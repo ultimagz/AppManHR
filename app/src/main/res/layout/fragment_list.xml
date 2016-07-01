@@ -13,12 +13,14 @@
         android:scrollbars="none"
         android:layout_gravity="center_horizontal|top" />
 
-    <!--<LinearLayout
+
+    <LinearLayout
+        android:layout_gravity="right"
         android:id="@+id/side_index"
         android:layout_width="50dp"
         android:layout_height="fill_parent"
-        android:background="#c3c3c3"
+
         android:gravity="center_horizontal"
         android:orientation="vertical" >
-    </LinearLayout>-->
+    </LinearLayout>
 </FrameLayout>
