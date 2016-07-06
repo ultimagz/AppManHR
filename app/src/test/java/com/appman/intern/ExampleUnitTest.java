@@ -1,4 +1,4 @@
-package com.example.intern.intern;
+package com.appman.intern;
 
 import org.junit.Test;
 
