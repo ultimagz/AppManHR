@@ -4,12 +4,12 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/headText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/headText"
+        android:layout_weight="1"
         android:text="A"
-        android:textSize="24dp"
         android:textColor="#fa1414"
-        android:textStyle="bold"
-        android:layout_weight="1" />
+        android:textSize="24dp"
+        android:textStyle="bold" />
 </LinearLayout>

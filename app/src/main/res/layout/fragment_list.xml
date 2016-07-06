@@ -2,25 +2,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.intern.intern.listFragment">
-
-    <!-- TODO: Update blank fragment layout -->
+    android:paddingBottom="?attr/actionBarSize"
+    tools:context=".ContactsFragment">
 
     <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/listView"
-        android:scrollbars="none"
-        android:layout_gravity="center_horizontal|top" />
-
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none" />
 
     <LinearLayout
-        android:layout_gravity="right"
         android:id="@+id/side_index"
         android:layout_width="50dp"
-        android:layout_height="fill_parent"
-
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
         android:gravity="center_horizontal"
-        android:orientation="vertical" >
-    </LinearLayout>
+        android:orientation="vertical" />
 </FrameLayout>
