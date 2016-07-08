@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.appman.intern.ContactListAdapter;
+import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.R;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.EmailData;
