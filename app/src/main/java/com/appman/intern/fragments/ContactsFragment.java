@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +15,20 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.appman.intern.adapters.ContactListAdapter;
+import com.appman.intern.AppManHR;
 import com.appman.intern.R;
+import com.appman.intern.adapters.ContactListAdapter;
+import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.EmailData;
 import com.appman.intern.models.PhoneData;
+import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,8 +83,39 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        adapter = new ContactListAdapter(getActivity(), createContactsList());
+        adapter = new ContactListAdapter(getActivity(), createContactsListFromFile());
         listView.setAdapter(adapter);
+    }
+
+    private List<AppContactData> createContactsListFromFile() {
+        List<AppContactData> all = new ArrayList<>();
+        try {
+            InputStream json = getActivity().getAssets().open("sample_contact.json");
+            String jsonString = IOUtils.toString(json, "UTF-8");
+            Type jsonType = new TypeToken<ArrayList<AppContactData>>(){}.getType();
+            List<AppContactData> contactList = AppManHR.GSON.fromJson(jsonString, jsonType); //retrieveContacts(getContext());
+
+            String prev = "";
+            AppContactData header;
+            for (AppContactData contactData : contactList) {
+                String firstChar = contactData.getFirstCharEn();
+                if (!firstChar.equalsIgnoreCase(prev)) {
+                    prev = firstChar;
+                    header = new AppContactData();
+                    header.setFirstnameEn(firstChar);
+                    header.setFirstnameTh(firstChar);
+                    header.setIsHeader(true);
+                    all.add(header);
+                }
+
+                all.add(contactData);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return all;
     }
 
     private List<ContactData> createContactsList() {
@@ -140,35 +178,14 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 //        int contactsCount = cursor.getCount(); // get how many contacts you have in your contacts list
         Timber.w("column(s)\n%s", Arrays.toString(cursor.getColumnNames()));
         while(cursor.moveToNext()) {
-            ContactData contactData = new ContactData(false);
+            ContactData contactData = new ContactData(cursor);
 
             String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-            String displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-            String thumbnailUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
-            String photoId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
-            String photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
-            String photoFileId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_FILE_ID));
-            String isUserProfile = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.IS_USER_PROFILE));
-            String inVisibleGroup = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.IN_VISIBLE_GROUP));
-            String hasPhoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
-            String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+            contactData.setEmailList(retrieveEmailList(context, contactData.getId()));
+            contactData.setRawContactId(retrieveRawContactId(context, contactData.getId()));
 
-            contactData.setId(id);
-            contactData.setValue(displayName);
-            contactData.setDisplayName(displayName);
-            contactData.setThumbnailUri(thumbnailUri);
-            contactData.setPhotoUri(photoUri);
-            contactData.setPhotoId(photoId);
-            contactData.setPhotoFileId(photoFileId);
-            contactData.setInVisibleGroup(TextUtils.equals(inVisibleGroup, "1"));
-            contactData.setIsUserProfile(TextUtils.equals(isUserProfile, "1"));
-            contactData.setHasPhoneNumber(TextUtils.equals(hasPhoneNumber, "1"));
-            contactData.setLookupKey(lookupKey);
-            contactData.setEmailList(retrieveEmailData(context, id));
-            contactData.setRawContactId(retrieveRawContactIds(context, id));
-
-            if (TextUtils.equals(hasPhoneNumber, "1")) {
-                contactData.setPhoneList(retrievePhoneData(context, id));
+            if (contactData.isHasPhoneNumber()) {
+                contactData.setPhoneList(retrievePhoneList(context, id));
             }
 
             contactDataList.add(contactData);
@@ -180,7 +197,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         return contactDataList;
     }
 
-    private String retrieveRawContactIds(Context context, String contactId) {
+    private String retrieveRawContactId(Context context, String contactId) {
         Cursor cursor = context.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI,
                 null, ContactsContract.RawContacts.CONTACT_ID + " = ?", new String[] { contactId }, null);
 
@@ -195,7 +212,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         return rawContactId;
     }
 
-    private List<EmailData> retrieveEmailData(Context context, String contactId) {
+    private List<EmailData> retrieveEmailList(Context context, String contactId) {
         List<EmailData> emailList = new ArrayList<>();
         Cursor cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
@@ -230,7 +247,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         return emailList;
     }
 
-    private List<PhoneData> retrievePhoneData(Context context, String contactId) {
+    private List<PhoneData> retrievePhoneList(Context context, String contactId) {
         List<PhoneData> phoneList = new ArrayList<>();
         Cursor cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",
