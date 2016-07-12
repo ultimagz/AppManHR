@@ -5,9 +5,11 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 
 import com.appman.intern.AppManHR;
+import com.appman.intern.enums.Language;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class AppContactData {
 
@@ -228,5 +230,22 @@ public class AppContactData {
     @Override
     public String toString() {
         return AppManHR.GSON_PRETTY.toJson(this);
+    }
+
+    public static Comparator<AppContactData> getComparator(Language lang) {
+        if (lang == Language.TH)
+            return new Comparator<AppContactData>() {
+                @Override
+                public int compare(AppContactData s1, AppContactData s2) {
+                    return s1.getFirstCharTh().compareToIgnoreCase(s2.getFirstCharTh());
+                }
+            };
+
+        return new Comparator<AppContactData>() {
+            @Override
+            public int compare(AppContactData s1, AppContactData s2) {
+                return s1.getFirstCharEn().compareToIgnoreCase(s2.getFirstCharEn());
+            }
+        };
     }
 }
