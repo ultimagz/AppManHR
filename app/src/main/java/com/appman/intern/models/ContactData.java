@@ -1,5 +1,12 @@
 package com.appman.intern.models;
 
+import android.content.ContentProviderOperation;
+import android.database.Cursor;
+import android.provider.ContactsContract;
+import android.text.TextUtils;
+
+import com.appman.intern.AppManHR;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +15,19 @@ public class ContactData extends BaseContactModel {
     boolean inVisibleGroup, isUserProfile, hasPhoneNumber, isHeader;
     List<PhoneData> phoneList = new ArrayList<>();
     List<EmailData> emailList = new ArrayList<>();
+
+    public ContactData(Cursor cursor) {
+        id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+        displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+        thumbnailUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI));
+        photoId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
+        photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
+        photoFileId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_FILE_ID));
+        isUserProfile = TextUtils.equals(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.IS_USER_PROFILE)), "1");
+        inVisibleGroup = TextUtils.equals(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.IN_VISIBLE_GROUP)), "1");
+        hasPhoneNumber = TextUtils.equals(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)), "1");
+        lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+    }
 
     public ContactData(boolean isHeader) {
         this.isHeader = isHeader;
