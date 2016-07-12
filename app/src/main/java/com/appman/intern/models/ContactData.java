@@ -1,11 +1,8 @@
 package com.appman.intern.models;
 
-import android.content.ContentProviderOperation;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-
-import com.appman.intern.AppManHR;
 
 import java.util.ArrayList;
 import java.util.List;
