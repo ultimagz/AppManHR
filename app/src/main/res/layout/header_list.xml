@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:padding="8dp">
 
     <TextView
         android:id="@+id/headText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="A"
+        android:clickable="false"
+        android:enabled="false"
         android:textColor="#fa1414"
-        android:textSize="24dp"
-        android:textStyle="bold" />
+        android:textSize="24sp"
+        android:textStyle="bold"
+        tools:text="A" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
 </LinearLayout>
