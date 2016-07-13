@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.appman.intern.AppManHR;
 import com.appman.intern.R;
 import com.appman.intern.adapters.SectionsPagerAdapter;
 import com.appman.intern.databinding.MainActivityBinding;
+import com.appman.intern.fragments.SearchFragment;
 import com.appman.intern.models.AppContactData;
 
 import java.util.ArrayList;
@@ -65,6 +67,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+
+        mBinding.searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.main_content, SearchFragment.newInstance());
+                transaction.commit();
+            }
         });
     }
 
