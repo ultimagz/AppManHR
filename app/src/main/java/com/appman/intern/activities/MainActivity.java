@@ -12,8 +12,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,7 +25,7 @@ import java.util.ArrayList;
 
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private MainActivityBinding mBinding;
@@ -40,8 +38,8 @@ public class MainActivity extends AppCompatActivity{
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
 
-        mBinding.container.setAdapter(mSectionsPagerAdapter);
-        mBinding.container.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mBinding.viewPager.setAdapter(mSectionsPagerAdapter);
+        mBinding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
@@ -54,11 +52,11 @@ public class MainActivity extends AppCompatActivity{
             public void onPageScrollStateChanged(int state) {}
         });
 
-        mBinding.tabs.setupWithViewPager(mBinding.container);
-        mBinding.tabs.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
+        mBinding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mBinding.container.setCurrentItem(tab.getPosition());
+                mBinding.viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -140,17 +138,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         Timber.w("Group Id %s", getGroupId());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_tab, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+        setToolbarTitleByIndex(mBinding.viewPager.getCurrentItem());
     }
 }
