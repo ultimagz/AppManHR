@@ -157,7 +157,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 .withValue(
                         ContactsContract.Contacts.Data.MIMETYPE,
                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "081 123 1234")
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "083 312 4860")
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, checkType)
                 .build();
     }
