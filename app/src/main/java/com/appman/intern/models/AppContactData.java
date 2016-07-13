@@ -8,34 +8,37 @@ import com.appman.intern.AppManHR;
 import com.appman.intern.enums.Language;
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 
+@Parcel
 public class AppContactData {
 
     @SerializedName("_id")
-    private String id = "id";
+    String id = "id";
     @SerializedName("th_fname")
-    private String firstnameTh = "firstnameTh";
+    String firstnameTh = "firstnameTh";
     @SerializedName("th_lname")
-    private String lastnameTh = "lastnameTh";
+    String lastnameTh = "lastnameTh";
     @SerializedName("th_nickname")
-    private String nicknameTh = "nicknameTh";
+    String nicknameTh = "nicknameTh";
     @SerializedName("en_fname")
-    private String firstnameEn = "firstnameEn";
+    String firstnameEn = "firstnameEn";
     @SerializedName("en_lname")
-    private String lastnameEn = "lastnameEn";
+    String lastnameEn = "lastnameEn";
     @SerializedName("en_nickname")
-    private String nicknameEn = "nicknameEn";
+    String nicknameEn = "nicknameEn";
     @SerializedName("workphone")
-    private String workPhone = "021234567";
+    String workPhone = "021234567";
 
-    private String position = "position";
-    private String mobile = "0897654321";
-    private String email = "e@mail.com";
-    private String line = "line";
-    private String update = "updateDate";
-    private boolean isHeader = false;
+    String position = "position";
+    String mobile = "0897654321";
+    String email = "e@mail.com";
+    String line = "line";
+    String update = "updateDate";
+    boolean isHeader = false;
 
     public String getId() {
         return id;
