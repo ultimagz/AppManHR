@@ -1,67 +1,52 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context=".fragments.SyncFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-<RelativeLayout
-    android:id="@+id/layout1"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="70dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/text1"
-        android:textSize="24dp"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/colorBlack"
-        android:text="Which language of contacts " />
-
-    <TextView
-        android:id="@+id/text2"
-        android:layout_below="@+id/text1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/colorBlack"
-        android:text="do you want to sync ?" />
-</RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/layout2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="50dp">
-
-    <Button
-        android:id="@+id/Th_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="-6dp"
-        android:text="TH"
-        android:background="@drawable/set_button"/>
-
-        <Button
+        <TextView
+            android:id="@+id/sync_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-2dp"
-            android:text="EN"
-            android:background="@drawable/set_button"/>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="64dp"
+            android:gravity="center"
+            android:text="Which language of contacts\ndo you want to sync ?"
+            android:textColor="@color/colorBlack"
+            android:textSize="24sp" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/sync_btn_wrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sync_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/th_btn"
+                style="?attr/buttonBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/set_button"
+                android:padding="8dp"
+                android:text="TH"
+                android:textSize="20sp"/>
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/en_btn"
+                style="?attr/buttonBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/set_button"
+                android:padding="8dp"
+                android:text="EN"
+                android:textSize="20sp"/>
 
-</FrameLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

@@ -1,23 +1,27 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="?attr/actionBarSize"
     tools:context=".fragments.ContactsFragment">
 
-    <ListView
-        android:id="@+id/listView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:scrollbars="none" />
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/side_index"
-        android:layout_width="50dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:gravity="center_horizontal"
-        android:orientation="vertical" />
-</FrameLayout>
+        <ListView
+            android:id="@+id/contact_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:id="@+id/side_index"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" />
+    </FrameLayout>
+
+</layout>

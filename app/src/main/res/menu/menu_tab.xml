@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title=""
+        android:id="@+id/lang_switch"
+        app:actionLayout="@layout/lang_switch_layout"
+        app:showAsAction="always" />
 </menu>
