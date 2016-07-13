@@ -11,9 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHR;
@@ -117,20 +116,20 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         Language lang = AppManHRPreferences.getCurrentLanguage(getContext());
-//        MenuItem menuItem = menu.findItem(R.id.lang_switch);
-//        RelativeLayout relativeLayout = (RelativeLayout) menuItem.getActionView();
-//        Switch switchBtn = (Switch) relativeLayout.findViewById(R.id.switch_lang_btn);
-//        switchBtn.setChecked(lang == Language.TH);
-//        switchBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-//                toggleLanguage(isChecked);
-//            }
-//        });
+        MenuItem menuItem = menu.findItem(R.id.lang_switch);
+        RelativeLayout relativeLayout = (RelativeLayout) menuItem.getActionView();
+        RadioGroup langGroup = (RadioGroup) relativeLayout.findViewById(R.id.lang_btn_group);
+        langGroup.check(lang == Language.TH ? R.id.th_btn : R.id.en_btn);
+        langGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                toggleLanguage(id);
+            }
+        });
     }
 
-    private void toggleLanguage(boolean isChecked) {
-        AppManHRPreferences.setCurrentLanguage(getContext(), isChecked ? "TH" : "EN");
+    private void toggleLanguage(int btnId) {
+        AppManHRPreferences.setCurrentLanguage(getContext(), btnId == R.id.th_btn ? "TH" : "EN");
     }
 }
 
