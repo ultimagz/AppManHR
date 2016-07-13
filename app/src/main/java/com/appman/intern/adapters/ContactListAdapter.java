@@ -1,11 +1,12 @@
 package com.appman.intern.adapters;
 
 import android.content.ContentProviderOperation;
-import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,13 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appman.intern.R;
+import com.appman.intern.fragments.ContactDetailFragment;
+import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.DataModel;
 import com.appman.intern.models.PhoneData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import timber.log.Timber;
 
@@ -32,19 +37,23 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
             ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
             ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
 
-    Context mContext;
-    List<ContactData> mContactList;
+    FragmentActivity mActivity;
+    List<AppContactData> mOriginalList;
+    List<AppContactData> mFilterList;
     LayoutInflater mInflater;
+    Map<String, Integer> mapIndex;
 
-    public ContactListAdapter(Context context, List<ContactData> contactList) {
-        super(context, 0);
-        mContext = context;
-        mInflater = LayoutInflater.from(context);
-        mContactList = contactList;
+    public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
+        super(activity, 0);
+        mActivity = activity;
+        mInflater = LayoutInflater.from(activity);
+        mOriginalList = new ArrayList<>(contactList);
+        mFilterList = createSectionList(contactList);
+        createIndexList(mFilterList);
     }
 
     public int getCount() {
-        return mContactList.size();
+        return mFilterList.size();
     }
 
     public ContactData getItem(int position) {
@@ -56,58 +65,68 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     }
 
     public View getView(int position, View view, ViewGroup parent) {
-        final ContactData dataAtPos = mContactList.get(position);
-        return dataAtPos.isHeader() ? createSessionView(dataAtPos, parent) : createContactView(dataAtPos, parent);
-    }
-
-    private View createSessionView(ContactData dataAtPos, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.header_list, parent, false);
-        TextView headView = (TextView) view.findViewById(R.id.headText);
-        headView.setText(dataAtPos.getValue());
+        final AppContactData dataAtPos = mFilterList.get(position);
+        view = dataAtPos.isHeader() ? createSessionView(dataAtPos, parent) : createContactView(dataAtPos, parent);
         return view;
     }
 
-    private View createContactView(final ContactData dataAtPos, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.layout_row, parent, false);
-        TextView title = (TextView) view.findViewById(R.id.contact_title);
+    private View createSessionView(AppContactData dataAtPos, ViewGroup parent) {
+        View view = mInflater.inflate(R.layout.contact_header_row, parent, false);
+        TextView headView = (TextView) view.findViewById(R.id.section_title);
+        headView.setText(dataAtPos.getFirstCharEn());
+        view.setOnClickListener(null);
+
+        return view;
+    }
+
+    private View createContactView(final AppContactData dataAtPos, ViewGroup parent) {
+        View view = mInflater.inflate(R.layout.contact_data_row, parent, false);
+        TextView title = (TextView) view.findViewById(R.id.contact_name);
         TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
 
-        title.setText(dataAtPos.getValue());
-        List<PhoneData> phoneList = dataAtPos.getPhoneList();
-        if (phoneList.size() > 0) {
-            phoneNo.setText(phoneList.get(0).getPhoneNo());
-        }
+        title.setText(dataAtPos.getFullNameEn());
+        phoneNo.setText(dataAtPos.getMobile());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String where =
-                        ContactsContract.Contacts.Data._ID + " = ? AND " +
-                        ContactsContract.Contacts.Data.MIMETYPE + " = ? AND " +
-                        ContactsContract.CommonDataKinds.Phone.TYPE + " = ? ";
-                try {
-                    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-
-                    List<PhoneData> phoneList = dataAtPos.getPhoneList();
-
-                    for (int checkType : PHONE_TYPE_LIST) {
-                        DataModel dataModel = containPhoneType(dataAtPos, checkType);
-                        if (dataModel == null) {
-                            ops.add(createInsertContact(dataAtPos, checkType));
-                        } else {
-                            ops.add(createUpdateContact(dataAtPos, dataModel, checkType));
-                        }
-                    }
-
-                    mContext.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-                    Toast.makeText(mContext, "Update success", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Log.e("Update contact failed", String.valueOf(dataAtPos), e);
-                    Toast.makeText(mContext, "Update failed", Toast.LENGTH_SHORT).show();
-                }
+                showDetailFragment(dataAtPos);
             }
         });
+
         return view;
+    }
+
+    private void showDetailFragment(final AppContactData dataAtPos) {
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos), "ContactDetailFragment")
+                .addToBackStack("ContactDetailFragment")
+                .commit();
+    }
+
+    private void updateContact(final ContactData dataAtPos) {
+        try {
+            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+            List<PhoneData> phoneList = dataAtPos.getPhoneList();
+
+            for (int checkType : PHONE_TYPE_LIST) {
+                DataModel dataModel = containPhoneType(dataAtPos, checkType);
+                if (dataModel == null) {
+                    ops.add(createInsertContact(dataAtPos, checkType));
+                } else {
+                    ops.add(createUpdateContact(dataAtPos, dataModel, checkType));
+                }
+            }
+
+            mActivity.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            Toast.makeText(mActivity, "Update success", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e("Update contact failed", String.valueOf(dataAtPos), e);
+            Toast.makeText(mActivity, "Update failed", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private ContentProviderOperation createInsertContact(final ContactData dataAtPos, final int checkType) throws RemoteException, OperationApplicationException {
@@ -149,7 +168,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         if (TextUtils.isEmpty(rawContactId)) {
             return null;
         } else {
-            Cursor cursor = mContext.getContentResolver().query(
+            Cursor cursor = mActivity.getContentResolver().query(
                     ContactsContract.Data.CONTENT_URI,
                     null,
                     ContactsContract.Data.CONTACT_ID + " = ? AND " +
@@ -168,5 +187,44 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
 
             return returnData;
         }
+    }
+
+    public List<AppContactData> createSectionList(List<AppContactData> contactList) {
+        String prev = "";
+        AppContactData header;
+        List<AppContactData> all = new ArrayList<>();
+        for (AppContactData contactData : contactList) {
+            String firstChar = contactData.getFirstCharEn();
+            if (!firstChar.equalsIgnoreCase(prev)) {
+                prev = firstChar;
+                header = new AppContactData();
+                header.setFirstnameEn(firstChar);
+                header.setFirstnameTh(firstChar);
+                header.setIsHeader(true);
+                all.add(header);
+            }
+
+            all.add(contactData);
+        }
+        return all;
+    }
+
+    private void createIndexList(List<AppContactData> contactList) {
+        mapIndex = new HashMap<>();
+        String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+
+        for (String anAlphabet : alphabet) {
+            for (int j = 0; j < contactList.size(); j++) {
+                AppContactData data = contactList.get(j);
+                String value = data.getFirstnameEn();
+                if (anAlphabet.equals(value)) {
+                    mapIndex.put(value, j);
+                }
+            }}
+    }
+
+    public int getMapIndex(String key) {
+        Integer index = mapIndex.get(key);
+        return index == null ? -1 : index;
     }
 }
