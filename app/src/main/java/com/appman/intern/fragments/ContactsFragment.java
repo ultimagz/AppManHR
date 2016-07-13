@@ -1,14 +1,10 @@
 package com.appman.intern.fragments;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.databinding.DataBindingUtil;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,8 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHRPreferences;
@@ -80,8 +79,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onRefresh() {
                 getContactListFromServer();
-
-
                 Log.e("F5","suss");
             }
         });
@@ -144,20 +141,20 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         Language lang = AppManHRPreferences.getCurrentLanguage(getContext());
-//        MenuItem menuItem = menu.findItem(R.id.lang_switch);
-//        RelativeLayout relativeLayout = (RelativeLayout) menuItem.getActionView();
-//        Switch switchBtn = (Switch) relativeLayout.findViewById(R.id.switch_lang_btn);
-//        switchBtn.setChecked(lang == Language.TH);
-//        switchBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-//                toggleLanguage(isChecked);
-//            }
-//        });
+        MenuItem menuItem = menu.findItem(R.id.lang_switch);
+        RelativeLayout relativeLayout = (RelativeLayout) menuItem.getActionView();
+        RadioGroup langGroup = (RadioGroup) relativeLayout.findViewById(R.id.lang_btn_group);
+        langGroup.check(lang == Language.TH ? R.id.th_btn : R.id.en_btn);
+        langGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                toggleLanguage(id);
+            }
+        });
     }
 
-    private void toggleLanguage(boolean isChecked) {
-        AppManHRPreferences.setCurrentLanguage(getContext(), isChecked ? "TH" : "EN");
+    private void toggleLanguage(int btnId) {
+        AppManHRPreferences.setCurrentLanguage(getContext(), btnId == R.id.th_btn ? "TH" : "EN");
     }
 
     private void updateAdapter(String jsonString) {
