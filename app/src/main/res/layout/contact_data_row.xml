@@ -7,17 +7,17 @@
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:layout_marginLeft="50dp">
 
     <com.appman.intern.views.RoundedImageView
         android:id="@+id/contact_img"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/downeyjr"/>
+        android:src="@drawable/downeyjr" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="256dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="8dp"

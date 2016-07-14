@@ -109,6 +109,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+
     @Override
     public void onClick(View view) {
         TextView selectedIndex = (TextView) view;
