@@ -50,13 +50,5 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_gravity="end"
             android:gravity="center_horizontal"
             android:orientation="vertical" />
-
-
     </RelativeLayout>
-
-
-
-
-
-
 </layout>

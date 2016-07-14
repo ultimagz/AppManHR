@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appman.intern.R;
+import com.appman.intern.enums.Language;
 import com.appman.intern.fragments.ContactDetailFragment;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
@@ -44,6 +45,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     LayoutInflater mInflater;
     Map<String, Integer> mapIndex;
     ItemFilter mFilter = new ItemFilter();
+    Language mLanguage = Language.EN;
 
     public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
         super(activity, 0);
@@ -72,6 +74,10 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         return view;
     }
 
+    public void setLanguage(Language language) {
+        mLanguage = language;
+    }
+
     private View createSessionView(AppContactData dataAtPos, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.contact_header_row, parent, false);
         TextView headView = (TextView) view.findViewById(R.id.section_title);
@@ -86,18 +92,13 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         TextView title = (TextView) view.findViewById(R.id.contact_name);
         TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
 
-        if (dataAtPos.getNicknameEn() != null){
-            if(dataAtPos.getNicknameEn().length()!=0) {
-                title.setText(dataAtPos.getFullNameEn() + " (" + dataAtPos.getNicknameEn() + ")");
-            }
-        }
-        else {
-            title.setText(dataAtPos.getFullNameEn());
+        if (TextUtils.isEmpty(dataAtPos.getNicknameEn())) {
+            title.setText(mLanguage == Language.TH ? dataAtPos.getFullNameTh() : dataAtPos.getFullNameEn());
+        } else {
+            title.setText(String.format("%s (%s)", dataAtPos.getFullNameEn(), dataAtPos.getNicknameEn()));
         }
 
-
-
-        phoneNo.setText(dataAtPos.getPosition());
+        phoneNo.setText(dataAtPos.getMobile());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
