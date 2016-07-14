@@ -1,10 +1,12 @@
 package com.appman.intern.fragments;
 
 import android.databinding.DataBindingUtil;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +25,10 @@ import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.ContactFragmentBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.okhttp.Response;
 
 import org.apache.commons.io.IOUtils;
 
@@ -45,6 +50,9 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     ContactFragmentBinding mBinding;
     ContactListAdapter mAdapter;
+    String result;
+    String resultText;
+    List<AppContactData> list;
 
     public static ContactsFragment newInstance(Bundle args) {
         ContactsFragment fragment = new ContactsFragment();
@@ -68,23 +76,21 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        mAdapter = new ContactListAdapter(getActivity(), getContactsListFromFile());
-        mBinding.contactList.setAdapter(mAdapter);
+        getContactListFromServer();
+//        getContactsListFromFile();
     }
 
-    private List<AppContactData> getContactsListFromFile() {
+    private void getContactsListFromFile() {
         List<AppContactData> contactList = new ArrayList<>();
         try {
             InputStream json = getActivity().getAssets().open("sample_contact.json");
-            String jsonString = IOUtils.toString(json, "UTF-8");
-            Type jsonType = new TypeToken<ArrayList<AppContactData>>(){}.getType();
-            contactList = AppManHR.GSON.fromJson(jsonString, jsonType); //ContactHelper.retrieveContacts(getContext(, PROJECTION);
-            Collections.sort(contactList, AppContactData.getComparator(Language.EN));
+            AppContactData data = new AppContactData();
+            Gson gson = new GsonBuilder().serializeNulls().create();
+            String jsonString = gson.toJson(data);
+            updateAdapter(jsonString);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return contactList;
     }
 
     private void displayIndex() {
@@ -131,6 +137,44 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     private void toggleLanguage(boolean isChecked) {
         AppManHRPreferences.setCurrentLanguage(getContext(), isChecked ? "TH" : "EN");
+    }
+
+    private void updateAdapter(String jsonString) {
+        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {}.getType();
+        List<AppContactData> contactList = new Gson().fromJson(jsonString, jsonType);
+        Collections.sort(contactList, AppContactData.getComparator(Language.EN));
+        mAdapter = new ContactListAdapter(getActivity(), contactList);
+        mBinding.contactList.setAdapter(mAdapter);
+    }
+
+    public void getContactListFromServer() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                com.squareup.okhttp.OkHttpClient okHttpClient = new com.squareup.okhttp.OkHttpClient();
+
+                com.squareup.okhttp.Request.Builder builder = new com.squareup.okhttp.Request.Builder();
+                com.squareup.okhttp.Request request = builder.url("http://hr.appmanproject.com/api/user/list").build();
+
+                try {
+                    Response response = okHttpClient.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        return response.body().string();
+                    } else {
+                        return "Not Success - code : " + response.code();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "Error - " + e.getMessage();
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String output) {
+                updateAdapter(output);
+            }
+
+        }.execute();
     }
 }
 

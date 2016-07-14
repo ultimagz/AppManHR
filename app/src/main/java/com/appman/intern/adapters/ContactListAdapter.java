@@ -3,6 +3,7 @@ package com.appman.intern.adapters;
 import android.content.ContentProviderOperation;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
@@ -22,7 +23,11 @@ import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.DataModel;
 import com.appman.intern.models.PhoneData;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +47,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     List<AppContactData> mFilterList;
     LayoutInflater mInflater;
     Map<String, Integer> mapIndex;
+    String result ;
+    String resultText ;
 
     public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
         super(activity, 0);
@@ -227,4 +234,43 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         Integer index = mapIndex.get(key);
         return index == null ? -1 : index;
     }
+
+    public void getContactListFromServer(){
+
+
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                com.squareup.okhttp.OkHttpClient okHttpClient = new com.squareup.okhttp.OkHttpClient();
+
+                com.squareup.okhttp.Request.Builder builder = new com.squareup.okhttp.Request.Builder();
+                com.squareup.okhttp.Request request = builder.url("http://hr.appmanproject.com/api/user/list").build();
+
+                try {
+                    Response response = okHttpClient.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        return response.body().string();
+                    } else {
+                        return "Not Success - code : " + response.code();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "Error - " + e.getMessage();
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String string) {
+                super.onPostExecute(string);
+
+                resultText = string;
+                Log.e("str",resultText);
+            }
+
+        }.execute();
+
+        Log.e("str2",resultText);
+
+    }
+
 }
