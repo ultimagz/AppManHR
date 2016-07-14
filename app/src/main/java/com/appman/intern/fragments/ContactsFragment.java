@@ -202,61 +202,14 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         Cursor mCursor = mDb.rawQuery("SELECT * FROM " + DatabaseHelper.DBTABLE, null);
 
         if (mCursor.getCount() == 0) {
-            for (AppContactData a : contactList) {
-
-                mDb.execSQL("INSERT INTO " + DatabaseHelper.DBTABLE + " ("
-                        + DatabaseHelper.contactID + ", " + DatabaseHelper.fistNameTH
-                        + ", " + DatabaseHelper.lastNameTH
-                        + ", " + DatabaseHelper.nickNameTH
-                        + ", " + DatabaseHelper.fistNameEN
-                        + ", " + DatabaseHelper.lastNameEN
-                        + ", " + DatabaseHelper.nickNameEN
-                        + ", " + DatabaseHelper.position
-                        + ", " + DatabaseHelper.email
-                        + ", " + DatabaseHelper.mobile
-                        + ", " + DatabaseHelper.workphone
-                        + ", " + DatabaseHelper.line
-                        + ", " + DatabaseHelper.updateTime
-                        + ") VALUES ('" + a.getId()
-                        + "', '" + a.getFirstnameTh()
-                        + "', '" + a.getLastnameTh()
-                        + "', '" + a.getNicknameTh()
-                        + "', '" + a.getFirstnameEn()
-                        + "', '" + a.getLastnameEn()
-                        + "', '" + a.getNicknameEn()
-                        + "', '" + a.getPosition()
-                        + "', '" + a.getEmail()
-                        + "', '" + a.getMobile()
-                        + "', '" + a.getWorkPhone()
-                        + "', '" + a.getLine()
-                        + "', '" + a.getUpdate()
-                        + "');");
-
-            }
+            insertData(contactList);
             Log.e("suss", "full");
 
 
         } else {
+            deleteData();
+            insertData(contactList);
 
-            for (AppContactData a : contactList) {
-
-                mDb.execSQL("UPDATE " + DatabaseHelper.DBTABLE + " SET"
-                        + DatabaseHelper.fistNameTH + "='" + a.getFirstnameTh()
-                        + "', " + DatabaseHelper.lastNameTH + "='" + a.getLastnameTh()
-                        + "', " + DatabaseHelper.nickNameTH+ "='" +a.getNicknameTh()
-                        + "', " + DatabaseHelper.fistNameEN+ "='" +a.getFirstnameEn()
-                        + "', " + DatabaseHelper.lastNameEN+ "='" +a.getLastnameEn()
-                        + "', " + DatabaseHelper.nickNameEN+ "='" +a.getNicknameEn()
-                        + "', " + DatabaseHelper.position+ "='" +a.getPosition()
-                        + "', " + DatabaseHelper.email+ "='" + a.getEmail()
-                        + "', " + DatabaseHelper.mobile+ "='" +a.getMobile()
-                        + "', " + DatabaseHelper.workphone+ "='" +a.getWorkPhone()
-                        + "', " + DatabaseHelper.line+ "='" +a.getLine()
-                        + "', " + DatabaseHelper.updateTime+ "='" +a.getUpdate()
-                        + "WHERE " +DatabaseHelper.contactID+"'"+a.getId()
-                        + "';");
-
-            }
             Log.e("suss", "yes");
         }
 
@@ -268,7 +221,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         mHelper = new DatabaseHelper(getActivity());
 
         mDb = mHelper.getReadableDatabase();
-        AppContactData contact = new AppContactData();
+        AppContactData contact ;
         List<AppContactData> contactList = new ArrayList<>();
 
 
@@ -300,7 +253,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             contactList.add(contact);
             mCursor.moveToNext();
 
-            //Parcelable wrapped = Parcels.wrap(contact);
 
         }
 
@@ -309,5 +261,45 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
         updateAdapter(contactList.toString());
     }
+
+    public void insertData(List<AppContactData> contactList) {
+        for (AppContactData a : contactList) {
+
+            mDb.execSQL("INSERT INTO " + DatabaseHelper.DBTABLE + " ("
+                    + DatabaseHelper.contactID + ", " + DatabaseHelper.fistNameTH
+                    + ", " + DatabaseHelper.lastNameTH
+                    + ", " + DatabaseHelper.nickNameTH
+                    + ", " + DatabaseHelper.fistNameEN
+                    + ", " + DatabaseHelper.lastNameEN
+                    + ", " + DatabaseHelper.nickNameEN
+                    + ", " + DatabaseHelper.position
+                    + ", " + DatabaseHelper.email
+                    + ", " + DatabaseHelper.mobile
+                    + ", " + DatabaseHelper.workphone
+                    + ", " + DatabaseHelper.line
+                    + ", " + DatabaseHelper.updateTime
+                    + ") VALUES ('" + a.getId()
+                    + "', '" + a.getFirstnameTh()
+                    + "', '" + a.getLastnameTh()
+                    + "', '" + a.getNicknameTh()
+                    + "', '" + a.getFirstnameEn()
+                    + "', '" + a.getLastnameEn()
+                    + "', '" + a.getNicknameEn()
+                    + "', '" + a.getPosition()
+                    + "', '" + a.getEmail()
+                    + "', '" + a.getMobile()
+                    + "', '" + a.getWorkPhone()
+                    + "', '" + a.getLine()
+                    + "', '" + a.getUpdate()
+                    + "');");
+        }
+    }
+
+    public void deleteData(){
+        mDb.execSQL("DELETE FROM "+DatabaseHelper.DBTABLE+";");
+        Log.e("delete","yes");
+
+    }
+
 }
 
