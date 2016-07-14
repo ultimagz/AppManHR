@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.appman.intern.R;
 import com.appman.intern.adapters.SectionsPagerAdapter;
 import com.appman.intern.databinding.MainActivityBinding;
 import com.appman.intern.enums.Language;
+import com.appman.intern.fragments.SearchFragment;
 import com.appman.intern.models.AppContactData;
 
 public class MainActivity extends AppCompatActivity {
@@ -60,6 +62,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        mBinding.searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager
+                            .beginTransaction()
+                            .add(R.id.main_content, SearchFragment.newInstance(), "SearchFragment")
+                            .addToBackStack("SearchFragment")
+                            .commit();
+
+            }
         });
 
         AppManHRPreferences.setCurrentLanguage(this, "EN");

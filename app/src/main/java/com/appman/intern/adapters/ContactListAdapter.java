@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     LayoutInflater mInflater;
     Map<String, Integer> mapIndex;
     Language mLanguage = Language.EN;
+    ItemFilter mFilter = new ItemFilter();
 
     public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
         super(activity, 0);
@@ -232,5 +234,58 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     public int getMapIndex(String key) {
         Integer index = mapIndex.get(key);
         return index == null ? -1 : index;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return mFilter;
+    }
+
+    private class ItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            String filterString = constraint.toString();
+            FilterResults results = new FilterResults();
+            List<AppContactData> nlist = filterString.length() == 0 ? new ArrayList<>(mOriginalList) : createFilterList(filterString);
+
+            results.values = createSectionList(nlist);
+            results.count = nlist.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mFilterList.clear();
+            mFilterList = (List<AppContactData>) results.values;
+            createIndexList(mFilterList);
+            notifyDataSetChanged();
+        }
+    }
+
+    private List<AppContactData> createFilterList(String filterString) {
+        int lengthFilterString = filterString.length();
+        List<AppContactData> nlist = new ArrayList<>();
+        String filterableString_FirstnameEn = "";
+        String filterableString_LastnameEn = "";
+        String filterableString_Position = "";
+        for (AppContactData data : mOriginalList) {
+            if(lengthFilterString <= data.getFirstnameEn().length()){
+                filterableString_FirstnameEn = data.getFirstnameEn().substring(0, lengthFilterString);
+            }
+
+            if(lengthFilterString <= data.getLastnameEn().length()){
+                filterableString_LastnameEn = data.getLastnameEn().substring(0, lengthFilterString);
+            }
+
+            if(lengthFilterString <= data.getPosition().length()){
+                filterableString_Position = data.getPosition().substring(0, lengthFilterString);
+            }
+
+            if (filterableString_FirstnameEn.equalsIgnoreCase(filterString) || filterableString_LastnameEn.equalsIgnoreCase(filterString) || filterableString_Position.equalsIgnoreCase(filterString)) {
+                nlist.add(data);
+            }
+        }
+
+        return nlist;
     }
 }
