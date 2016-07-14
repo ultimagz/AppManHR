@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.appman.intern.AppManHR;
 import com.appman.intern.AppManHRPreferences;
+import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
 import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.ContactFragmentBinding;
@@ -67,6 +68,8 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        String groupId = ContactHelper.getContactGroupId(getContext());
+        ContactHelper.retrieveContacts(getContext(), PROJECTION, groupId);
         mAdapter = new ContactListAdapter(getActivity(), getContactsListFromFile());
         mBinding.contactList.setAdapter(mAdapter);
     }
@@ -129,7 +132,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     }
 
     private void toggleLanguage(int btnId) {
-        AppManHRPreferences.setCurrentLanguage(getContext(), btnId == R.id.th_btn ? "TH" : "EN");
+        boolean isThai = btnId == R.id.th_btn;
+        AppManHRPreferences.setCurrentLanguage(getContext(), isThai ? "TH" : "EN");
+        mAdapter.setLanguage(isThai ? Language.TH : Language.EN);
+        mAdapter.notifyDataSetChanged();
     }
 }
 
