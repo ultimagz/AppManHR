@@ -1,32 +1,27 @@
 package com.appman.intern.activities;
 
-import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.OperationApplicationException;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.appman.intern.AppManHR;
+import com.appman.intern.AppManHRPreferences;
+import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
 import com.appman.intern.adapters.SectionsPagerAdapter;
 import com.appman.intern.databinding.MainActivityBinding;
+import com.appman.intern.enums.Language;
 import com.appman.intern.fragments.SearchFragment;
 import com.appman.intern.models.AppContactData;
-
-import java.util.ArrayList;
-
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,11 +60,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {}
 
-
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
-
 
         mBinding.searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,12 +77,20 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        AppManHRPreferences.setCurrentLanguage(this, "EN");
     }
 
     public void addNewContact(View view) {
         AppContactData newContact = new AppContactData();
         try {
-            ContentProviderResult[] results = getContentResolver().applyBatch(ContactsContract.AUTHORITY, newContact.createNewContactProvider(getGroupId()));
+            String groupId = ContactHelper.getContactGroupId(this);
+            Language lang = AppManHRPreferences.getCurrentLanguage(this);
+            ContentProviderResult[] results =
+                    getContentResolver().applyBatch(
+                            ContactsContract.AUTHORITY,
+                            newContact.createNewContactProvider(lang, groupId));
+
             Toast.makeText(this, "Insert contact success", Toast.LENGTH_SHORT).show();
 
             for (ContentProviderResult result : results) {
@@ -106,56 +107,9 @@ public class MainActivity extends AppCompatActivity {
         mBinding.toolbarTitle.setText(mSectionsPagerAdapter.getPageTitle(index));
     }
 
-    private String getGroupId() {
-        String groupId = ifGroup(AppManHR.GROUP_NAME);
-
-        if (groupId == null) {
-            ArrayList<ContentProviderOperation> opsGroup = new ArrayList<>();
-            opsGroup.add(ContentProviderOperation.newInsert(ContactsContract.Groups.CONTENT_URI)
-                    .withValue(ContactsContract.Groups.TITLE, AppManHR.GROUP_NAME)
-                    .withValue(ContactsContract.Groups.GROUP_VISIBLE, true)
-                    .withValue(ContactsContract.Groups.ACCOUNT_NAME, AppManHR.ACCOUNT_NAME)
-                    .withValue(ContactsContract.Groups.ACCOUNT_TYPE, AppManHR.ACCOUNT_TYPE)
-                    .build());
-            try {
-                ContentProviderResult[] results = getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsGroup);
-                for (ContentProviderResult result : results) {
-                    Log.w("create group result %s", result.uri.getLastPathSegment());
-                }
-            } catch (Exception e) {
-                Log.e("create group failed", AppManHR.GROUP_NAME, e);
-            }
-
-            return ifGroup(AppManHR.GROUP_NAME);
-        } else {
-            return groupId;
-        }
-    }
-
-    private String ifGroup(String groupName) {
-        String selection = ContactsContract.Groups.DELETED + " = ? AND " + ContactsContract.Groups.GROUP_VISIBLE + " = ? AND " + ContactsContract.Groups.TITLE + " = ?";
-        String[] selectionArgs = { "0", "1", groupName };
-        Cursor cursor = getContentResolver().query(ContactsContract.Groups.CONTENT_URI, null, selection, selectionArgs, null);
-
-        if (cursor == null)
-            return null;
-
-        String id = null, title = null;
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            id = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups._ID));
-            title = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups.TITLE));
-        }
-
-        cursor.close();
-
-        return id;
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
-        Timber.w("Group Id %s", getGroupId());
         setToolbarTitleByIndex(mBinding.viewPager.getCurrentItem());
     }
 }
