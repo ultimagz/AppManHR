@@ -102,7 +102,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-
         TextView selectedIndex = (TextView) view;
         String alphabet = selectedIndex.getText().toString();
         int index = mAdapter.getMapIndex(alphabet);
@@ -112,14 +111,14 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         }
 
         if(a != null) {
-            clearColor(a);
+            ((TextView) a).setTextColor(Color.parseColor("#999999"));
         }
         a = view;
     }
 
 
     private void clearColor(View a){
-        ((TextView) a).setTextColor(Color.parseColor("#000"));
+
     }
 
     @Override
