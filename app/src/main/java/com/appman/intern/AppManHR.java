@@ -3,7 +3,6 @@ package com.appman.intern;
 import android.app.Application;
 import android.util.Log;
 
-import com.appman.intern.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
