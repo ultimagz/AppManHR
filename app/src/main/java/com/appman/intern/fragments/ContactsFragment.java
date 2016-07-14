@@ -15,15 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.appman.intern.AppManHR;
 import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.DatabaseHelper;
 import com.appman.intern.R;
@@ -37,8 +32,6 @@ import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,7 +160,9 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                 OkHttpClient okHttpClient = new OkHttpClient();
 
                 Request.Builder builder = new Request.Builder();
+
                 Request request = builder.url(URL).build();
+
 
                 try {
                     Response response = okHttpClient.newCall(request).execute();
@@ -190,7 +185,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                 saveDatabase(result);
                 Log.e("re", result);
             }
-
         }.execute();
     }
 

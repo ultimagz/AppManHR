@@ -3,7 +3,6 @@ package com.appman.intern.adapters;
 import android.content.ContentProviderOperation;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
@@ -14,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,11 +23,7 @@ import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.DataModel;
 import com.appman.intern.models.PhoneData;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,8 +43,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     List<AppContactData> mFilterList;
     LayoutInflater mInflater;
     Map<String, Integer> mapIndex;
-    String result ;
-    String resultText ;
+    ItemFilter mFilter = new ItemFilter();
 
     public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
         super(activity, 0);
@@ -235,42 +230,56 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         return index == null ? -1 : index;
     }
 
-    public void getContactListFromServer(){
-
-
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... voids) {
-                com.squareup.okhttp.OkHttpClient okHttpClient = new com.squareup.okhttp.OkHttpClient();
-
-                com.squareup.okhttp.Request.Builder builder = new com.squareup.okhttp.Request.Builder();
-                com.squareup.okhttp.Request request = builder.url("http://hr.appmanproject.com/api/user/list").build();
-
-                try {
-                    Response response = okHttpClient.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        return response.body().string();
-                    } else {
-                        return "Not Success - code : " + response.code();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return "Error - " + e.getMessage();
-                }
-            }
-
-            @Override
-            protected void onPostExecute(String string) {
-                super.onPostExecute(string);
-
-                resultText = string;
-                Log.e("str",resultText);
-            }
-
-        }.execute();
-
-        Log.e("str2",resultText);
-
+    @Override
+    public Filter getFilter() {
+        return mFilter;
     }
 
+    private class ItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            String filterString = constraint.toString();
+            FilterResults results = new FilterResults();
+            List<AppContactData> nlist = filterString.length() == 0 ? new ArrayList<>(mOriginalList) : createFilterList(filterString);
+
+            results.values = createSectionList(nlist);
+            results.count = nlist.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mFilterList.clear();
+            mFilterList = (List<AppContactData>) results.values;
+            createIndexList(mFilterList);
+            notifyDataSetChanged();
+        }
+    }
+
+    private List<AppContactData> createFilterList(String filterString) {
+        int lengthFilterString = filterString.length();
+        List<AppContactData> nlist = new ArrayList<>();
+        String filterableString_FirstnameEn = "";
+        String filterableString_LastnameEn = "";
+        String filterableString_Position = "";
+        for (AppContactData data : mOriginalList) {
+            if(lengthFilterString <= data.getFirstnameEn().length()){
+                filterableString_FirstnameEn = data.getFirstnameEn().substring(0, lengthFilterString);
+            }
+
+            if(lengthFilterString <= data.getLastnameEn().length()){
+                filterableString_LastnameEn = data.getLastnameEn().substring(0, lengthFilterString);
+            }
+
+            if(lengthFilterString <= data.getPosition().length()){
+                filterableString_Position = data.getPosition().substring(0, lengthFilterString);
+            }
+
+            if (filterableString_FirstnameEn.equalsIgnoreCase(filterString) || filterableString_LastnameEn.equalsIgnoreCase(filterString) || filterableString_Position.equalsIgnoreCase(filterString)) {
+                nlist.add(data);
+            }
+        }
+
+        return nlist;
+    }
 }

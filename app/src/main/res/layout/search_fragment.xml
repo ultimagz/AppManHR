@@ -1,0 +1,62 @@
+<layout
+xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.SearchFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/textColorPrimary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:id="@+id/top">
+
+            <ImageButton
+                android:id="@+id/back_btn"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_back_arrow"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/search_text"/>
+        </LinearLayout>
+
+
+        <ListView
+            android:id="@+id/contact_list"
+            android:layout_below="@+id/top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:layout_alignRight="@id/contact_list"
+            android:layout_below="@+id/top"
+            android:id="@+id/side_index"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" />
+
+
+    </RelativeLayout>
+
+
+
+
+
+
+</layout>
