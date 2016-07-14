@@ -6,19 +6,13 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.appman.intern.AppManHR;
 import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.R;
 import com.appman.intern.adapters.ContactListAdapter;
@@ -28,9 +22,9 @@ import com.appman.intern.models.AppContactData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -151,10 +145,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
-                com.squareup.okhttp.OkHttpClient okHttpClient = new com.squareup.okhttp.OkHttpClient();
+                OkHttpClient okHttpClient = new OkHttpClient();
 
-                com.squareup.okhttp.Request.Builder builder = new com.squareup.okhttp.Request.Builder();
-                com.squareup.okhttp.Request request = builder.url("http://hr.appmanproject.com/api/user/list").build();
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.url("http://hr.appmanproject.com/api/user/list").build();
 
                 try {
                     Response response = okHttpClient.newCall(request).execute();
@@ -173,7 +167,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             protected void onPostExecute(String output) {
                 updateAdapter(output);
             }
-
         }.execute();
     }
 }
