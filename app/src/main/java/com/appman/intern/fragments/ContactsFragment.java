@@ -1,11 +1,13 @@
 package com.appman.intern.fragments;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -86,7 +88,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
     }
-
+    View a = null;
     private void displayIndex() {
         TextView textView;
         String[] alphabets = getResources().getStringArray(R.array.alphabet);
@@ -100,11 +102,24 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+
         TextView selectedIndex = (TextView) view;
         String alphabet = selectedIndex.getText().toString();
         int index = mAdapter.getMapIndex(alphabet);
-        if (index != -1)
+        if (index != -1) {
+            ((TextView) view).setTextColor(Color.parseColor("#fa1414"));
             mBinding.contactList.setSelection(index);
+        }
+
+        if(a != null) {
+            clearColor(a);
+        }
+        a = view;
+    }
+
+
+    private void clearColor(View a){
+        ((TextView) a).setTextColor(Color.parseColor("#000"));
     }
 
     @Override
