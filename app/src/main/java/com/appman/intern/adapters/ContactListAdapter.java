@@ -13,12 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appman.intern.R;
 import com.appman.intern.fragments.ContactDetailFragment;
-import com.appman.intern.fragments.SearchFragment;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.DataModel;
@@ -35,14 +35,16 @@ import timber.log.Timber;
 public class ContactListAdapter extends ArrayAdapter<ContactData> {
     List<Integer> PHONE_TYPE_LIST = new ArrayList<>(
             Arrays.asList(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
-            ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
-            ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
+                    ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
+                    ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
 
     FragmentActivity mActivity;
     List<AppContactData> mOriginalList;
     List<AppContactData> mFilterList;
     LayoutInflater mInflater;
     Map<String, Integer> mapIndex;
+    List<AppContactData> filter;
+    private ItemFilter mFilter = new ItemFilter();
 
     public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
         super(activity, 0);
@@ -150,8 +152,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 .newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(
                         ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                        ContactsContract.Data.MIMETYPE + " = ? AND " +
-                        ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
+                                ContactsContract.Data.MIMETYPE + " = ? AND " +
+                                ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
                         new String[] {
                                 dataAtPos.getId(),
                                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
@@ -175,8 +177,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                     ContactsContract.Data.CONTENT_URI,
                     null,
                     ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                    ContactsContract.Data.MIMETYPE + " = ? AND " +
-                    ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
+                            ContactsContract.Data.MIMETYPE + " = ? AND " +
+                            ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
                     new String[] { rawContactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(phoneType) },
                     null);
 
@@ -229,5 +231,66 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     public int getMapIndex(String key) {
         Integer index = mapIndex.get(key);
         return index == null ? -1 : index;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return mFilter;
+    }
+
+    private class ItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            String filterString = constraint.toString();
+            FilterResults results = new FilterResults();
+            List<AppContactData> nlist = filterString.length() == 0 ? new ArrayList<>(mOriginalList) : createFilterList(filterString);
+
+            results.values = createSectionList(nlist);
+            results.count = nlist.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mFilterList.clear();
+            mFilterList = (List<AppContactData>) results.values;
+            createIndexList(mFilterList);
+            notifyDataSetChanged();
+        }
+    }
+
+    private List<AppContactData> createFilterList(String filterString) {
+        int lengthFilterString = filterString.length();
+        List<AppContactData> nlist = new ArrayList<>();
+        String filterableString_FirstnameEn = "";
+        String filterableString_LastnameEn = "";
+        String filterableString_Position = "";
+        for (AppContactData data : mOriginalList) {
+            if(lengthFilterString <= data.getFirstnameEn().length()){
+                filterableString_FirstnameEn = data.getFirstnameEn().substring(0, lengthFilterString);
+            }
+
+            if(lengthFilterString <= data.getLastnameEn().length()){
+                filterableString_LastnameEn = data.getLastnameEn().substring(0, lengthFilterString);
+            }
+
+            if(lengthFilterString <= data.getPosition().length()){
+                filterableString_Position = data.getPosition().substring(0, lengthFilterString);
+            }
+
+            //filterableString_FirstnameEn = data.getFirstnameEn().toLowerCase().substring(0, lengthFilterString);
+            //filterableString_LastnameEn = data.getLastnameEn().toLowerCase().substring(0, lengthFilterString);
+            //filterableString_Position = data.getPosition().toLowerCase().substring(0, lengthFilterString);
+            Log.i("name", filterString);
+            Log.i("name1", filterableString_FirstnameEn);
+            Log.i("nameFE", filterableString_FirstnameEn.equalsIgnoreCase(filterString) + "");
+            Log.i("nameLE", filterableString_LastnameEn.equalsIgnoreCase(filterString) + "");
+            Log.i("nameP", filterableString_Position.equalsIgnoreCase(filterString) + "");
+            if (filterableString_FirstnameEn.equalsIgnoreCase(filterString) || filterableString_LastnameEn.equalsIgnoreCase(filterString) || filterableString_Position.equalsIgnoreCase(filterString)) {
+                nlist.add(data);
+            }
+        }
+
+        return nlist;
     }
 }
