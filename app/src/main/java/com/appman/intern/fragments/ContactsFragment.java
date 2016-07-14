@@ -1,19 +1,31 @@
 package com.appman.intern.fragments;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.databinding.DataBindingUtil;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import com.appman.intern.AppManHR;
 import com.appman.intern.AppManHRPreferences;
+import com.appman.intern.DatabaseHelper;
 import com.appman.intern.R;
 import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.ContactFragmentBinding;
@@ -25,6 +37,8 @@ import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,9 +58,11 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     ContactFragmentBinding mBinding;
     ContactListAdapter mAdapter;
-    String result;
-    String resultText;
-    List<AppContactData> list;
+    public static String URL = "http://hr.appmanproject.com/api/user/list";
+
+    DatabaseHelper mHelper;
+    SQLiteDatabase mDb;
+
 
     public static ContactsFragment newInstance(Bundle args) {
         ContactsFragment fragment = new ContactsFragment();
@@ -70,8 +86,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+
         getContactListFromServer();
-//        getContactsListFromFile();
+        //getContactListFromDatabase();
+        //getContactsListFromFile();
     }
 
     private void getContactsListFromFile() {
@@ -134,7 +152,8 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateAdapter(String jsonString) {
-        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {}.getType();
+        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {
+        }.getType();
         List<AppContactData> contactList = new Gson().fromJson(jsonString, jsonType);
         Collections.sort(contactList, AppContactData.getComparator(Language.EN));
         mAdapter = new ContactListAdapter(getActivity(), contactList);
@@ -148,7 +167,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                 OkHttpClient okHttpClient = new OkHttpClient();
 
                 Request.Builder builder = new Request.Builder();
-                Request request = builder.url("http://hr.appmanproject.com/api/user/list").build();
+                Request request = builder.url(URL).build();
 
                 try {
                     Response response = okHttpClient.newCall(request).execute();
@@ -164,10 +183,138 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
-            protected void onPostExecute(String output) {
-                updateAdapter(output);
+            protected void onPostExecute(String result) {
+
+                updateAdapter(result);
+
+                saveDatabase(result);
+                Log.e("re", result);
             }
+
         }.execute();
+    }
+
+
+    public void saveDatabase(String jsonString) {
+        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {
+        }.getType();
+        List<AppContactData> contactList = new Gson().fromJson(jsonString, jsonType);
+        Collections.sort(contactList, AppContactData.getComparator(Language.EN));
+
+        mHelper = new DatabaseHelper(getActivity());
+
+        mDb = mHelper.getWritableDatabase();
+
+        Cursor mCursor = mDb.rawQuery("SELECT * FROM " + DatabaseHelper.DBTABLE, null);
+        String key = "";
+
+        if (mCursor.getCount() == 0) {
+            for (AppContactData a : contactList) {
+
+                mDb.execSQL("INSERT INTO " + DatabaseHelper.DBTABLE + " ("
+                        + DatabaseHelper.contactID + ", " + DatabaseHelper.fistNameTH
+                        + ", " + DatabaseHelper.lastNameTH
+                        + ", " + DatabaseHelper.nickNameTH
+                        + ", " + DatabaseHelper.fistNameEN
+                        + ", " + DatabaseHelper.lastNameEN
+                        + ", " + DatabaseHelper.nickNameEN
+                        + ", " + DatabaseHelper.position
+                        + ", " + DatabaseHelper.email
+                        + ", " + DatabaseHelper.mobile
+                        + ", " + DatabaseHelper.workphone
+                        + ", " + DatabaseHelper.line
+                        + ", " + DatabaseHelper.updateTime
+                        + ") VALUES ('" + a.getId()
+                        + "', '" + a.getFirstnameTh()
+                        + "', '" + a.getLastnameTh()
+                        + "', '" + a.getNicknameTh()
+                        + "', '" + a.getFirstnameEn()
+                        + "', '" + a.getLastnameEn()
+                        + "', '" + a.getNicknameEn()
+                        + "', '" + a.getPosition()
+                        + "', '" + a.getEmail()
+                        + "', '" + a.getMobile()
+                        + "', '" + a.getWorkPhone()
+                        + "', '" + a.getLine()
+                        + "', '" + a.getUpdate()
+                        + "');");
+
+            }
+            Log.e("suss", "full");
+
+
+        } else {
+
+            for (AppContactData a : contactList) {
+
+                mDb.execSQL("UPDATE " + DatabaseHelper.DBTABLE + " SET"
+                        + DatabaseHelper.fistNameTH + "='" + a.getFirstnameTh()
+                        + "', " + DatabaseHelper.lastNameTH + "='" + a.getLastnameTh()
+                        + "', " + DatabaseHelper.nickNameTH + "='" + a.getNicknameTh()
+                        + "', " + DatabaseHelper.fistNameEN + "='" + a.getFirstnameEn()
+                        + "', " + DatabaseHelper.lastNameEN + "='" + a.getLastnameEn()
+                        + "', " + DatabaseHelper.nickNameEN + "='" + a.getNicknameEn()
+                        + "', " + DatabaseHelper.position + "='" + a.getPosition()
+                        + "', " + DatabaseHelper.email + "='" + a.getEmail()
+                        + "', " + DatabaseHelper.mobile + "='" + a.getMobile()
+                        + "', " + DatabaseHelper.workphone + "='" + a.getWorkPhone()
+                        + "', " + DatabaseHelper.line + "='" + a.getLine()
+                        + "', " + DatabaseHelper.updateTime + "='" + a.getUpdate()
+                        + "' WHERE " + DatabaseHelper.contactID+"='"+a.getId()+"';"
+                     );
+
+            }
+            Log.e("suss", "yes");
+        }
+
+
+    }
+
+    public void getContactListFromDatabase() {
+
+        mHelper = new DatabaseHelper(getActivity());
+
+        mDb = mHelper.getReadableDatabase();
+        AppContactData contact = new AppContactData();
+        List<AppContactData> contactList = new ArrayList<>();
+
+
+        Cursor mCursor = mDb.query(DatabaseHelper.DBTABLE, new String[]{"contact_id", "fistName_TH", "lastName_TH",
+                "nickName_TH", "fistName_EN", "lastName_EN", "nickName_EN", "position", "email",
+                "mobile", "workphone", "line"}, null, null, null, null, "fistName_EN ASC");
+
+
+        mCursor.moveToFirst();
+
+
+        while (!mCursor.isAfterLast()) {
+            //contact = new ContactData(mCursor.getString(0), mCursor.getString(1), mCursor.getString(2), mCursor.getString(3), mCursor.getString(4), mCursor.getString(5), mCursor.getString(mCursor.getColumnIndex()), mCursor.getString(7), mCursor.getString(8), mCursor.getString(9), mCursor.getString(10), mCursor.getString(11));
+            contact = new AppContactData();
+            contact.setId(mCursor.getString(mCursor.getColumnIndexOrThrow(DatabaseHelper.contactID)));
+            contact.setFirstnameTh(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.fistNameTH)));
+            contact.setLastnameTh(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.lastNameTH)));
+            contact.setNicknameTh(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.nickNameTH)));
+            contact.setFirstnameEn(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.fistNameEN)));
+            contact.setLastnameEn(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.lastNameEN)));
+            contact.setNicknameEn(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.nickNameEN)));
+            contact.setPosition(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.position)));
+            contact.setEmail(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.email)));
+            contact.setMobile(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.mobile)));
+            contact.setWorkPhone(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.workphone)));
+            contact.setLine(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.line)));
+
+
+            contactList.add(contact);
+            mCursor.moveToNext();
+
+            //Parcelable wrapped = Parcels.wrap(contact);
+
+        }
+
+        mCursor.close();
+        Log.e("contactList", contactList.toString());
+
+        updateAdapter(contactList.toString());
     }
 }
 
