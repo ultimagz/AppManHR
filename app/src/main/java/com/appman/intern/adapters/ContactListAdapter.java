@@ -35,8 +35,8 @@ import timber.log.Timber;
 public class ContactListAdapter extends ArrayAdapter<ContactData> {
     List<Integer> PHONE_TYPE_LIST = new ArrayList<>(
             Arrays.asList(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
-            ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
-            ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
+                    ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
+                    ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
 
     FragmentActivity mActivity;
     List<AppContactData> mOriginalList;
@@ -86,8 +86,17 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         TextView title = (TextView) view.findViewById(R.id.contact_name);
         TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
 
-        title.setText(dataAtPos.getFullNameEn());
-        phoneNo.setText(dataAtPos.getMobile());
+        if (dataAtPos.getNicknameEn() != null){
+            title.setText(dataAtPos.getFullNameEn() + " (" + dataAtPos.getNicknameEn() + ")");
+
+        }
+        else{
+            title.setText(dataAtPos.getFullNameEn());
+        }
+
+
+
+        phoneNo.setText(dataAtPos.getPosition());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,9 +158,9 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 .newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(
                         ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                        ContactsContract.Data.MIMETYPE + " = ? AND " +
-                        ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
-                        new String[] {
+                                ContactsContract.Data.MIMETYPE + " = ? AND " +
+                                ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
+                        new String[]{
                                 dataAtPos.getId(),
                                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
                                 String.valueOf(checkType)
@@ -174,9 +183,9 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                     ContactsContract.Data.CONTENT_URI,
                     null,
                     ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                    ContactsContract.Data.MIMETYPE + " = ? AND " +
-                    ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
-                    new String[] { rawContactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(phoneType) },
+                            ContactsContract.Data.MIMETYPE + " = ? AND " +
+                            ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
+                    new String[]{rawContactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(phoneType)},
                     null);
 
             DataModel returnData = null;
@@ -222,7 +231,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 if (anAlphabet.equals(value)) {
                     mapIndex.put(value, j);
                 }
-            }}
+            }
+        }
     }
 
     public int getMapIndex(String key) {
@@ -263,15 +273,15 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         String filterableString_LastnameEn = "";
         String filterableString_Position = "";
         for (AppContactData data : mOriginalList) {
-            if(lengthFilterString <= data.getFirstnameEn().length()){
+            if (lengthFilterString <= data.getFirstnameEn().length()) {
                 filterableString_FirstnameEn = data.getFirstnameEn().substring(0, lengthFilterString);
             }
 
-            if(lengthFilterString <= data.getLastnameEn().length()){
+            if (lengthFilterString <= data.getLastnameEn().length()) {
                 filterableString_LastnameEn = data.getLastnameEn().substring(0, lengthFilterString);
             }
 
-            if(lengthFilterString <= data.getPosition().length()){
+            if (lengthFilterString <= data.getPosition().length()) {
                 filterableString_Position = data.getPosition().substring(0, lengthFilterString);
             }
 
