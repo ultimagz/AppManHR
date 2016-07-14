@@ -1,5 +1,7 @@
 package com.appman.intern;
 
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -17,11 +19,15 @@ import timber.log.Timber;
 
 public class ContactHelper {
 
-    public static List<ContactData> retrieveContacts(Context context, String[] projection) { //This Context parameter is nothing but your Activity class's Context
+    public static List<ContactData> retrieveContacts(Context context, String[] projection, String groupId) { //This Context parameter is nothing but your Activity class's Context
         List<ContactData> contactDataList = new ArrayList<>();
 
-        String selection = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '1' ";
-        Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, projection, selection, null, null);
+        String selection =
+                ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '1' AND " +
+                ContactsContract.Groups._ID + " = ? ";
+
+        String[] args = { groupId };
+        Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, projection, selection, args, null);
         if (cursor == null) {
             return contactDataList;
         }
@@ -131,5 +137,52 @@ public class ContactHelper {
 
         Log.w("Phone Model", String.valueOf(phoneList));
         return phoneList;
+    }
+
+    public static String getContactGroupId(Context context) {
+        String groupId = checkExistGroup(context, AppManHR.GROUP_NAME);
+
+        if (groupId == null) {
+            ArrayList<ContentProviderOperation> opsGroup = new ArrayList<>();
+            opsGroup.add(ContentProviderOperation.newInsert(ContactsContract.Groups.CONTENT_URI)
+                    .withValue(ContactsContract.Groups.TITLE, AppManHR.GROUP_NAME)
+                    .withValue(ContactsContract.Groups.GROUP_VISIBLE, true)
+                    .withValue(ContactsContract.Groups.GROUP_IS_READ_ONLY, true)
+                    .withValue(ContactsContract.Groups.ACCOUNT_NAME, AppManHR.ACCOUNT_NAME)
+                    .withValue(ContactsContract.Groups.ACCOUNT_TYPE, AppManHR.ACCOUNT_TYPE)
+                    .build());
+            try {
+                ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsGroup);
+                for (ContentProviderResult result : results) {
+                    Log.w("create group result %s", result.uri.getLastPathSegment());
+                }
+            } catch (Exception e) {
+                Log.e("create group failed", AppManHR.GROUP_NAME, e);
+            }
+
+            return checkExistGroup(context, AppManHR.GROUP_NAME);
+        } else {
+            return groupId;
+        }
+    }
+
+    private static String checkExistGroup(Context context, String groupName) {
+        String selection = ContactsContract.Groups.DELETED + " = ? AND " + ContactsContract.Groups.GROUP_VISIBLE + " = ? AND " + ContactsContract.Groups.TITLE + " = ?";
+        String[] selectionArgs = { "0", "1", groupName };
+        Cursor cursor = context.getContentResolver().query(ContactsContract.Groups.CONTENT_URI, null, selection, selectionArgs, null);
+
+        if (cursor == null)
+            return null;
+
+        String id = null, title = null;
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            id = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups._ID));
+            title = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups.TITLE));
+        }
+
+        cursor.close();
+
+        return id;
     }
 }
