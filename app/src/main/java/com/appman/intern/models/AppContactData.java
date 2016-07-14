@@ -186,8 +186,10 @@ public class AppContactData {
         return firstnameEn.substring(0, 1).toUpperCase();
     }
 
-    public ArrayList<ContentProviderOperation> createNewContactProvider(String groupId) {
+    public ArrayList<ContentProviderOperation> createNewContactProvider(Language lang, String groupId) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+        boolean isThai = lang == Language.TH;
 
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withYieldAllowed(true)
@@ -208,16 +210,16 @@ public class AppContactData {
         ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, getFullNameEn())
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, lastnameEn)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, firstnameEn)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, isThai ? getFullNameTh() : getFullNameEn())
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, isThai ? lastnameTh : lastnameEn)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, isThai ? firstnameTh : firstnameEn)
                 .build());
 
         // NICKNAME
         ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Nickname.NAME, nicknameEn)
+                .withValue(ContactsContract.CommonDataKinds.Nickname.NAME, isThai ? nicknameTh : nicknameEn)
                 .withValue(ContactsContract.CommonDataKinds.Nickname.TYPE, ContactsContract.CommonDataKinds.Nickname.TYPE_CUSTOM)
                 .build());
 
