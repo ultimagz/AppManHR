@@ -237,6 +237,26 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
 
         } else {
+
+            for (AppContactData a : contactList) {
+
+                mDb.execSQL("UPDATE " + DatabaseHelper.DBTABLE + " SET"
+                        + DatabaseHelper.fistNameTH + "='" + a.getFirstnameTh()
+                        + "', " + DatabaseHelper.lastNameTH + "='" + a.getLastnameTh()
+                        + "', " + DatabaseHelper.nickNameTH+ "='" +a.getNicknameTh()
+                        + "', " + DatabaseHelper.fistNameEN+ "='" +a.getFirstnameEn()
+                        + "', " + DatabaseHelper.lastNameEN+ "='" +a.getLastnameEn()
+                        + "', " + DatabaseHelper.nickNameEN+ "='" +a.getNicknameEn()
+                        + "', " + DatabaseHelper.position+ "='" +a.getPosition()
+                        + "', " + DatabaseHelper.email+ "='" + a.getEmail()
+                        + "', " + DatabaseHelper.mobile+ "='" +a.getMobile()
+                        + "', " + DatabaseHelper.workphone+ "='" +a.getWorkPhone()
+                        + "', " + DatabaseHelper.line+ "='" +a.getLine()
+                        + "', " + DatabaseHelper.updateTime+ "='" +a.getUpdate()
+                        + "WHERE " +DatabaseHelper.contactID+"'"+a.getId()
+                        + "';");
+
+            }
             Log.e("suss", "yes");
         }
 
