@@ -9,18 +9,27 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/textColorPrimary"
-        >
+        android:background="@color/textColorPrimary">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:id="@+id/top">
+
+            <ImageButton
+                android:id="@+id/back_btn"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_back_arrow"/>
+
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"/>
         </LinearLayout>
+
 
         <ListView
             android:id="@+id/contact_list"
@@ -32,6 +41,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:scrollbars="none" />
 
         <LinearLayout
+            android:layout_alignRight="@id/contact_list"
+            android:layout_below="@+id/top"
             android:id="@+id/side_index"
             android:layout_width="50dp"
             android:layout_height="match_parent"

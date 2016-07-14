@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.appman.intern.R;
 import com.appman.intern.fragments.ContactDetailFragment;
+import com.appman.intern.fragments.SearchFragment;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.DataModel;
@@ -105,6 +106,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 .addToBackStack("ContactDetailFragment")
                 .commit();
     }
+
+
 
     private void updateContact(final ContactData dataAtPos) {
         try {

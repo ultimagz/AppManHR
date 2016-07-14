@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -73,9 +74,14 @@ public class MainActivity extends AppCompatActivity {
         mBinding.searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.main_content, SearchFragment.newInstance());
-                transaction.commit();
+                
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager
+                            .beginTransaction()
+                            .add(R.id.main_content, SearchFragment.newInstance(), "SearchFragment")
+                            .addToBackStack("SearchFragment")
+                            .commit();
+
             }
         });
     }

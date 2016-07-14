@@ -34,14 +34,14 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private SearchFragmentBinding mBinding;
 
-    public static SearchFragment newInstance(Bundle args) {
+    public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
-        fragment.setArguments(args);
-        fragment.setHasOptionsMenu(true);
+        //fragment.setArguments(args);
+        //fragment.setHasOptionsMenu(true);
         return fragment;
     }
 
@@ -59,6 +59,14 @@ public class SearchFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         displayIndex();
+
+        mBinding.backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
+            }
+        });
+
     }
 
     @Override
