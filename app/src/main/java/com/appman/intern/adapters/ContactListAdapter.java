@@ -245,18 +245,13 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             String filterString = constraint.toString();
-            FilterResults results = new FilterResults();
-            List<AppContactData> nlist = filterString.length() == 0 ? new ArrayList<>(mOriginalList) : createFilterList(filterString);
-
-            results.values = createSectionList(nlist);
-            results.count = nlist.size();
-            return results;
+            List<AppContactData> filterlist = createFilterList(filterString);
+            mFilterList = createSectionList(filterlist);
+            return null;
         }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilterList.clear();
-            mFilterList = (List<AppContactData>) results.values;
             createIndexList(mFilterList);
             notifyDataSetChanged();
         }
