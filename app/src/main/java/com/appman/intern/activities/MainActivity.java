@@ -67,14 +67,12 @@ public class MainActivity extends AppCompatActivity {
         mBinding.searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager
                             .beginTransaction()
                             .add(R.id.main_content, SearchFragment.newInstance(), "SearchFragment")
                             .addToBackStack("SearchFragment")
                             .commit();
-
             }
         });
 
@@ -94,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Insert contact success", Toast.LENGTH_SHORT).show();
 
             for (ContentProviderResult result : results) {
-                Log.w("insert id %s", String.valueOf(result.uri.getLastPathSegment()));
+                Log.w("insert id", String.valueOf(result.uri));
             }
 
         } catch (RemoteException | OperationApplicationException e) {
