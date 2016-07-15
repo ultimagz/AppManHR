@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHRPreferences;
@@ -88,14 +89,24 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
     }
-    View a = null;
+
+    View oldView = null;
     private void displayIndex() {
+
         TextView textView;
         String[] alphabets = getResources().getStringArray(R.array.alphabet);
         for (String alphabet : alphabets) {
             textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.side_index_item, null);
+            /*int index = mAdapter.getMapIndex(alphabet);
+            Log.i("item",index+"");*/
             textView.setText(alphabet);
+            textView.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             textView.setOnClickListener(this);
+           /* if(index != -1) {
+                textView.setTextColor(Color.parseColor("#000000"));
+            }else{
+                textView.setTextColor(Color.parseColor("#c8c8c8"));
+            }*/
             mBinding.sideIndex.addView(textView);
         }
     }
@@ -110,15 +121,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             mBinding.contactList.setSelection(index);
         }
 
-        if(a != null) {
-            ((TextView) a).setTextColor(Color.parseColor("#999999"));
+        if(oldView != null) {
+            ((TextView) oldView).setTextColor(Color.parseColor("#999999"));
         }
-        a = view;
-    }
-
-
-    private void clearColor(View a){
-
+        oldView = view;
     }
 
     @Override

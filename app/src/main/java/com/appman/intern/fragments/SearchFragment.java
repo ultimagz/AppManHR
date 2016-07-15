@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SearchFragment extends Fragment implements View.OnClickListener {
+public class SearchFragment extends Fragment {
 
     private SearchFragmentBinding mBinding;
 
@@ -60,7 +60,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        displayIndex();
+        //displayIndex();
 
         mBinding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +109,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         return contactList;
     }
 
-    private void displayIndex() {
+    /*private void displayIndex() {
         TextView textView;
         String[] alphabets = getResources().getStringArray(R.array.alphabet);
         for (String alphabet : alphabets) {
@@ -127,7 +127,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         int index = mAdapter.getMapIndex(alphabet);
         if (index != -1)
             mBinding.contactList.setSelection(index);
-    }
+    }*/
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
