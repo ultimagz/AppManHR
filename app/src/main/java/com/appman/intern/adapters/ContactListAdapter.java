@@ -263,25 +263,19 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     }
 
     private List<AppContactData> createFilterList(String filterString) {
-        int lengthFilterString = filterString.length();
+        int searchLength = filterString.length();
         List<AppContactData> nlist = new ArrayList<>();
-        String filterableString_FirstnameEn = "";
-        String filterableString_LastnameEn = "";
-        String filterableString_Position = "";
+
+        boolean exist;
         for (AppContactData data : mOriginalList) {
-            if(lengthFilterString <= data.getFirstnameEn().length()){
-                filterableString_FirstnameEn = data.getFirstnameEn().substring(0, lengthFilterString);
-            }
+            exist = data.getFirstnameEn().regionMatches(true, 0, filterString, 0, searchLength);
+            exist |= data.getLastnameEn().regionMatches(true, 0, filterString, 0, searchLength);
+            exist |= data.getNicknameEn().regionMatches(true, 0, filterString, 0, searchLength);
+            exist |= data.getFirstnameTh().regionMatches(true, 0, filterString, 0, searchLength);
+            exist |= data.getLastnameTh().regionMatches(true, 0, filterString, 0, searchLength);
+            exist |= data.getNicknameTh().regionMatches(true, 0, filterString, 0, searchLength);
 
-            if(lengthFilterString <= data.getLastnameEn().length()){
-                filterableString_LastnameEn = data.getLastnameEn().substring(0, lengthFilterString);
-            }
-
-            if(lengthFilterString <= data.getPosition().length()){
-                filterableString_Position = data.getPosition().substring(0, lengthFilterString);
-            }
-
-            if (filterableString_FirstnameEn.equalsIgnoreCase(filterString) || filterableString_LastnameEn.equalsIgnoreCase(filterString) || filterableString_Position.equalsIgnoreCase(filterString)) {
+            if (exist) {
                 nlist.add(data);
             }
         }
