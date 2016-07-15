@@ -43,7 +43,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     List<AppContactData> mOriginalList;
     List<AppContactData> mFilterList;
     LayoutInflater mInflater;
-    Map<String, Integer> mapIndex;
+    Map<String, Integer> mapIndex = new HashMap<>();
     Language mLanguage = Language.EN;
     ItemFilter mFilter = new ItemFilter();
 
@@ -218,7 +218,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     }
 
     private void createIndexList(List<AppContactData> contactList) {
-        mapIndex = new HashMap<>();
+        mapIndex.clear();
         String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
         for (String anAlphabet : alphabet) {
@@ -228,7 +228,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 if (anAlphabet.equals(value)) {
                     mapIndex.put(value, j);
                 }
-            }}
+            }
+        }
     }
 
     public int getMapIndex(String key) {
@@ -258,23 +259,28 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     }
 
     private List<AppContactData> createFilterList(String filterString) {
-        int searchLength = filterString.length();
         List<AppContactData> nlist = new ArrayList<>();
-
-        boolean exist;
         for (AppContactData data : mOriginalList) {
-            exist = data.getFirstnameEn().regionMatches(true, 0, filterString, 0, searchLength);
-            exist |= data.getLastnameEn().regionMatches(true, 0, filterString, 0, searchLength);
-            exist |= data.getNicknameEn().regionMatches(true, 0, filterString, 0, searchLength);
-            exist |= data.getFirstnameTh().regionMatches(true, 0, filterString, 0, searchLength);
-            exist |= data.getLastnameTh().regionMatches(true, 0, filterString, 0, searchLength);
-            exist |= data.getNicknameTh().regionMatches(true, 0, filterString, 0, searchLength);
-
-            if (exist) {
+            if (checkRegionMatches(data, filterString)) {
                 nlist.add(data);
             }
         }
 
         return nlist;
+    }
+
+    private boolean checkRegionMatches(AppContactData data, String filterString) {
+        int searchLength = filterString.length();
+        boolean match;
+
+        match = data.getFirstnameEn().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getLastnameEn().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getNicknameEn().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getFirstnameTh().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getLastnameTh().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getNicknameTh().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getPosition().regionMatches(true, 0, filterString, 0, searchLength);
+
+        return match;
     }
 }
