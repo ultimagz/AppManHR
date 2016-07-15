@@ -15,10 +15,7 @@ import com.appman.intern.models.EmailData;
 import com.appman.intern.models.PhoneData;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import timber.log.Timber;
 
 public class ContactHelper {
 
@@ -33,14 +30,12 @@ public class ContactHelper {
                 ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '1' AND " +
                 ContactsContract.Contacts._ID + " IN (" + TextUtils.join(", ", contactIdList) + ")";
         String[] args = {};
-        Timber.w("selection\n%s", selection);
+
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, projection, selection, args, null);
         if (cursor == null) {
             return contactDataList;
         }
 
-//        int contactsCount = cursor.getCount(); // get how many contacts you have in your contacts list
-        Timber.w("column(s)\n%s", Arrays.toString(cursor.getColumnNames()));
         while(cursor.moveToNext()) {
             ContactData contactData = new ContactData(cursor);
 
@@ -113,22 +108,7 @@ public class ContactHelper {
         }
 
         while (cursor.moveToNext()) {
-            EmailData emailModel = new EmailData();
-            int emailType = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE));
-            String id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email._ID));
-            String refContactId = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.CONTACT_ID));
-            String rawContactId = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID));
-            String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.LOOKUP_KEY));
-            String emailAddress = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
-
-            emailModel.setId(id);
-            emailModel.setContactId(refContactId);
-            emailModel.setRawContactId(rawContactId);
-            emailModel.setLookupKey(lookupKey);
-            emailModel.setEmailType(emailType);
-            emailModel.setEmailAddress(emailAddress);
-
-            emailList.add(emailModel);
+            emailList.add(new EmailData(cursor));
         }
 
         cursor.close();
@@ -148,22 +128,7 @@ public class ContactHelper {
             return phoneList;
 
         while (cursor.moveToNext()) {
-            PhoneData phoneModel = new PhoneData();
-            int phoneType = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-            String id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
-            String refContactId = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-            String rawContactId = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID));
-            String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY));
-            String phoneNo = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-            phoneModel.setId(id);
-            phoneModel.setContactId(refContactId);
-            phoneModel.setRawContactId(rawContactId);
-            phoneModel.setLookupKey(lookupKey);
-            phoneModel.setPhoneNo(phoneNo);
-            phoneModel.setPhoneType(phoneType);
-
-            phoneList.add(phoneModel);
+            phoneList.add(new PhoneData(cursor));
         }
 
         cursor.close();
