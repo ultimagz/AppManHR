@@ -22,10 +22,53 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_back"/>
 
-            <EditText
-                android:id="@+id/search_text"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:background="@drawable/gray_outline"
+                android:paddingBottom="4dp"
+                android:paddingTop="4dp">
+
+                <ImageView
+                    android:id="@+id/search_ic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_action_name"/>
+
+                <ImageButton
+                    android:id="@+id/search_clear_btn"
+                    style="?attr/buttonBarButtonStyle"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/search_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="8dp"
+                    android:layout_toEndOf="@id/search_clear_btn"
+                    android:layout_toLeftOf="@id/search_clear_btn"
+                    android:layout_toRightOf="@id/search_ic"
+                    android:layout_toStartOf="@id/search_clear_btn"
+                    android:background="@android:color/transparent"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:scrollHorizontally="true"
+                    android:textColor="@android:color/black"/>
+            </RelativeLayout>
         </LinearLayout>
 
 
