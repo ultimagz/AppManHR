@@ -89,40 +89,48 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp">
 
-                <ImageView
-                    android:id="@+id/phone1"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_phone"/>
-
-                <TextView
-                    android:id="@+id/phoneNumber_1"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/phone1"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="16dp"
-                    tools:text="081865587"/>
+                    android:id="@+id/subData"
+                    android:layout_marginLeft="50dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/phoneNumber_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16dp"
+                        tools:text="081865587"/>
 
-                <TextView
-                    android:id="@+id/typePhone_1"
+                    <TextView
+                        android:id="@+id/typePhone_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#c8c8c8 "
+                        android:textSize="14dp"
+                        tools:text="Mobile"/>
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/phoneNumber_1"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/phone1"
-                    android:textColor="#c8c8c8"
-                    android:textSize="14dp"
-                    tools:text="Mobile"/>
-
-
-                <ImageView
-                    android:id="@+id/mes1"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
-                    android:src="@drawable/ic_message"/>
+                    android:layout_marginRight="20dp">
+                    <ImageView
+                        android:id="@+id/mes1"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_message"/>
+
+                    <ImageView
+                        android:id="@+id/phone1"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_phone"/>
+                </LinearLayout>
 
             </RelativeLayout>
 
@@ -130,44 +138,54 @@
             <!--Data2-->
             <RelativeLayout
                 android:id="@+id/data2"
+                android:layout_below="@+id/data1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/data1"
                 android:padding="10dp">
 
-                <ImageView
-                    android:id="@+id/phone2"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_phone"/>
-
-                <TextView
-                    android:id="@+id/phoneNumber_2"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/phone2"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="16dp"
-                    tools:text="081865587"/>
+                    android:id="@+id/subData1"
+                    android:layout_marginLeft="50dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/phoneNumber_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16dp"
+                        tools:text="081865587"/>
 
-                <TextView
-                    android:id="@+id/typePhone_2"
+                    <TextView
+                        android:id="@+id/typePhone_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#c8c8c8 "
+                        android:textSize="14dp"
+                        tools:text="Work Place"/>
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/phoneNumber_2"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/phone2"
-                    android:textColor="#c8c8c8"
-                    android:textSize="14dp"
-                    tools:text="Work Place"/>
-
-                <ImageView
-                    android:id="@+id/mes2"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
-                    android:src="@drawable/ic_message"/>
+                    android:layout_marginRight="20dp">
+                    <ImageView
+                        android:id="@+id/mes2"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_message"/>
+
+                    <ImageView
+                        android:id="@+id/phone2"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_phone"/>
+                </LinearLayout>
+
             </RelativeLayout>
 
             <!--Line-->
@@ -188,74 +206,97 @@
             <!--Data3-->
             <RelativeLayout
                 android:id="@+id/data3"
+                android:layout_below="@+id/data2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/line"
                 android:padding="10dp">
 
-                <ImageView
-                    android:id="@+id/imgMail"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_mail"/>
-
-                <TextView
-                    android:id="@+id/mail"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/imgMail"
-                    android:text="R.JR@hotmail.com"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="16dp"/>
+                    android:id="@+id/subData3"
+                    android:layout_marginLeft="50dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16dp"
+                        tools:text="mail@mail.com"
+                        android:text="mail@mail.com" />
 
-                <TextView
-                    android:id="@+id/typeMail"
+                    <TextView
+                        android:id="@+id/typeMail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#c8c8c8 "
+                        android:textSize="14dp"
+                        tools:text="E-Mail"/>
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/mail"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/imgMail"
-                    android:text="E-mail"
-                    android:textColor="#c8c8c8"
-                    android:textSize="14dp"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp">
+
+                    <ImageView
+                        android:id="@+id/mail"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_mail"/>
+                </LinearLayout>
 
             </RelativeLayout>
 
             <!--Data4-->
             <RelativeLayout
                 android:id="@+id/data4"
+                android:layout_below="@+id/data3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/data3"
                 android:padding="10dp">
 
-                <ImageView
-                    android:id="@+id/imgLine"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_line"/>
-
-                <TextView
-                    android:id="@+id/idLine"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/imgLine"
-                    android:text="I love Mark42"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="16dp"/>
+                    android:id="@+id/subData4"
+                    android:layout_marginLeft="50dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/lineld"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16dp"
+                        tools:text="appMan101"/>
 
-                <TextView
-                    android:id="@+id/typeLine"
+                    <TextView
+                        android:id="@+id/typeLineID"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#c8c8c8 "
+                        android:textSize="14dp"
+                        tools:text="LineID"/>
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/idLine"
-                    android:layout_marginLeft="60dp"
-                    android:layout_toRightOf="@+id/imgLine"
-                    android:text="Line ID"
-                    android:textColor="#c8c8c8"
-                    android:textSize="14dp"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp">
+
+                    <ImageView
+                        android:id="@+id/idline"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_line"/>
+                </LinearLayout>
 
             </RelativeLayout>
         </RelativeLayout>
