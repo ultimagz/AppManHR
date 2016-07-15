@@ -3,7 +3,6 @@ package com.appman.intern.fragments;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import com.appman.intern.AppManHR;
 import com.appman.intern.R;
 import com.appman.intern.adapters.ContactListAdapter;
-import com.appman.intern.databinding.ContactFragmentBinding;
 import com.appman.intern.databinding.SearchFragmentBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
@@ -69,21 +67,25 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+        mBinding.searchClearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mBinding.searchText.setText("");
+            }
+        });
+
         mBinding.searchText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mAdapter.getFilter().filter(s);
+                mBinding.searchClearBtn.setVisibility(s.length() == 0 ? View.GONE : View.VISIBLE);
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) {}
         });
     }
 
