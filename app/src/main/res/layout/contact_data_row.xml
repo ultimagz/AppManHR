@@ -7,7 +7,12 @@
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+<<<<<<< HEAD
     android:padding="8dp">
+=======
+    android:padding="8dp"
+    android:weightSum="1">
+>>>>>>> 132316d... change icon
 
     <com.appman.intern.views.RoundedImageView
         android:id="@+id/contact_img"
@@ -22,7 +27,8 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="0.37">
         <TextView
             android:id="@+id/contact_name"
             android:layout_width="wrap_content"
