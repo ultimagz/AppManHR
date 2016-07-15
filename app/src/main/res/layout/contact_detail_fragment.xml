@@ -107,7 +107,7 @@
                         android:id="@+id/typePhone_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#c8c8c8 "
+                        android:textColor="#c8c8c8"
                         android:textSize="14dp"
                         tools:text="Mobile"/>
                 </LinearLayout>
@@ -161,7 +161,7 @@
                         android:id="@+id/typePhone_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#c8c8c8 "
+                        android:textColor="#c8c8c8"
                         android:textSize="14dp"
                         tools:text="Work Place"/>
                 </LinearLayout>
@@ -230,7 +230,7 @@
                         android:id="@+id/typeMail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#c8c8c8 "
+                        android:textColor="#c8c8c8"
                         android:textSize="14dp"
                         tools:text="E-Mail"/>
                 </LinearLayout>
@@ -278,7 +278,7 @@
                         android:id="@+id/typeLineID"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#c8c8c8 "
+                        android:textColor="#c8c8c8"
                         android:textSize="14dp"
                         tools:text="LineID"/>
                 </LinearLayout>
