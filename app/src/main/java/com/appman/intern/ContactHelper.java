@@ -3,8 +3,11 @@ package com.appman.intern;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.appman.intern.models.ContactData;
@@ -20,13 +23,17 @@ import timber.log.Timber;
 public class ContactHelper {
 
     public static List<ContactData> retrieveContacts(Context context, String[] projection, String groupId) { //This Context parameter is nothing but your Activity class's Context
+        List<String> contactIdList = getContactIdsInGroup(context, groupId);
         List<ContactData> contactDataList = new ArrayList<>();
+        if (contactIdList.size() == 0) {
+            return contactDataList;
+        }
 
         String selection =
                 ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '1' AND " +
-                ContactsContract.Groups._ID + " = ? ";
-
-        String[] args = { groupId };
+                ContactsContract.Contacts._ID + " IN (" + TextUtils.join(", ", contactIdList) + ")";
+        String[] args = {};
+        Timber.w("selection\n%s", selection);
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, projection, selection, args, null);
         if (cursor == null) {
             return contactDataList;
@@ -52,6 +59,32 @@ public class ContactHelper {
 
         Log.w("Contacts", String.valueOf(contactDataList));
         return contactDataList;
+    }
+
+    private static List<String> getContactIdsInGroup(Context context, String groupId) {
+        List<String> contactIdList = new ArrayList<>();
+        String[] projection = new String[] {
+                ContactsContract.Data._ID,
+                ContactsContract.Data.CONTACT_ID,
+                ContactsContract.Data.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID
+        };
+
+        String selection = ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID + " = ? ";
+        String[] args = { groupId };
+
+        Cursor cursor = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, projection, selection, args, null);
+        if (cursor == null) {
+            return contactIdList;
+        }
+
+        while(cursor.moveToNext()) {
+            contactIdList.add(cursor.getString(cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID)));
+        }
+
+        cursor.close();
+        Log.w("ContactIds in Group[" + groupId + "]", String.valueOf(contactIdList));
+        return contactIdList;
     }
 
     private static String retrieveRawContactId(Context context, String contactId) {
@@ -151,16 +184,16 @@ public class ContactHelper {
                     .withValue(ContactsContract.Groups.ACCOUNT_NAME, AppManHR.ACCOUNT_NAME)
                     .withValue(ContactsContract.Groups.ACCOUNT_TYPE, AppManHR.ACCOUNT_TYPE)
                     .build());
+
             try {
                 ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsGroup);
-                for (ContentProviderResult result : results) {
-                    Log.w("create group result %s", result.uri.getLastPathSegment());
-                }
-            } catch (Exception e) {
+                groupId = results[0].uri.getLastPathSegment();
+                Log.w("create group result %s", groupId);
+            } catch (RemoteException | OperationApplicationException e) {
                 Log.e("create group failed", AppManHR.GROUP_NAME, e);
             }
 
-            return checkExistGroup(context, AppManHR.GROUP_NAME);
+            return groupId;
         } else {
             return groupId;
         }
@@ -174,11 +207,10 @@ public class ContactHelper {
         if (cursor == null)
             return null;
 
-        String id = null, title = null;
-        if (cursor.getCount() > 0) {
+        String id = null;
+        if (cursor.getCount() == 1) {
             cursor.moveToFirst();
             id = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups._ID));
-            title = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups.TITLE));
         }
 
         cursor.close();
