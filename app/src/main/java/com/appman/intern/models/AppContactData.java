@@ -32,12 +32,21 @@ public class AppContactData {
     String nicknameEn = "nicknameEn";
     @SerializedName("workphone")
     String workPhone = "021234567";
+    @SerializedName("line")
+    String lineID = "line_id";
+    @SerializedName("update")
+    String update = "updateTime";
+
+    @SerializedName("avatarbase64")
+    String image = "image";
+
+
+
 
     String position = "position";
     String mobile = "0897654321";
     String email = "e@mail.com";
-    String line = "line";
-    String update = "updateDate";
+
     boolean isHeader = false;
 
     public String getId() {
@@ -104,12 +113,12 @@ public class AppContactData {
         this.position = position;
     }
 
-    public String getLine() {
-        return line;
+    public String getLineID() {
+        return lineID;
     }
 
-    public void setLine(String line) {
-        this.line = line;
+    public void setLineID(String lineID) {
+        this.lineID = lineID;
     }
 
     public String getUpdate() {
@@ -143,6 +152,15 @@ public class AppContactData {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
 
     public boolean isHeader() {
         return isHeader;

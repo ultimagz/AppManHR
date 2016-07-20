@@ -8,9 +8,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,6 +57,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     DatabaseHelper mHelper;
     SQLiteDatabase mDb;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     public static ContactsFragment newInstance(Bundle args) {
@@ -73,6 +76,16 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mBinding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getContactListFromServer();
+
+
+                Log.e("F5","suss");
+            }
+        });
+
         displayIndex();
     }
 
@@ -81,6 +94,8 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         super.onResume();
 
         getContactListFromServer();
+
+
         //getContactListFromDatabase();
         //getContactsListFromFile();
     }
@@ -184,6 +199,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                 updateAdapter(result);
 
                 saveDatabase(result);
+                mBinding.swipeContainer.setRefreshing(false);
                 Log.e("re", result);
             }
         }.execute();
@@ -226,9 +242,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         List<AppContactData> contactList = new ArrayList<>();
 
 
-        Cursor mCursor = mDb.query(DatabaseHelper.DBTABLE, new String[]{"contact_id", "fistName_TH", "lastName_TH",
-                "nickName_TH", "fistName_EN", "lastName_EN", "nickName_EN", "position", "email",
-                "mobile", "workphone", "line"}, null, null, null, null, "fistName_EN ASC");
+        Cursor mCursor = mDb.query(DatabaseHelper.DBTABLE, new String[]{"contact_id", "fistName_th", "lastName_th",
+                "nickName_th", "fistName_en", "lastName_en", "nickName_en", "position", "email",
+                "mobile", "workphone", "line_id" +
+                "","updateTime","image"}, null, null, null, null, "fistName_EN ASC");
 
 
         mCursor.moveToFirst();
@@ -248,7 +265,9 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             contact.setEmail(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.email)));
             contact.setMobile(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.mobile)));
             contact.setWorkPhone(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.workphone)));
-            contact.setLine(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.line)));
+            contact.setLineID(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.lineID)));
+            contact.setUpdate(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.updateTime)));
+            contact.setImage(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.image)));
 
 
             contactList.add(contact);
@@ -265,6 +284,17 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     public void insertData(List<AppContactData> contactList) {
         for (AppContactData a : contactList) {
+            String job ;
+
+            if(a.getPosition().contains("'")){
+
+                job = a.getPosition().replace("'"," ''");
+
+
+            }else{
+                job = a.getPosition();
+            }
+
 
             mDb.execSQL("INSERT INTO " + DatabaseHelper.DBTABLE + " ("
                     + DatabaseHelper.contactID + ", " + DatabaseHelper.fistNameTH
@@ -277,8 +307,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                     + ", " + DatabaseHelper.email
                     + ", " + DatabaseHelper.mobile
                     + ", " + DatabaseHelper.workphone
-                    + ", " + DatabaseHelper.line
+                    + ", " + DatabaseHelper.lineID
                     + ", " + DatabaseHelper.updateTime
+                    + ", " + DatabaseHelper.image
+
                     + ") VALUES ('" + a.getId()
                     + "', '" + a.getFirstnameTh()
                     + "', '" + a.getLastnameTh()
@@ -286,19 +318,19 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                     + "', '" + a.getFirstnameEn()
                     + "', '" + a.getLastnameEn()
                     + "', '" + a.getNicknameEn()
-                    + "', '" + a.getPosition()
+                    + "', '" + job
                     + "', '" + a.getEmail()
                     + "', '" + a.getMobile()
                     + "', '" + a.getWorkPhone()
-                    + "', '" + a.getLine()
+                    + "', '" + a.getLineID()
                     + "', '" + a.getUpdate()
+                    + "', '" + a.getImage()
                     + "');");
         }
     }
 
     public void deleteData(){
         mDb.execSQL("DELETE FROM "+DatabaseHelper.DBTABLE+";");
-        Log.e("delete","yes");
 
     }
 

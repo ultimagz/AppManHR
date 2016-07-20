@@ -87,10 +87,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
 
         if (dataAtPos.getNicknameEn() != null){
-            if(dataAtPos.getNicknameEn().length() == 0){
-                title.setText(dataAtPos.getFullNameEn());
-            }
-            else{
+            if(dataAtPos.getNicknameEn().length()!=0) {
                 title.setText(dataAtPos.getFullNameEn() + " (" + dataAtPos.getNicknameEn() + ")");
             }
         }
