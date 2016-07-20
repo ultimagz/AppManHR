@@ -12,6 +12,7 @@ public class AppManHR extends Application {
 
     public static final Gson GSON = new GsonBuilder().serializeNulls().disableHtmlEscaping().create();
     public static final Gson GSON_PRETTY = new GsonBuilder().serializeNulls().setPrettyPrinting().disableHtmlEscaping().create();
+    public static final String URL = "http://hr.appmanproject.com/api/user/list";
     public static final String GROUP_NAME = "AppManHR";
     public static final String ACCOUNT_TYPE = "";
     public static final String ACCOUNT_NAME = "";
