@@ -94,10 +94,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
 
-        getContactListFromServer();
+       // getContactListFromServer();
 
 
-        //getContactListFromDatabase();
+        getContactListFromDatabase();
         //getContactsListFromFile();
     }
 
@@ -244,17 +244,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         }
 
 
-//        if (mCursor.getCount() == 0) {
-//            insertData(contactList);
-//            Log.e("suss", "full");
-//
-//
-//        } else {
-//            deleteData();
-//            insertData(contactList);
-//
-//            Log.e("suss", "yes");
-//        }
+
 
 
     }
@@ -310,77 +300,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     public void insertData(List<AppContactData> contactList) {
         for (AppContactData contact : contactList) {
             insert(contact);
-//            String job ;
-//
-//            if(contact.getPosition().contains("'")){
-//
-//                job = contact.getPosition().replace("'"," ''");
-//
-//
-//            }else{
-//                job = contact.getPosition();
-//            }
-//
-//
-//            mDb.execSQL("INSERT INTO " + DatabaseHelper.DBTABLE + " ("
-//                    + DatabaseHelper.contactID + ", " + DatabaseHelper.fistNameTH
-//                    + ", " + DatabaseHelper.lastNameTH
-//                    + ", " + DatabaseHelper.nickNameTH
-//                    + ", " + DatabaseHelper.fistNameEN
-//                    + ", " + DatabaseHelper.lastNameEN
-//                    + ", " + DatabaseHelper.nickNameEN
-//                    + ", " + DatabaseHelper.position
-//                    + ", " + DatabaseHelper.email
-//                    + ", " + DatabaseHelper.mobile
-//                    + ", " + DatabaseHelper.workphone
-//                    + ", " + DatabaseHelper.lineID
-//                    + ", " + DatabaseHelper.updateTime
-//                    + ", " + DatabaseHelper.image
-//                    + ", " + DatabaseHelper.localContactID
-//                    + ", " + DatabaseHelper.localFistNameTH
-//                    + ", " + DatabaseHelper.localLastNameTH
-//                    + ", " + DatabaseHelper.localNickNameTH
-//                    + ", " + DatabaseHelper.localFistNameEN
-//                    + ", " + DatabaseHelper.localLastNameEN
-//                    + ", " + DatabaseHelper.localNickNameEN
-//                    + ", " + DatabaseHelper.localPosition
-//                    + ", " + DatabaseHelper.localEmail
-//                    + ", " + DatabaseHelper.localMobile
-//                    + ", " + DatabaseHelper.localWorkphone
-//                    + ", " + DatabaseHelper.localLineID
-//                    + ", " + DatabaseHelper.localUpdateTime
-//                    + ", " + DatabaseHelper.localUImage
-//
-//                    + ") VALUES ('" + contact.getId()
-//                    + "', '" + contact.getFirstnameTh()
-//                    + "', '" + contact.getLastnameTh()
-//                    + "', '" + contact.getNicknameTh()
-//                    + "', '" + contact.getFirstnameEn()
-//                    + "', '" + contact.getLastnameEn()
-//                    + "', '" + contact.getNicknameEn()
-//                    + "', '" + job
-//                    + "', '" + contact.getEmail()
-//                    + "', '" + contact.getMobile()
-//                    + "', '" + contact.getWorkPhone()
-//                    + "', '" + contact.getLineID()
-//                    + "', '" + contact.getUpdate()
-//                    + "', '" + contact.getImage()
-//
-//                    + "', '" + contact.getId()
-//                    + "', '" + contact.getFirstnameTh()
-//                    + "', '" + contact.getLastnameTh()
-//                    + "', '" + contact.getNicknameTh()
-//                    + "', '" + contact.getFirstnameEn()
-//                    + "', '" + contact.getLastnameEn()
-//                    + "', '" + contact.getNicknameEn()
-//                    + "', '" + job
-//                    + "', '" + contact.getEmail()
-//                    + "', '" + contact.getMobile()
-//                    + "', '" + contact.getWorkPhone()
-//                    + "', '" + contact.getLineID()
-//                    + "', '" + contact.getUpdate()
-//                    + "', '" + contact.getImage()
-//                    + "');");
         }
     }
 
