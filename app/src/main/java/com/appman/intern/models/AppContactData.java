@@ -16,10 +16,14 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 @Parcel
-public class AppContactData {
+public class AppContactData extends RealmObject {
 
     @SerializedName("_id")
+    @PrimaryKey
     String id = "id";
 
     @SerializedName("th_fname")
@@ -323,14 +327,14 @@ public class AppContactData {
             return new Comparator<AppContactData>() {
                 @Override
                 public int compare(AppContactData s1, AppContactData s2) {
-                    return s1.getFirstCharTh().compareToIgnoreCase(s2.getFirstCharTh());
+                    return s1.getFirstnameTh().compareToIgnoreCase(s2.getFirstnameTh());
                 }
             };
 
         return new Comparator<AppContactData>() {
             @Override
             public int compare(AppContactData s1, AppContactData s2) {
-                return s1.getFirstCharEn().compareToIgnoreCase(s2.getFirstCharEn());
+                return s1.getFirstnameEn().compareToIgnoreCase(s2.getFirstnameEn());
             }
         };
     }
