@@ -249,7 +249,6 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
 
     private List<AppContactData> createFilterList(String filterString) {
         List<AppContactData> nlist = new ArrayList<>();
-        boolean exist;
         for (AppContactData data : mOriginalList) {
             if (checkRegionMatches(data, filterString)) {
                 nlist.add(data);
