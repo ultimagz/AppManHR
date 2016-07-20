@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHR;
@@ -31,9 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private SearchFragmentBinding mBinding;
@@ -116,6 +114,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         String[] alphabets = getResources().getStringArray(R.array.alphabet);
         for (String alphabet : alphabets) {
             textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.side_index_item, null);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
+            textView.setLayoutParams(params);
             textView.setText(alphabet);
             textView.setOnClickListener(this);
             mBinding.sideIndex.addView(textView);
@@ -136,5 +136,4 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_tab, menu);
     }
-
 }
