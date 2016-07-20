@@ -57,7 +57,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     DatabaseHelper mHelper;
     SQLiteDatabase mDb;
-    SwipeRefreshLayout mSwipeRefreshLayout;
+
 
 
     public static ContactsFragment newInstance(Bundle args) {

@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String workphone = "workphone";
     public static final String lineID = "line_id";
     public static final String updateTime = "updateTime";
+    public static final String image = "image";
 
     // Local contacts row
     public static final String localContactID = "local_contact_id";
@@ -39,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String localWorkphone = "local_workphone";
     public static final String localLineID = "local_line";
     public static final String localUpdateTime = "local_updateTime";
+    public static final String localUImage = "local_image";
 
     public DatabaseHelper(Context context) {
         super(context, DBNAME, null, DBVERSION);
@@ -60,6 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 workphone + " TEXT, " +
                 lineID + " TEXT, " +
                 updateTime + " TEXT," +
+                image + " TEXT," +
                 localContactID + " TEXT," +
                 localFistNameTH + " TEXT, " +
                 localLastNameTH + " TEXT, " +
@@ -72,7 +75,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 localMobile + " TEXT, " +
                 localWorkphone + " TEXT, " +
                 localLineID + " TEXT, " +
-                localUpdateTime + " TEXT)";
+                localUpdateTime + " TEXT, " +
+                localUImage + " TEXT)";
 
         db.execSQL(sql);
         Log.w("CREATE TABLE", "Create Table Successfully.");
