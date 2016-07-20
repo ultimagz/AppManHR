@@ -76,18 +76,21 @@
             android:id="@+id/contact_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/top"
+            android:layout_below="@id/top"
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"
             android:scrollbars="none" />
 
         <LinearLayout
             android:id="@+id/side_index"
-            android:layout_width="50dp"
+            android:layout_width="48dp"
             android:layout_height="match_parent"
-            android:layout_alignRight="@id/contact_list"
-            android:layout_below="@+id/top"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/top"
             android:layout_gravity="end"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:gravity="center_horizontal"
             android:orientation="vertical" />
     </RelativeLayout>
