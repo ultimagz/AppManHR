@@ -1,7 +1,5 @@
 package com.appman.intern.fragments;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +18,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.appman.intern.AppManHR;
 import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.ContactHelper;
 import com.appman.intern.DatabaseHelper;
@@ -53,12 +52,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     ContactFragmentBinding mBinding;
     ContactListAdapter mAdapter;
-    public static String URL = "http://hr.appmanproject.com/api/user/list";
-
     DatabaseHelper mHelper;
-    SQLiteDatabase mDb;
-    SwipeRefreshLayout mSwipeRefreshLayout;
-
 
     public static ContactsFragment newInstance(Bundle args) {
         ContactsFragment fragment = new ContactsFragment();
@@ -70,6 +64,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.contact_fragment, container, false);
+        mHelper = new DatabaseHelper(getActivity());
         return mBinding.getRoot();
     }
 
@@ -180,7 +175,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
                 Request.Builder builder = new Request.Builder();
 
-                Request request = builder.url(URL).build();
+                Request request = builder.url(AppManHR.URL).build();
 
 
                 try {
@@ -210,132 +205,19 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
 
     public void saveDatabase(String jsonString) {
-        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {
-        }.getType();
+        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {}.getType();
         List<AppContactData> contactList = new Gson().fromJson(jsonString, jsonType);
         Collections.sort(contactList, AppContactData.getComparator(Language.EN));
 
-        mHelper = new DatabaseHelper(getActivity());
-
-        mDb = mHelper.getWritableDatabase();
-
-        Cursor mCursor = mDb.rawQuery("SELECT * FROM " + DatabaseHelper.DBTABLE, null);
-
-        if (mCursor.getCount() == 0) {
-            insertData(contactList);
-            Log.e("suss", "full");
-
-
-        } else {
-            deleteData();
-            insertData(contactList);
-
-            Log.e("suss", "yes");
-        }
-
-
-    }
-
-    public void getContactListFromDatabase() {
-
-        mHelper = new DatabaseHelper(getActivity());
-
-        mDb = mHelper.getReadableDatabase();
-        AppContactData contact ;
-        List<AppContactData> contactList = new ArrayList<>();
-
-
-        Cursor mCursor = mDb.query(DatabaseHelper.DBTABLE, new String[]{"contact_id", "fistName_th", "lastName_th",
-                "nickName_th", "fistName_en", "lastName_en", "nickName_en", "position", "email",
-                "mobile", "workphone", "line_id" +
-                "","updateTime","image"}, null, null, null, null, "fistName_EN ASC");
-
-
-        mCursor.moveToFirst();
-
-
-        while (!mCursor.isAfterLast()) {
-            //contact = new ContactData(mCursor.getString(0), mCursor.getString(1), mCursor.getString(2), mCursor.getString(3), mCursor.getString(4), mCursor.getString(5), mCursor.getString(mCursor.getColumnIndex()), mCursor.getString(7), mCursor.getString(8), mCursor.getString(9), mCursor.getString(10), mCursor.getString(11));
-            contact = new AppContactData();
-            contact.setId(mCursor.getString(mCursor.getColumnIndexOrThrow(DatabaseHelper.contactID)));
-            contact.setFirstnameTh(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.fistNameTH)));
-            contact.setLastnameTh(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.lastNameTH)));
-            contact.setNicknameTh(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.nickNameTH)));
-            contact.setFirstnameEn(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.fistNameEN)));
-            contact.setLastnameEn(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.lastNameEN)));
-            contact.setNicknameEn(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.nickNameEN)));
-            contact.setPosition(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.position)));
-            contact.setEmail(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.email)));
-            contact.setMobile(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.mobile)));
-            contact.setWorkPhone(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.workphone)));
-            contact.setLineID(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.lineID)));
-            contact.setUpdate(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.updateTime)));
-            contact.setImage(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.image)));
-
-
-            contactList.add(contact);
-            mCursor.moveToNext();
-
-
-        }
-
-        mCursor.close();
-        Log.e("contactList", contactList.toString());
-
-        updateAdapter(contactList.toString());
-    }
-
-    public void insertData(List<AppContactData> contactList) {
-        for (AppContactData a : contactList) {
-            String job ;
-
-            if(a.getPosition().contains("'")){
-
-                job = a.getPosition().replace("'"," ''");
-
-
-            }else{
-                job = a.getPosition();
+        AppContactData dbContactData;
+        for (AppContactData contactData : contactList) {
+            dbContactData = mHelper.getContactById(contactData.getId());
+            if (dbContactData == null) {
+                mHelper.insertContactData(contactData);
+            } else if (!dbContactData.getUpdateTime().equals(contactData.getUpdateTime())) {
+                mHelper.updateContactData(contactData);
             }
-
-
-            mDb.execSQL("INSERT INTO " + DatabaseHelper.DBTABLE + " ("
-                    + DatabaseHelper.contactID + ", " + DatabaseHelper.fistNameTH
-                    + ", " + DatabaseHelper.lastNameTH
-                    + ", " + DatabaseHelper.nickNameTH
-                    + ", " + DatabaseHelper.fistNameEN
-                    + ", " + DatabaseHelper.lastNameEN
-                    + ", " + DatabaseHelper.nickNameEN
-                    + ", " + DatabaseHelper.position
-                    + ", " + DatabaseHelper.email
-                    + ", " + DatabaseHelper.mobile
-                    + ", " + DatabaseHelper.workphone
-                    + ", " + DatabaseHelper.lineID
-                    + ", " + DatabaseHelper.updateTime
-                    + ", " + DatabaseHelper.image
-
-                    + ") VALUES ('" + a.getId()
-                    + "', '" + a.getFirstnameTh()
-                    + "', '" + a.getLastnameTh()
-                    + "', '" + a.getNicknameTh()
-                    + "', '" + a.getFirstnameEn()
-                    + "', '" + a.getLastnameEn()
-                    + "', '" + a.getNicknameEn()
-                    + "', '" + job
-                    + "', '" + a.getEmail()
-                    + "', '" + a.getMobile()
-                    + "', '" + a.getWorkPhone()
-                    + "', '" + a.getLineID()
-                    + "', '" + a.getUpdate()
-                    + "', '" + a.getImage()
-                    + "');");
         }
     }
-
-    public void deleteData(){
-        mDb.execSQL("DELETE FROM "+DatabaseHelper.DBTABLE+";");
-
-    }
-
 }
 
