@@ -17,7 +17,7 @@ import java.util.Comparator;
 public class AppContactData {
 
     @SerializedName("_id")
-    String id = "id";
+    String id = "contact_id";
     @SerializedName("th_fname")
     String firstnameTh = "firstnameTh";
     @SerializedName("th_lname")

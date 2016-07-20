@@ -76,6 +76,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mBinding.swipeContainer.setColorSchemeResources(R.color.red,R.color.blue,R.color.green);
         mBinding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -216,19 +217,44 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
         mDb = mHelper.getWritableDatabase();
 
-        Cursor mCursor = mDb.rawQuery("SELECT * FROM " + DatabaseHelper.DBTABLE, null);
+       Cursor mCursor = mDb.rawQuery("SELECT * FROM " + DatabaseHelper.DBTABLE, null);
 
-        if (mCursor.getCount() == 0) {
-            insertData(contactList);
-            Log.e("suss", "full");
+        String id;
+        String dataUpdate;
+        for (AppContactData contact : contactList) {
+            id = contact.getId();
 
-
-        } else {
-            deleteData();
-            insertData(contactList);
-
-            Log.e("suss", "yes");
+            if(mCursor.getCount() == 0){
+                insertData(contactList);
+            }
+            else{
+                Cursor cursor1 = mDb.rawQuery("SELECT * FROM "
+                        + DatabaseHelper.DBTABLE+" WHERE '"+id+"'", null);
+                cursor1.moveToFirst();
+                if(cursor1.getCount() ==0){
+                    insert(contact);
+                }
+                else{
+                    dataUpdate = cursor1.getString(cursor1.getColumnIndex(DatabaseHelper.updateTime));
+                    if(!(contact.getUpdate().equals(dataUpdate))){
+                        updateData(contact);
+                    }
+                }
+            }
         }
+
+
+//        if (mCursor.getCount() == 0) {
+//            insertData(contactList);
+//            Log.e("suss", "full");
+//
+//
+//        } else {
+//            deleteData();
+//            insertData(contactList);
+//
+//            Log.e("suss", "yes");
+//        }
 
 
     }
@@ -244,8 +270,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
         Cursor mCursor = mDb.query(DatabaseHelper.DBTABLE, new String[]{"contact_id", "fistName_th", "lastName_th",
                 "nickName_th", "fistName_en", "lastName_en", "nickName_en", "position", "email",
-                "mobile", "workphone", "line_id" +
-                "","updateTime","image"}, null, null, null, null, "fistName_EN ASC");
+                "mobile", "workphone", "line_id","updateTime","image"}, null, null, null, null, "fistName_EN ASC");
 
 
         mCursor.moveToFirst();
@@ -283,16 +308,93 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     }
 
     public void insertData(List<AppContactData> contactList) {
-        for (AppContactData a : contactList) {
+        for (AppContactData contact : contactList) {
+            insert(contact);
+//            String job ;
+//
+//            if(contact.getPosition().contains("'")){
+//
+//                job = contact.getPosition().replace("'"," ''");
+//
+//
+//            }else{
+//                job = contact.getPosition();
+//            }
+//
+//
+//            mDb.execSQL("INSERT INTO " + DatabaseHelper.DBTABLE + " ("
+//                    + DatabaseHelper.contactID + ", " + DatabaseHelper.fistNameTH
+//                    + ", " + DatabaseHelper.lastNameTH
+//                    + ", " + DatabaseHelper.nickNameTH
+//                    + ", " + DatabaseHelper.fistNameEN
+//                    + ", " + DatabaseHelper.lastNameEN
+//                    + ", " + DatabaseHelper.nickNameEN
+//                    + ", " + DatabaseHelper.position
+//                    + ", " + DatabaseHelper.email
+//                    + ", " + DatabaseHelper.mobile
+//                    + ", " + DatabaseHelper.workphone
+//                    + ", " + DatabaseHelper.lineID
+//                    + ", " + DatabaseHelper.updateTime
+//                    + ", " + DatabaseHelper.image
+//                    + ", " + DatabaseHelper.localContactID
+//                    + ", " + DatabaseHelper.localFistNameTH
+//                    + ", " + DatabaseHelper.localLastNameTH
+//                    + ", " + DatabaseHelper.localNickNameTH
+//                    + ", " + DatabaseHelper.localFistNameEN
+//                    + ", " + DatabaseHelper.localLastNameEN
+//                    + ", " + DatabaseHelper.localNickNameEN
+//                    + ", " + DatabaseHelper.localPosition
+//                    + ", " + DatabaseHelper.localEmail
+//                    + ", " + DatabaseHelper.localMobile
+//                    + ", " + DatabaseHelper.localWorkphone
+//                    + ", " + DatabaseHelper.localLineID
+//                    + ", " + DatabaseHelper.localUpdateTime
+//                    + ", " + DatabaseHelper.localUImage
+//
+//                    + ") VALUES ('" + contact.getId()
+//                    + "', '" + contact.getFirstnameTh()
+//                    + "', '" + contact.getLastnameTh()
+//                    + "', '" + contact.getNicknameTh()
+//                    + "', '" + contact.getFirstnameEn()
+//                    + "', '" + contact.getLastnameEn()
+//                    + "', '" + contact.getNicknameEn()
+//                    + "', '" + job
+//                    + "', '" + contact.getEmail()
+//                    + "', '" + contact.getMobile()
+//                    + "', '" + contact.getWorkPhone()
+//                    + "', '" + contact.getLineID()
+//                    + "', '" + contact.getUpdate()
+//                    + "', '" + contact.getImage()
+//
+//                    + "', '" + contact.getId()
+//                    + "', '" + contact.getFirstnameTh()
+//                    + "', '" + contact.getLastnameTh()
+//                    + "', '" + contact.getNicknameTh()
+//                    + "', '" + contact.getFirstnameEn()
+//                    + "', '" + contact.getLastnameEn()
+//                    + "', '" + contact.getNicknameEn()
+//                    + "', '" + job
+//                    + "', '" + contact.getEmail()
+//                    + "', '" + contact.getMobile()
+//                    + "', '" + contact.getWorkPhone()
+//                    + "', '" + contact.getLineID()
+//                    + "', '" + contact.getUpdate()
+//                    + "', '" + contact.getImage()
+//                    + "');");
+        }
+    }
+
+    public void insert(AppContactData contact) {
+
             String job ;
 
-            if(a.getPosition().contains("'")){
+            if(contact.getPosition().contains("'")){
 
-                job = a.getPosition().replace("'"," ''");
+                job = contact.getPosition().replace("'"," ''");
 
 
             }else{
-                job = a.getPosition();
+                job = contact.getPosition();
             }
 
 
@@ -310,27 +412,82 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                     + ", " + DatabaseHelper.lineID
                     + ", " + DatabaseHelper.updateTime
                     + ", " + DatabaseHelper.image
+                    + ", " + DatabaseHelper.localContactID
+                    + ", " + DatabaseHelper.localFistNameTH
+                    + ", " + DatabaseHelper.localLastNameTH
+                    + ", " + DatabaseHelper.localNickNameTH
+                    + ", " + DatabaseHelper.localFistNameEN
+                    + ", " + DatabaseHelper.localLastNameEN
+                    + ", " + DatabaseHelper.localNickNameEN
+                    + ", " + DatabaseHelper.localPosition
+                    + ", " + DatabaseHelper.localEmail
+                    + ", " + DatabaseHelper.localMobile
+                    + ", " + DatabaseHelper.localWorkphone
+                    + ", " + DatabaseHelper.localLineID
+                    + ", " + DatabaseHelper.localUpdateTime
+                    + ", " + DatabaseHelper.localUImage
 
-                    + ") VALUES ('" + a.getId()
-                    + "', '" + a.getFirstnameTh()
-                    + "', '" + a.getLastnameTh()
-                    + "', '" + a.getNicknameTh()
-                    + "', '" + a.getFirstnameEn()
-                    + "', '" + a.getLastnameEn()
-                    + "', '" + a.getNicknameEn()
+                    + ") VALUES ('" + contact.getId()
+                    + "', '" + contact.getFirstnameTh()
+                    + "', '" + contact.getLastnameTh()
+                    + "', '" + contact.getNicknameTh()
+                    + "', '" + contact.getFirstnameEn()
+                    + "', '" + contact.getLastnameEn()
+                    + "', '" + contact.getNicknameEn()
                     + "', '" + job
-                    + "', '" + a.getEmail()
-                    + "', '" + a.getMobile()
-                    + "', '" + a.getWorkPhone()
-                    + "', '" + a.getLineID()
-                    + "', '" + a.getUpdate()
-                    + "', '" + a.getImage()
+                    + "', '" + contact.getEmail()
+                    + "', '" + contact.getMobile()
+                    + "', '" + contact.getWorkPhone()
+                    + "', '" + contact.getLineID()
+                    + "', '" + contact.getUpdate()
+                    + "', '" + contact.getImage()
+
+                    + "', '" + contact.getId()
+                    + "', '" + contact.getFirstnameTh()
+                    + "', '" + contact.getLastnameTh()
+                    + "', '" + contact.getNicknameTh()
+                    + "', '" + contact.getFirstnameEn()
+                    + "', '" + contact.getLastnameEn()
+                    + "', '" + contact.getNicknameEn()
+                    + "', '" + job
+                    + "', '" + contact.getEmail()
+                    + "', '" + contact.getMobile()
+                    + "', '" + contact.getWorkPhone()
+                    + "', '" + contact.getLineID()
+                    + "', '" + contact.getUpdate()
+                    + "', '" + contact.getImage()
                     + "');");
-        }
+
     }
 
-    public void deleteData(){
-        mDb.execSQL("DELETE FROM "+DatabaseHelper.DBTABLE+";");
+    public void updateData(AppContactData contact){
+        String job ;
+
+        if(contact.getPosition().contains("'")){
+
+            job = contact.getPosition().replace("'"," ''");
+
+
+        }else{
+            job = contact.getPosition();
+        }
+        mDb.execSQL("UPDATE "+DatabaseHelper.DBTABLE+" SET "
+                +DatabaseHelper.fistNameTH +" = '"+contact.getFirstnameTh() +"', "
+                +DatabaseHelper.lastNameTH +" = '"+contact.getLastnameTh() +"', "
+                +DatabaseHelper.nickNameTH +" = '"+contact.getNicknameTh() +"', "
+                +DatabaseHelper.fistNameEN +" = '"+contact.getFirstnameEn() +"', "
+                +DatabaseHelper.lastNameEN +" = '"+contact.getLastnameEn() +"', "
+                +DatabaseHelper.nickNameEN +" = '"+contact.getNicknameEn() +"', "
+                +DatabaseHelper.position +" = '"+job+"', "
+                +DatabaseHelper.email +" = '"+contact.getEmail() +"', "
+                +DatabaseHelper.mobile +" = '"+contact.getMobile() +"', "
+                +DatabaseHelper.workphone +" = '"+contact.getWorkPhone() +"', "
+                +DatabaseHelper.lineID +" = '"+contact.getLineID() +"', "
+                +DatabaseHelper.updateTime +" = '"+contact.getUpdate()+"', "
+                +DatabaseHelper.image +" = '"+contact.getImage() +"' "
+                +" WHERE "
+                +DatabaseHelper.contactID +" = '"+contact.getId() +"'"
+                );
 
     }
 
