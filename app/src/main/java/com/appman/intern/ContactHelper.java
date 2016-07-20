@@ -9,7 +9,11 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import com.appman.intern.enums.Language;
+import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.EmailData;
 import com.appman.intern.models.PhoneData;
@@ -18,6 +22,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContactHelper {
+
+    public void addNewContact(Context context, View view) {
+        AppContactData newContact = new AppContactData();
+        try {
+            String groupId = ContactHelper.getContactGroupId(context);
+            Language lang = AppManHRPreferences.getCurrentLanguage(context);
+            ContentProviderResult[] results =
+                    context.getContentResolver().applyBatch(
+                            ContactsContract.AUTHORITY,
+                            newContact.createNewContactProvider(lang, groupId));
+
+            Toast.makeText(context, "Insert contact success", Toast.LENGTH_SHORT).show();
+
+            for (ContentProviderResult result : results) {
+                Log.w("insert id", String.valueOf(result.uri));
+            }
+
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.e("Insert contact failed", String.valueOf(newContact), e);
+            Toast.makeText(context, "Insert contact failed", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public static List<ContactData> retrieveContacts(Context context, String[] projection, String groupId) { //This Context parameter is nothing but your Activity class's Context
         List<String> contactIdList = getContactIdsInGroup(context, groupId);
