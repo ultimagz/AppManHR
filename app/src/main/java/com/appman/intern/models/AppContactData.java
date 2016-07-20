@@ -61,7 +61,7 @@ public class AppContactData {
     public AppContactData() {}
 
     public AppContactData(Cursor cursor) {
-        id = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.CONTACT_ID));
+        id = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
         firstnameTh = cursor.getString(cursor.getColumnIndex(DatabaseHelper.FIRST_NAME_TH));
         lastnameTh = cursor.getString(cursor.getColumnIndex(DatabaseHelper.LAST_NAME_TH));
         nicknameTh = cursor.getString(cursor.getColumnIndex(DatabaseHelper.NICK_NAME_TH));
