@@ -68,9 +68,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 MOBILE + " TEXT, " +
                 WORKPHONE + " TEXT, " +
                 LINE_ID + " TEXT, " +
-                UPDATE_TIME + " TEXT," +
-                IMAGE + " TEXT," +
-                LOCAL_CONTACT_ID + " TEXT," +
+                UPDATE_TIME + " TEXT, " +
+                IMAGE + " TEXT, " +
+                LOCAL_CONTACT_ID + " TEXT, " +
                 LOCAL_FIRST_NAME_TH + " TEXT, " +
                 LOCAL_LAST_NAME_TH + " TEXT, " +
                 LOCAL_NICK_NAME_TH + " TEXT, " +
@@ -117,9 +117,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public AppContactData getContactById(String id) {
         AppContactData contactData = null;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.DBTABLE, null, "CONTACT_ID = ?", new String[]{ id }, null, null, null);
-
-        if (cursor != null) {
+        Cursor cursor = db.query(DatabaseHelper.DBTABLE, null, CONTACT_ID + " = ?", new String[]{ id }, null, null, null);
+        if (cursor != null && cursor.moveToNext()) {
             contactData = new AppContactData(cursor);
             cursor.close();
         }
@@ -142,7 +141,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public long insertContactData(AppContactData contactData) {
         SQLiteDatabase db = getWritableDatabase();
-        String position = contactData.getPosition().replace("'", " ''");
         ContentValues insertValues = contactData.createContentValues();
         long result = db.insertWithOnConflict(DBTABLE, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
