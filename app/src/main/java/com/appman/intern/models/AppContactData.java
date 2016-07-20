@@ -16,13 +16,7 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @Parcel
-@Getter @Setter
-@NoArgsConstructor
 public class AppContactData {
 
     @SerializedName("_id")
@@ -64,6 +58,8 @@ public class AppContactData {
 
     boolean isHeader = false;
 
+    public AppContactData() {}
+
     public AppContactData(Cursor cursor) {
         id = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.CONTACT_ID));
         firstnameTh = cursor.getString(cursor.getColumnIndex(DatabaseHelper.FIRST_NAME_TH));
@@ -79,6 +75,126 @@ public class AppContactData {
         lineID = cursor.getString(cursor.getColumnIndex(DatabaseHelper.LINE_ID));
         updateTime = cursor.getString(cursor.getColumnIndex(DatabaseHelper.UPDATE_TIME));
         image = cursor.getString(cursor.getColumnIndex(DatabaseHelper.IMAGE));
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getFirstnameTh() {
+        return firstnameTh;
+    }
+
+    public void setFirstnameTh(String firstnameTh) {
+        this.firstnameTh = firstnameTh;
+    }
+
+    public String getLastnameTh() {
+        return lastnameTh;
+    }
+
+    public void setLastnameTh(String lastnameTh) {
+        this.lastnameTh = lastnameTh;
+    }
+
+    public String getNicknameTh() {
+        return nicknameTh;
+    }
+
+    public void setNicknameTh(String nicknameTh) {
+        this.nicknameTh = nicknameTh;
+    }
+
+    public String getFirstnameEn() {
+        return firstnameEn;
+    }
+
+    public void setFirstnameEn(String firstnameEn) {
+        this.firstnameEn = firstnameEn;
+    }
+
+    public String getLastnameEn() {
+        return lastnameEn;
+    }
+
+    public void setLastnameEn(String lastnameEn) {
+        this.lastnameEn = lastnameEn;
+    }
+
+    public String getNicknameEn() {
+        return nicknameEn;
+    }
+
+    public void setNicknameEn(String nicknameEn) {
+        this.nicknameEn = nicknameEn;
+    }
+
+    public String getWorkPhone() {
+        return workPhone;
+    }
+
+    public void setWorkPhone(String workPhone) {
+        this.workPhone = workPhone;
+    }
+
+    public String getLineID() {
+        return lineID;
+    }
+
+    public void setLineID(String lineID) {
+        this.lineID = lineID;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isHeader() {
+        return isHeader;
+    }
+
+    public void setHeader(boolean header) {
+        isHeader = header;
     }
 
     public String getFullNameTh() {
