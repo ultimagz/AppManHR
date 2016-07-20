@@ -1,27 +1,18 @@
 package com.appman.intern.activities;
 
-import android.content.ContentProviderResult;
-import android.content.OperationApplicationException;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.appman.intern.AppManHRPreferences;
-import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
 import com.appman.intern.adapters.SectionsPagerAdapter;
 import com.appman.intern.databinding.MainActivityBinding;
-import com.appman.intern.enums.Language;
 import com.appman.intern.fragments.SearchFragment;
-import com.appman.intern.models.AppContactData;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,28 +68,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         AppManHRPreferences.setCurrentLanguage(this, "EN");
-    }
-
-    public void addNewContact(View view) {
-        AppContactData newContact = new AppContactData();
-        try {
-            String groupId = ContactHelper.getContactGroupId(this);
-            Language lang = AppManHRPreferences.getCurrentLanguage(this);
-            ContentProviderResult[] results =
-                    getContentResolver().applyBatch(
-                            ContactsContract.AUTHORITY,
-                            newContact.createNewContactProvider(lang, groupId));
-
-            Toast.makeText(this, "Insert contact success", Toast.LENGTH_SHORT).show();
-
-            for (ContentProviderResult result : results) {
-                Log.w("insert id", String.valueOf(result.uri));
-            }
-
-        } catch (RemoteException | OperationApplicationException e) {
-            Log.e("Insert contact failed", String.valueOf(newContact), e);
-            Toast.makeText(this, "Insert contact failed", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void setToolbarTitleByIndex(int index) {
