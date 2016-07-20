@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -72,11 +73,12 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        displayIndex();
+
         mBinding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 getContactListFromServer();
-                Log.e("F5","suss");
             }
         });
     }
@@ -86,22 +88,18 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         super.onResume();
 //        getContactListFromServer();
 //        getContactListFromDatabase();
-//        getContactsListFromFile();
+        getContactsListFromFile();
         String groupId = ContactHelper.getContactGroupId(getContext());
         ContactHelper.retrieveContacts(getContext(), PROJECTION, groupId);
-        mAdapter = new ContactListAdapter(getActivity(), getContactsListFromFile());
-        mBinding.contactList.setAdapter(mAdapter);
     }
 
-    private List<AppContactData> getContactsListFromFile() {
-        List<AppContactData> contactList = new ArrayList<>();
+    private void getContactsListFromFile() {
         try {
             InputStream json = getActivity().getAssets().open("sample_contact.json");
             String jsonString = IOUtils.toString(json, "UTF-8");
             updateAdapter(jsonString);
-            return contactList;
         } catch (IOException e) {
-            return contactList;
+            updateAdapter("[]");
         }
     }
 
@@ -110,12 +108,13 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         String[] alphabets = getResources().getStringArray(R.array.alphabet);
         for (String alphabet : alphabets) {
             textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.side_index_item, null);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
+            textView.setLayoutParams(params);
             textView.setText(alphabet);
             textView.setOnClickListener(this);
             mBinding.sideIndex.addView(textView);
         }
     }
-
 
     @Override
     public void onClick(View view) {
@@ -156,8 +155,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateAdapter(String jsonString) {
-        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {
-        }.getType();
+        Type jsonType = new TypeToken<ArrayList<AppContactData>>() {}.getType();
         List<AppContactData> contactList = new Gson().fromJson(jsonString, jsonType);
         Collections.sort(contactList, AppContactData.getComparator(Language.EN));
         mAdapter = new ContactListAdapter(getActivity(), contactList);
@@ -169,11 +167,8 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             @Override
             protected String doInBackground(Void... voids) {
                 OkHttpClient okHttpClient = new OkHttpClient();
-
                 Request.Builder builder = new Request.Builder();
-
                 Request request = builder.url(AppManHR.URL).build();
-
 
                 try {
                     Response response = okHttpClient.newCall(request).execute();
@@ -190,9 +185,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
             @Override
             protected void onPostExecute(String result) {
-
                 updateAdapter(result);
-
                 saveDatabase(result);
                 mBinding.swipeContainer.setRefreshing(false);
                 Log.e("re", result);
