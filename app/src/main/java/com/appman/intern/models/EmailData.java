@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.provider.ContactsContract;
 
 import org.parceler.Parcel;
-
 import lombok.Getter;
 import lombok.Setter;
 

@@ -28,11 +28,12 @@ import com.appman.intern.databinding.ContactFragmentBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,8 +79,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                 Log.e("F5","suss");
             }
         });
-
-        displayIndex();
     }
 
     @Override
@@ -98,9 +97,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         List<AppContactData> contactList = new ArrayList<>();
         try {
             InputStream json = getActivity().getAssets().open("sample_contact.json");
-            AppContactData data = new AppContactData();
-            Gson gson = new GsonBuilder().serializeNulls().create();
-            String jsonString = gson.toJson(data);
+            String jsonString = IOUtils.toString(json, "UTF-8");
             updateAdapter(jsonString);
             return contactList;
         } catch (IOException e) {
