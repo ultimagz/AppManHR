@@ -6,7 +6,6 @@ import android.app.backup.BackupDataOutput;
 import android.app.backup.FileBackupHelper;
 import android.app.backup.SharedPreferencesBackupHelper;
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
 
 import java.io.IOException;
 
