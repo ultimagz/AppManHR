@@ -164,16 +164,16 @@ public class ContactHelper {
     }
 
     public static String getContactGroupId(Context context) {
-        String groupId = checkExistGroup(context, AppManHR.GROUP_NAME);
+        String groupId = checkExistGroup(context, Utils.GROUP_NAME);
 
         if (groupId == null) {
             ArrayList<ContentProviderOperation> opsGroup = new ArrayList<>();
             opsGroup.add(ContentProviderOperation.newInsert(ContactsContract.Groups.CONTENT_URI)
-                    .withValue(ContactsContract.Groups.TITLE, AppManHR.GROUP_NAME)
+                    .withValue(ContactsContract.Groups.TITLE, Utils.GROUP_NAME)
                     .withValue(ContactsContract.Groups.GROUP_VISIBLE, true)
                     .withValue(ContactsContract.Groups.GROUP_IS_READ_ONLY, true)
-                    .withValue(ContactsContract.Groups.ACCOUNT_NAME, AppManHR.ACCOUNT_NAME)
-                    .withValue(ContactsContract.Groups.ACCOUNT_TYPE, AppManHR.ACCOUNT_TYPE)
+                    .withValue(ContactsContract.Groups.ACCOUNT_NAME, Utils.ACCOUNT_NAME)
+                    .withValue(ContactsContract.Groups.ACCOUNT_TYPE, Utils.ACCOUNT_TYPE)
                     .build());
 
             try {
@@ -181,7 +181,7 @@ public class ContactHelper {
                 groupId = results[0].uri.getLastPathSegment();
                 Log.w("create group result %s", groupId);
             } catch (RemoteException | OperationApplicationException e) {
-                Log.e("create group failed", AppManHR.GROUP_NAME, e);
+                Log.e("create group failed", Utils.GROUP_NAME, e);
             }
 
             return groupId;

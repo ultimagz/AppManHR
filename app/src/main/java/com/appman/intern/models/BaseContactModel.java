@@ -1,6 +1,7 @@
 package com.appman.intern.models;
 
 import com.appman.intern.AppManHR;
+import com.appman.intern.Utils;
 
 import org.parceler.Parcel;
 
@@ -42,6 +43,6 @@ public class BaseContactModel {
 
     @Override
     public String toString() {
-        return AppManHR.GSON_PRETTY.toJson(this);
+        return Utils.GSON_PRETTY.toJson(this);
     }
 }

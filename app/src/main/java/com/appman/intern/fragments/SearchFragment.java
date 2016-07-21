@@ -1,6 +1,5 @@
 package com.appman.intern.fragments;
 
-
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 
 import com.appman.intern.AppManHR;
 import com.appman.intern.R;
+import com.appman.intern.Utils;
 import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.SearchFragmentBinding;
 import com.appman.intern.enums.Language;
@@ -100,7 +100,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             InputStream json = getActivity().getAssets().open("sample_contact.json");
             String jsonString = IOUtils.toString(json, "UTF-8");
             Type jsonType = new TypeToken<ArrayList<AppContactData>>(){}.getType();
-            contactList = AppManHR.GSON.fromJson(jsonString, jsonType); //ContactHelper.retrieveContacts(getContext(, PROJECTION);
+            contactList = Utils.GSON.fromJson(jsonString, jsonType); //ContactHelper.retrieveContacts(getContext(, PROJECTION);
             Collections.sort(contactList, AppContactData.getComparator(Language.EN));
         } catch (IOException e) {
             e.printStackTrace();
