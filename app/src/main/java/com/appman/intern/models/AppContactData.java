@@ -49,6 +49,24 @@ public class AppContactData {
 
     boolean isHeader = false;
 
+    public static final int MOBILE_TYPE= 0;
+    public static final int WORK_PHONE_TYPE = 1;
+    public static final int E_MAIL_TYPE = 2;
+    public static final int ID_LINE_TYPE = 3;
+
+    private int type;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+
+
+
     public String getId() {
         return id;
     }
