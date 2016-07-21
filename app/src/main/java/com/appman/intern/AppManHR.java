@@ -10,12 +10,11 @@ public class AppManHR extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        RealmConfiguration realmConfiguration =
+        Realm.setDefaultConfiguration(
                 new RealmConfiguration.Builder(this)
                         .deleteRealmIfMigrationNeeded()
                         .name("hr_contact.realm")
-                        .build();
-        Realm.setDefaultConfiguration(realmConfiguration);
+                        .build());
         Timber.plant(new CrashReportingTree());
     }
 }

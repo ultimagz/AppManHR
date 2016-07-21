@@ -20,21 +20,29 @@ public class AppManHRDebug extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(
-                                RealmInspectorModulesProvider.builder(this)
-                                        .databaseNamePattern(Pattern.compile(".+\\.realm"))
-                                        .build())
-                        .build());
-
-        RealmConfiguration realmConfiguration =
-                new RealmConfiguration.Builder(this)
-                        .deleteRealmIfMigrationNeeded()
-                        .name("hr_contact.realm")
-                        .build();
-        Realm.setDefaultConfiguration(realmConfiguration);
+        Stetho.initialize(createStethoInitializer());
+        Realm.setDefaultConfiguration(createRealmConfigs());
         Timber.plant(new Timber.DebugTree());
+    }
+
+    private RealmConfiguration createRealmConfigs() {
+        return new RealmConfiguration.Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .name("hr_contact.realm")
+                .build();
+    }
+
+    private Stetho.Initializer createStethoInitializer() {
+        return Stetho.newInitializerBuilder(this)
+                .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                .enableWebKitInspector(createRealmInspector())
+                .build();
+    }
+
+    private RealmInspectorModulesProvider createRealmInspector() {
+        return RealmInspectorModulesProvider
+                .builder(this)
+                .databaseNamePattern(Pattern.compile(".+\\.realm"))
+                .build();
     }
 }

@@ -185,8 +185,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                     ContactsContract.Data.CONTENT_URI,
                     null,
                     ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                            ContactsContract.Data.MIMETYPE + " = ? AND " +
-                            ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
+                    ContactsContract.Data.MIMETYPE + " = ? AND " +
+                    ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
                     new String[]{rawContactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(phoneType)},
                     null);
 
