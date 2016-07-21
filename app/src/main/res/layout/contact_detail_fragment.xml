@@ -101,6 +101,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorBlack"
                         android:textSize="16dp"
+                        android:text="@{contactData.getMobile()}"
                         tools:text="081865587"/>
 
                     <TextView
@@ -109,6 +110,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="#c8c8c8"
                         android:textSize="14dp"
+                        android:text="Moblie"
                         tools:text="Mobile"/>
                 </LinearLayout>
 
@@ -155,6 +157,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorBlack"
                         android:textSize="16dp"
+                        android:text="@{contactData.getWorkPhone()}"
                         tools:text="081865587"/>
 
                     <TextView
@@ -163,6 +166,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="#c8c8c8"
                         android:textSize="14dp"
+                        android:text="Work Place"
                         tools:text="Work Place"/>
                 </LinearLayout>
 
@@ -223,8 +227,9 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorBlack"
                         android:textSize="16dp"
+                        android:text="@{contactData.getEmail()}"
                         tools:text="mail@mail.com"
-                        android:text="mail@mail.com" />
+                         />
 
                     <TextView
                         android:id="@+id/typeMail"
@@ -232,7 +237,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="#c8c8c8"
                         android:textSize="14dp"
-                        tools:text="E-Mail"/>
+                        tools:text="E-Mail"
+                        android:text="E-mail"/>
                 </LinearLayout>
 
 
@@ -272,7 +278,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorBlack"
                         android:textSize="16dp"
-                        tools:text="appMan101"/>
+                        tools:text="appMan101"
+                        android:text="@{contactData.getLineID()}"/>
 
                     <TextView
                         android:id="@+id/typeLineID"
@@ -280,7 +287,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="#c8c8c8"
                         android:textSize="14dp"
-                        tools:text="LineID"/>
+                        tools:text="LineID"
+                        android:text="LineID"/>
                 </LinearLayout>
 
 
