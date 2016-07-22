@@ -89,40 +89,6 @@ public class AppContactData extends RealmObject {
         image = cursor.getString(cursor.getColumnIndex(DatabaseHelper.IMAGE));
     }
 
-    public static final int MOBILE_TYPE= 0;
-    public static final int WORK_PHONE_TYPE = 1;
-    public static final int E_MAIL_TYPE = 2;
-    public static final int ID_LINE_TYPE = 3;
-
-    private int type;
-
-    public AppContactData(String data, int type) {
-        this.type = type;
-        switch (type) {
-            case MOBILE_TYPE:
-                this.mobile = data;
-                break;
-            case WORK_PHONE_TYPE:
-                this.workPhone = data;
-                break;
-            case E_MAIL_TYPE:
-                this.email = data;
-                break;
-            case ID_LINE_TYPE:
-                this.lineID = data;
-                break;
-        }
-
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public String getId() {
         return id;
     }
