@@ -15,7 +15,8 @@ import io.realm.annotations.PrimaryKey;
 @Parcel
 public class LocalContactData extends RealmObject {
     @PrimaryKey
-    String id = "id";
+    String contactId = "contactId";
+    String localId = "localId";
     String firstnameTh = "firstnameTh";
     String lastnameTh = "lastnameTh";
     String nicknameTh = "nicknameTh";
@@ -33,6 +34,11 @@ public class LocalContactData extends RealmObject {
     public LocalContactData() {}
 
     public LocalContactData(AppContactData contactData) {
+        setNewValue(contactData);
+    }
+
+    public void setNewValue(AppContactData contactData) {
+        contactId = contactData.getId();
         firstnameTh = contactData.getFirstnameTh();
         lastnameTh = contactData.getLastnameTh();
         nicknameTh = contactData.getNicknameTh();
@@ -48,12 +54,20 @@ public class LocalContactData extends RealmObject {
         image = contactData.getImage();
     }
 
-    public String getId() {
-        return id;
+    public String getContactId() {
+        return contactId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setContactId(String contactId) {
+        this.contactId = contactId;
+    }
+
+    public String getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(String localId) {
+        this.localId = localId;
     }
 
     public String getFirstnameTh() {
