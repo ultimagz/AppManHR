@@ -40,9 +40,6 @@ public class AppContactData {
     @SerializedName("avatarbase64")
     String image = "image";
 
-
-
-
     String position = "position";
     String mobile = "0897654321";
     String email = "e@mail.com";
@@ -55,6 +52,28 @@ public class AppContactData {
     public static final int ID_LINE_TYPE = 3;
 
     private int type;
+
+    public AppContactData(String data, int type) {
+        this.type = type;
+        switch (type) {
+            case MOBILE_TYPE:
+                this.mobile = data;
+                break;
+            case WORK_PHONE_TYPE:
+                this.workPhone = data;
+                break;
+            case E_MAIL_TYPE:
+                this.email = data;
+                break;
+            case ID_LINE_TYPE:
+                this.lineID = data;
+                break;
+        }
+
+    }
+    public AppContactData() {
+
+    }
 
     public int getType() {
         return type;
@@ -287,4 +306,6 @@ public class AppContactData {
             }
         };
     }
+
+
 }
