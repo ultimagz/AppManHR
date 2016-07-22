@@ -7,7 +7,11 @@ import android.net.NetworkInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class Utils {
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
     public static final Gson GSON = new GsonBuilder().serializeNulls().disableHtmlEscaping().create();
     public static final Gson GSON_PRETTY = new GsonBuilder().serializeNulls().setPrettyPrinting().disableHtmlEscaping().create();
     public static final String URL = "http://hr.appmanproject.com/api/user/list";
