@@ -3,21 +3,26 @@ package com.appman.intern.models;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Base64;
 
-import com.appman.intern.AppManHR;
 import com.appman.intern.DatabaseHelper;
+import com.appman.intern.Utils;
 import com.appman.intern.enums.Language;
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import timber.log.Timber;
 
 @Parcel
 public class AppContactData extends RealmObject {
@@ -44,7 +49,7 @@ public class AppContactData extends RealmObject {
     @SerializedName("en_nickname")
     String nicknameEn = "nicknameEn";
 
-    @SerializedName("WORKPHONE")
+    @SerializedName("workphone")
     String workPhone = "021234567";
 
     @SerializedName("line")
@@ -56,11 +61,14 @@ public class AppContactData extends RealmObject {
     @SerializedName("avatarbase64")
     String image = "image";
 
-    String position = "POSITION";
+    String position = "position";
     String mobile = "0897654321";
     String email = "e@mail.com";
 
     boolean isHeader = false;
+    boolean exported = false;
+
+    LocalContactData localContactData;
 
     public AppContactData() {}
 
@@ -201,6 +209,22 @@ public class AppContactData extends RealmObject {
         isHeader = header;
     }
 
+    public boolean isExported() {
+        return exported;
+    }
+
+    public void setExported(boolean exported) {
+        this.exported = exported;
+    }
+
+    public LocalContactData getLocalContactData() {
+        return localContactData;
+    }
+
+    public void setLocalContactData(LocalContactData localContactData) {
+        this.localContactData = localContactData;
+    }
+
     public String getFullNameTh() {
         return TextUtils.join(" ", new String[]{ firstnameTh, lastnameTh });
     }
@@ -224,8 +248,8 @@ public class AppContactData extends RealmObject {
 
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withYieldAllowed(true)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, AppManHR.ACCOUNT_TYPE)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, AppManHR.ACCOUNT_NAME)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, Utils.ACCOUNT_TYPE)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, Utils.ACCOUNT_NAME)
                 .build());
 
         // GROUP
@@ -255,28 +279,160 @@ public class AppContactData extends RealmObject {
                 .build());
 
         // MOBILE
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+        if (!TextUtils.isEmpty(mobile))
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, mobile)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                    .build());
+
+        // WORK PHONE
+        if (!TextUtils.isEmpty(workPhone))
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, workPhone)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
+                    .build());
+
+        // EMAIL
+        if (!TextUtils.isEmpty(email))
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email)
+                    .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                    .build());
+
+        // LINE
+        if (!TextUtils.isEmpty(lineID))
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Im.LABEL, "LINE")
+                    .withValue(ContactsContract.CommonDataKinds.Im.TYPE, ContactsContract.CommonDataKinds.Im.TYPE_CUSTOM)
+                    .withValue(ContactsContract.CommonDataKinds.Im.PROTOCOL, ContactsContract.CommonDataKinds.Im.PROTOCOL_CUSTOM)
+                    .withValue(ContactsContract.CommonDataKinds.Im.CUSTOM_PROTOCOL, "LINE")
+                    .withValue(ContactsContract.CommonDataKinds.Im.DATA, lineID)
+                    .build());
+
+        // IMAGE
+        if (!TextUtils.isEmpty(image)) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] decodedBytes = Base64.decode(image, Base64.NO_WRAP);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] bitmapBytes = baos.toByteArray();
+
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, bitmapBytes)
+                    .build());
+        }
+
+        return ops;
+    }
+
+    public ArrayList<ContentProviderOperation> createUpdateContactProvider(Language lang, String groupId) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+        boolean isThai = lang == Language.TH;
+
+        // GROUP
+//        if (!TextUtils.isEmpty(groupId)) {
+//            ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+//                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+//                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
+//                    .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
+//                    .build());
+//        }
+
+        // NAME
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?", new String[]{ localContactData.getLocalId(), ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE })
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, isThai ? getFullNameTh() : getFullNameEn())
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, isThai ? lastnameTh : lastnameEn)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, isThai ? firstnameTh : firstnameEn)
+                .build());
+
+        // NICKNAME
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=? AND " + ContactsContract.CommonDataKinds.Nickname.TYPE + "=?", new String[]{ localContactData.getLocalId(), ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE, String.valueOf(ContactsContract.CommonDataKinds.Nickname.TYPE_CUSTOM) })
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Nickname.NAME, isThai ? nicknameTh : nicknameEn)
+                .withValue(ContactsContract.CommonDataKinds.Nickname.TYPE, ContactsContract.CommonDataKinds.Nickname.TYPE_CUSTOM)
+                .build());
+
+        // MOBILE
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=? AND " + ContactsContract.CommonDataKinds.Phone.TYPE + "=?", new String[]{ localContactData.getLocalId(), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE) })
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, mobile)
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
                 .build());
 
         // WORK PHONE
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=? AND " + ContactsContract.CommonDataKinds.Phone.TYPE + "=?", new String[]{ localContactData.getLocalId(), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(ContactsContract.CommonDataKinds.Phone.TYPE_WORK) })
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, workPhone)
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
                 .build());
 
         // EMAIL
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=? AND " + ContactsContract.CommonDataKinds.Email.TYPE + "=?", new String[]{ localContactData.getLocalId(), ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE, String.valueOf(ContactsContract.CommonDataKinds.Email.TYPE_WORK) })
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email)
                 .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
                 .build());
+
+        // LINE
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                        ContactsContract.Data.RAW_CONTACT_ID + "=? AND " +
+                        ContactsContract.Data.MIMETYPE + "=? AND " +
+                        ContactsContract.CommonDataKinds.Im.TYPE + "=? AND " +
+                        ContactsContract.CommonDataKinds.Im.PROTOCOL + "=? AND " +
+                        ContactsContract.CommonDataKinds.Im.CUSTOM_PROTOCOL + "=? AND " +
+                        ContactsContract.CommonDataKinds.Im.LABEL + "=?",
+                        new String[]{
+                                localContactData.getLocalId(),
+                                ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE,
+                                String.valueOf(ContactsContract.CommonDataKinds.Im.TYPE_CUSTOM),
+                                String.valueOf(ContactsContract.CommonDataKinds.Im.PROTOCOL_CUSTOM),
+                                "LINE", "LINE" })
+                .withValue(ContactsContract.CommonDataKinds.Im.TYPE, ContactsContract.CommonDataKinds.Im.TYPE_CUSTOM)
+                .withValue(ContactsContract.CommonDataKinds.Im.PROTOCOL, ContactsContract.CommonDataKinds.Im.PROTOCOL_CUSTOM)
+                .withValue(ContactsContract.CommonDataKinds.Im.CUSTOM_PROTOCOL, "LINE")
+                .withValue(ContactsContract.CommonDataKinds.Im.LABEL, "LINE")
+                .withValue(ContactsContract.CommonDataKinds.Im.DATA, lineID)
+                .build());
+
+        // IMAGE
+        if (!TextUtils.isEmpty(image)) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] decodedBytes = Base64.decode(image, Base64.NO_WRAP);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] bitmapBytes = baos.toByteArray();
+
+            Timber.w("Image %s size %d", getFullNameEn(), bitmapBytes.length);
+
+            ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                    .withSelection(
+                            ContactsContract.Data.RAW_CONTACT_ID + "=? AND " +
+                            ContactsContract.Data.MIMETYPE + "=?",
+                            new String[]{
+                                    localContactData.getLocalId(),
+                                    ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE})
+                    .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+                    .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, bitmapBytes)
+                    .build());
+        }
 
         return ops;
     }
@@ -319,7 +475,7 @@ public class AppContactData extends RealmObject {
 
     @Override
     public String toString() {
-        return AppManHR.GSON_PRETTY.toJson(this);
+        return Utils.GSON_PRETTY.toJson(this);
     }
 
     public static Comparator<AppContactData> getComparator(Language lang) {
