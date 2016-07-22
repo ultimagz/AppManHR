@@ -9,16 +9,20 @@ import android.widget.TextView;
 import com.appman.intern.R;
 import com.appman.intern.models.AppContactData;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by sodajune on 7/21/16.
- */
 public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<AppContactData> mList;
-    public ContactAdapter(List<AppContactData> list) {
 
-        this.mList = list;
+    private List<AppContactData> mList;
+
+    public ContactAdapter(List<AppContactData> list) {
+        setList(list);
+    }
+
+    public void setList(List<AppContactData> list) {
+        mList = new ArrayList<>(list);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -60,7 +64,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     break;
             }
         }
-
     }
 
     @Override
