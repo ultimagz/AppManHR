@@ -58,7 +58,6 @@ public class ContactDetailFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mBinding.setContactData(mContactData);
-        update(mContactData);
 
         mBinding.contactJob.setText(mContactData.getPosition());
         mBinding.backBtn.setOnClickListener(new View.OnClickListener() {
@@ -67,15 +66,18 @@ public class ContactDetailFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
+
+        mAdapter = new ContactAdapter(mList);
+        mBinding.recyclerView.setAdapter(mAdapter);
+        mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        updateDetail();
     }
 
-    private void update(AppContactData mContactData) {
+    private void updateDetail() {
         mList.add(new AppContactData(mContactData.getMobile(),AppContactData.MOBILE_TYPE));
         mList.add(new AppContactData(mContactData.getWorkPhone(),AppContactData.WORK_PHONE_TYPE));
         mList.add(new AppContactData(mContactData.getEmail(),AppContactData.E_MAIL_TYPE));
         mList.add(new AppContactData(mContactData.getLineID(),AppContactData.ID_LINE_TYPE));
-        mAdapter = new ContactAdapter(mList);
-        mBinding.recyclerView.setAdapter(mAdapter);
-        mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mAdapter.setList(mList);
     }
 }
