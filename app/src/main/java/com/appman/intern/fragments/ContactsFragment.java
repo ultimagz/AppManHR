@@ -1,13 +1,11 @@
 package com.appman.intern.fragments;
 
+import android.app.ProgressDialog;
 import android.databinding.DataBindingUtil;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,17 +17,19 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.appman.intern.AppManHR;
 import com.appman.intern.AppManHRPreferences;
-import com.appman.intern.ContactHelper;
 import com.appman.intern.DatabaseHelper;
 import com.appman.intern.R;
+import com.appman.intern.Utils;
 import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.ContactFragmentBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
+import com.appman.intern.models.LocalContactData;
+import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -43,18 +43,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ContactsFragment extends Fragment implements View.OnClickListener {
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import io.realm.Sort;
+import timber.log.Timber;
 
-    private final String[] PROJECTION = {
-            ContactsContract.Contacts._ID, ContactsContract.Contacts.IN_VISIBLE_GROUP,
-            ContactsContract.Contacts.IS_USER_PROFILE, ContactsContract.Contacts.PHOTO_URI, ContactsContract.Contacts.PHOTO_ID,
-            ContactsContract.Contacts.PHOTO_FILE_ID, ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
-            ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.HAS_PHONE_NUMBER
-    };
+public class ContactsFragment extends Fragment implements View.OnClickListener, Callback {
 
     ContactFragmentBinding mBinding;
     ContactListAdapter mAdapter;
     DatabaseHelper mHelper;
+    ProgressDialog mProgressDialog;
 
     public static ContactsFragment newInstance(Bundle args) {
         ContactsFragment fragment = new ContactsFragment();
@@ -67,6 +67,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.contact_fragment, container, false);
         mHelper = new DatabaseHelper(getActivity());
+        mProgressDialog = new ProgressDialog(getActivity());
         return mBinding.getRoot();
     }
 
@@ -86,11 +87,24 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-//        getContactListFromServer();
-//        getContactListFromDatabase();
-        getContactsListFromFile();
-        String groupId = ContactHelper.getContactGroupId(getContext());
-        ContactHelper.retrieveContacts(getContext(), PROJECTION, groupId);
+        initContactList();
+//        getContactsListFromFile();
+    }
+
+    private void initContactList() {
+        if (Utils.isNetworkConnected(getContext())) {
+            getContactListFromServer();
+        } else {
+            getContactListFromDatabase();
+        }
+    }
+
+    private void getContactListFromDatabase() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmQuery<AppContactData> query = realm.where(AppContactData.class);
+        RealmResults<AppContactData> results = query.findAllSorted("firstnameEn", Sort.ASCENDING);
+        mAdapter = new ContactListAdapter(getActivity(), results);
+        mBinding.contactList.setAdapter(mAdapter);
     }
 
     private void getContactsListFromFile() {
@@ -162,52 +176,80 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         mBinding.contactList.setAdapter(mAdapter);
     }
 
-    public void getContactListFromServer() {
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... voids) {
-                OkHttpClient okHttpClient = new OkHttpClient();
-                Request.Builder builder = new Request.Builder();
-                Request request = builder.url(AppManHR.URL).build();
+    private void getContactListFromServer() {
+        mBinding.swipeContainer.setRefreshing(false);
+        mProgressDialog.setMessage("Sync contacts");
+        mProgressDialog.show();
 
-                try {
-                    Response response = okHttpClient.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        return response.body().string();
-                    } else {
-                        return "Not Success - code : " + response.code();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return "Error - " + e.getMessage();
-                }
-            }
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request.Builder builder = new Request.Builder();
+        Request request = builder.url(Utils.URL).build();
 
-            @Override
-            protected void onPostExecute(String result) {
-                updateAdapter(result);
-                saveDatabase(result);
-                mBinding.swipeContainer.setRefreshing(false);
-                Log.e("re", result);
-            }
-        }.execute();
+        okHttpClient.networkInterceptors().add(new StethoInterceptor());
+        okHttpClient
+                .newCall(request)
+                .enqueue(this);
     }
 
-
-    public void saveDatabase(String jsonString) {
+    private void saveDatabase(String jsonString) {
         Type jsonType = new TypeToken<ArrayList<AppContactData>>() {}.getType();
         List<AppContactData> contactList = new Gson().fromJson(jsonString, jsonType);
         Collections.sort(contactList, AppContactData.getComparator(Language.EN));
 
         AppContactData dbContactData;
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
         for (AppContactData contactData : contactList) {
-            dbContactData = mHelper.getContactById(contactData.getId());
+
+            RealmQuery<AppContactData> query = realm.where(AppContactData.class);
+            query.equalTo("id", contactData.getId());
+            dbContactData = query.findFirst();
+
             if (dbContactData == null) {
-                mHelper.insertContactData(contactData);
+                contactData.setLocalContactData(new LocalContactData(contactData));
+                realm.insertOrUpdate(contactData);
             } else if (!dbContactData.getUpdateTime().equals(contactData.getUpdateTime())) {
-                mHelper.updateContactData(contactData);
+                contactData.setLocalContactData(dbContactData.getLocalContactData());
+                contactData.setExported(false);
+                realm.insertOrUpdate(contactData);
             }
         }
+
+        realm.commitTransaction();
+    }
+
+    @Override
+    public void onFailure(final Request request, IOException e) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+                showRequestFailDialog(request.toString());
+            }
+        });
+    }
+
+    @Override
+    public void onResponse(final Response response) throws IOException {
+        final String result = response.body().string();
+        final boolean success = response.isSuccessful();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+                if (success) {
+                    updateAdapter(result);
+                    saveDatabase(result);
+                } else {
+                    showRequestFailDialog(response.message());
+                }
+            }
+        });
+    }
+
+    private void showRequestFailDialog(String message) {
+        Timber.e("Request fail. %s", message);
+        //TODO
     }
 }
 
