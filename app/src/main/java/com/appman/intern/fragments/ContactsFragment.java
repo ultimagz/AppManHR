@@ -75,7 +75,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         displayIndex();
-
+        mBinding.swipeContainer.setColorSchemeResources(R.color.red,R.color.blue,R.color.green);
         mBinding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
