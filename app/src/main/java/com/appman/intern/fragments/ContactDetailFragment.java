@@ -5,25 +5,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.appman.intern.R;
 import com.appman.intern.adapters.ContactAdapter;
-import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.ContactDetailFragmentBinding;
-import com.appman.intern.enums.Language;
+import com.appman.intern.enums.ContactDetailType;
 import com.appman.intern.models.AppContactData;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.appman.intern.models.ContactDetailRowModel;
 
 import org.parceler.Parcels;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ContactDetailFragment extends Fragment {
@@ -31,7 +26,7 @@ public class ContactDetailFragment extends Fragment {
     private AppContactData mContactData;
     ContactDetailFragmentBinding mBinding;
     ContactAdapter mAdapter;
-    List<AppContactData> mList = new ArrayList<>();
+    List<ContactDetailRowModel> mList = new ArrayList<>();
 
     public static ContactDetailFragment newInstance(AppContactData contactData) {
         ContactDetailFragment fragment = new ContactDetailFragment();
@@ -74,10 +69,10 @@ public class ContactDetailFragment extends Fragment {
     }
 
     private void updateDetail() {
-        mList.add(new AppContactData(mContactData.getMobile(),AppContactData.MOBILE_TYPE));
-        mList.add(new AppContactData(mContactData.getWorkPhone(),AppContactData.WORK_PHONE_TYPE));
-        mList.add(new AppContactData(mContactData.getEmail(),AppContactData.E_MAIL_TYPE));
-        mList.add(new AppContactData(mContactData.getLineID(),AppContactData.ID_LINE_TYPE));
+        mList.add(new ContactDetailRowModel(mContactData.getMobile(), ContactDetailType.MOBILE));
+        mList.add(new ContactDetailRowModel(mContactData.getWorkPhone(), ContactDetailType.WORK_PHONE));
+        mList.add(new ContactDetailRowModel(mContactData.getEmail(), ContactDetailType.E_MAIL));
+        mList.add(new ContactDetailRowModel(mContactData.getLineID(), ContactDetailType.LINE));
         mAdapter.setList(mList);
     }
 }
