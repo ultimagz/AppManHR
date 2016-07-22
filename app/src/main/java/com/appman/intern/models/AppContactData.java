@@ -267,6 +267,14 @@ public class AppContactData extends RealmObject {
         return TextUtils.join(" ", new String[]{ firstnameEn, lastnameEn });
     }
 
+    public String getAllNameTh() {
+        return String.format("%s %s (%s)", firstnameTh, lastnameTh, nicknameTh);
+    }
+
+    public String getAllNameEn() {
+        return String.format("%s %s (%s)", firstnameEn, lastnameEn, nicknameEn);
+    }
+
     public String getFirstCharTh() {
         return firstnameTh.substring(0, 1).toUpperCase();
     }
