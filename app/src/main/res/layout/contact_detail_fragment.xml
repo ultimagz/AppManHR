@@ -1,7 +1,8 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.ContactDetailFragment">
+    tools:context=".fragments.ContactDetailFragment"
+    tools:ignore="ContentDescription">
 
     <data>
         <variable name="contactData" type="com.appman.intern.models.AppContactData"/>
@@ -78,8 +79,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/contact_header"
-            android:background="?attr/selectableItemBackground"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"/>
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/shadow_bottom_view_contact"
+            android:overScrollMode="never"
+            android:scrollbars="none"/>
     </RelativeLayout>
 </layout>
