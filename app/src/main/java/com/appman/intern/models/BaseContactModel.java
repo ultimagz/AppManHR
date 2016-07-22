@@ -1,6 +1,5 @@
 package com.appman.intern.models;
 
-import com.appman.intern.AppManHR;
 import com.appman.intern.Utils;
 
 import org.parceler.Parcel;
