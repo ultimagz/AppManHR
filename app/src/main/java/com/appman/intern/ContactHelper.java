@@ -9,39 +9,64 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.EmailData;
+import com.appman.intern.models.ImData;
 import com.appman.intern.models.PhoneData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class ContactHelper {
 
-    public void addNewContact(Context context, View view) {
-        AppContactData newContact = new AppContactData();
+    public static String addNewContact(Context context, AppContactData newContact, Language lang) {
         try {
             String groupId = ContactHelper.getContactGroupId(context);
-            Language lang = AppManHRPreferences.getCurrentLanguage(context);
             ContentProviderResult[] results =
                     context.getContentResolver().applyBatch(
                             ContactsContract.AUTHORITY,
                             newContact.createNewContactProvider(lang, groupId));
 
-            Toast.makeText(context, "Insert contact success", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Insert contact success", Toast.LENGTH_SHORT).show();
+//            for (ContentProviderResult result : results) {
+//                Log.w("insert id", String.valueOf(result.uri));
+//            }
 
-            for (ContentProviderResult result : results) {
-                Log.w("insert id", String.valueOf(result.uri));
-            }
+            return results[0].uri.getLastPathSegment();
 
         } catch (RemoteException | OperationApplicationException e) {
             Log.e("Insert contact failed", String.valueOf(newContact), e);
-            Toast.makeText(context, "Insert contact failed", Toast.LENGTH_SHORT).show();
+            return null;
+//            Toast.makeText(context, "Insert contact failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static String updateContact(Context context, AppContactData updateContact, Language lang) {
+        try {
+            String groupId = ContactHelper.getContactGroupId(context);
+            ContentProviderResult[] results =
+                    context.getContentResolver().applyBatch(
+                            ContactsContract.AUTHORITY,
+                            updateContact.createUpdateContactProvider(lang, groupId));
+
+
+//            Toast.makeText(context, "Insert contact success", Toast.LENGTH_SHORT).show();
+//            for (ContentProviderResult result : results) {
+//                Log.w("insert id", String.valueOf(result.uri));
+//            }
+            Timber.w("update result %s", Arrays.toString(results));
+            return Arrays.toString(results);
+
+        } catch (RemoteException | OperationApplicationException e) {
+            Timber.e(e, "Insert contact failed %s", String.valueOf(updateContact));
+            return null;
+//            Toast.makeText(context, "Insert contact failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -54,7 +79,7 @@ public class ContactHelper {
 
         String selection =
                 ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '1' AND " +
-                ContactsContract.Contacts._ID + " IN (" + TextUtils.join(", ", contactIdList) + ")";
+                        ContactsContract.Contacts._ID + " IN (" + TextUtils.join(", ", contactIdList) + ")";
         String[] args = {};
 
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, projection, selection, args, null);
@@ -66,8 +91,9 @@ public class ContactHelper {
             ContactData contactData = new ContactData(cursor);
 
             String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-            contactData.setEmailList(retrieveEmailList(context, contactData.getId()));
-            contactData.setRawContactId(retrieveRawContactId(context, contactData.getId()));
+            contactData.setRawContactId(retrieveRawContactId(context, id));
+            contactData.setImList(retrieveImList(context, id));
+            contactData.setEmailList(retrieveEmailList(context, id));
 
             if (contactData.isHasPhoneNumber()) {
                 contactData.setPhoneList(retrievePhoneList(context, id));
@@ -78,7 +104,7 @@ public class ContactHelper {
 
         cursor.close();
 
-        Log.w("Contacts", String.valueOf(contactDataList));
+        Timber.w("Contacts %s", String.valueOf(contactDataList));
         return contactDataList;
     }
 
@@ -104,7 +130,7 @@ public class ContactHelper {
         }
 
         cursor.close();
-        Log.w("ContactIds in Group[" + groupId + "]", String.valueOf(contactIdList));
+        Timber.w("ContactIds in Group[%s] %s", groupId, String.valueOf(contactIdList));
         return contactIdList;
     }
 
@@ -139,7 +165,7 @@ public class ContactHelper {
 
         cursor.close();
 
-        Log.w("Email List", String.valueOf(emailList));
+        Timber.w("Email List %s", String.valueOf(emailList));
         return emailList;
     }
 
@@ -159,8 +185,28 @@ public class ContactHelper {
 
         cursor.close();
 
-        Log.w("Phone Model", String.valueOf(phoneList));
+        Timber.w("Phone Model %s", String.valueOf(phoneList));
         return phoneList;
+    }
+
+    private static List<ImData> retrieveImList(Context context, String contactId) {
+        List<ImData> imList = new ArrayList<>();
+        Cursor cursor = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ? AND " + ContactsContract.Data.MIMETYPE + "=?",
+                new String[]{ contactId, ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE }, null);
+//        Log.w("phone column(s)", Arrays.toString(cursor.getColumnNames()));
+
+        if (cursor == null)
+            return imList;
+
+        while (cursor.moveToNext()) {
+            imList.add(new ImData(cursor));
+        }
+
+        cursor.close();
+
+        Timber.w("IM Model %s", String.valueOf(imList));
+        return imList;
     }
 
     public static String getContactGroupId(Context context) {
@@ -179,9 +225,9 @@ public class ContactHelper {
             try {
                 ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, opsGroup);
                 groupId = results[0].uri.getLastPathSegment();
-                Log.w("create group result %s", groupId);
+                Timber.w("create group result %s", groupId);
             } catch (RemoteException | OperationApplicationException e) {
-                Log.e("create group failed", Utils.GROUP_NAME, e);
+                Timber.e(e, "create group failed %s", Utils.GROUP_NAME);
             }
 
             return groupId;
