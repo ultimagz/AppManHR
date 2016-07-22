@@ -15,6 +15,7 @@ public class ContactData extends BaseContactModel {
     boolean inVisibleGroup, isUserProfile, hasPhoneNumber, isHeader;
     List<PhoneData> phoneList = new ArrayList<>();
     List<EmailData> emailList = new ArrayList<>();
+    List<ImData> imList = new ArrayList<>();
 
     public ContactData() {}
 
@@ -133,5 +134,13 @@ public class ContactData extends BaseContactModel {
 
     public void setEmailList(List<EmailData> emailList) {
         this.emailList = new ArrayList<>(emailList);
+    }
+
+    public List<ImData> getImList() {
+        return new ArrayList<>(imList);
+    }
+
+    public void setImList(List<ImData> imList) {
+        this.imList = new ArrayList<>(imList);
     }
 }
