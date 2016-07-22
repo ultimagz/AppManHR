@@ -14,7 +14,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="64dp"
             android:gravity="center"
-            android:text="Which language of contacts\ndo you want to sync ?"
+            android:text="Which language of contacts\ndo you want to export ?"
             android:textColor="@color/colorBlack"
             android:textSize="24sp" />
 
@@ -58,11 +58,11 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="64dp"
-            android:text="Last sync : 10/07/2016 09:35"
+            android:text="Last export : 10/07/2016 09:35"
             android:textSize="18sp"/>
 
         <Button
-            android:id="@+id/sync_btn"
+            android:id="@+id/export_btn"
             style="?attr/buttonBarStyle"
             android:layout_width="144dp"
             android:layout_height="64dp"
@@ -70,7 +70,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
             android:background="@drawable/black_btn_selector"
-            android:text="Sync"
+            android:text="Export"
             android:textColor="@android:color/white"
             android:textSize="24sp"/>
 
