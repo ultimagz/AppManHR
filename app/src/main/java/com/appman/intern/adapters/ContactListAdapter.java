@@ -33,8 +33,12 @@ import java.util.Map;
 
 import timber.log.Timber;
 
-public class ContactListAdapter extends ArrayAdapter<ContactData> {
-    List<Integer> PHONE_TYPE_LIST = new ArrayList<>(
+public class ContactListAdapter extends ArrayAdapter<AppContactData> {
+    public static final List<String> SIDE_INDEX_EN = new ArrayList<>(Arrays.asList(new String[]{
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+            "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}));
+
+    final List<Integer> PHONE_TYPE_LIST = new ArrayList<>(
             Arrays.asList(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
                     ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
                     ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
@@ -51,16 +55,23 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         super(activity, 0);
         mActivity = activity;
         mInflater = LayoutInflater.from(activity);
+        setList(contactList);
+    }
+
+    public void setList(List<AppContactData> contactList) {
         mOriginalList = new ArrayList<>(contactList);
         mFilterList = createSectionList(contactList);
         createIndexList(mFilterList);
+        notifyDataSetChanged();
     }
 
     public int getCount() {
         return mFilterList.size();
     }
 
-    public ContactData getItem(int position) {
+    public AppContactData getItem(int position) {
+        if (position >= 0 && position < mFilterList.size())
+            return mFilterList.get(position);
         return null;
     }
 
@@ -114,7 +125,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .add(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos), "ContactDetailFragment")
+                .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos), "ContactDetailFragment")
                 .addToBackStack("ContactDetailFragment")
                 .commit();
     }
@@ -224,9 +235,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
 
     private void createIndexList(List<AppContactData> contactList) {
         mapIndex.clear();
-        String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-
-        for (String anAlphabet : alphabet) {
+        for (String anAlphabet : SIDE_INDEX_EN) {
             for (int j = 0; j < contactList.size(); j++) {
                 AppContactData data = contactList.get(j);
                 String value = data.getFirstnameEn();
