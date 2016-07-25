@@ -17,13 +17,38 @@ import com.appman.intern.models.EmailData;
 import com.appman.intern.models.ImData;
 import com.appman.intern.models.PhoneData;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import timber.log.Timber;
 
 public class ContactHelper {
+
+    public static RealmResults<AppContactData> getContactListFromDatabase(Context context) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmQuery<AppContactData> query = realm.where(AppContactData.class);
+        Language lang = AppManHRPreferences.getCurrentLanguage(context);
+        String sortBy = lang == Language.TH ? "firstnameTh" : "firstnameEn";
+        return query.findAllSorted(sortBy, Sort.ASCENDING);
+    }
+
+    public static String getContactsJsonFromFile(Context context) {
+        try {
+            InputStream json = context.getAssets().open("sample_contact.json");
+            return IOUtils.toString(json, "UTF-8");
+        } catch (IOException e) {
+            return("[]");
+        }
+    }
 
     public static String addNewContact(Context context, AppContactData newContact, Language lang) {
         try {
@@ -49,11 +74,10 @@ public class ContactHelper {
 
     public static String updateContact(Context context, AppContactData updateContact, Language lang) {
         try {
-            String groupId = ContactHelper.getContactGroupId(context);
             ContentProviderResult[] results =
                     context.getContentResolver().applyBatch(
                             ContactsContract.AUTHORITY,
-                            updateContact.createUpdateContactProvider(lang, groupId));
+                            updateContact.createUpdateContactProvider(lang));
 
 
 //            Toast.makeText(context, "Insert contact success", Toast.LENGTH_SHORT).show();
@@ -79,7 +103,7 @@ public class ContactHelper {
 
         String selection =
                 ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '1' AND " +
-                        ContactsContract.Contacts._ID + " IN (" + TextUtils.join(", ", contactIdList) + ")";
+                ContactsContract.Contacts._ID + " IN (" + TextUtils.join(", ", contactIdList) + ")";
         String[] args = {};
 
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, projection, selection, args, null);
