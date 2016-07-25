@@ -14,7 +14,8 @@
             android:layout_alignParentRight="true"
             android:background="@android:color/white"
             android:gravity="center_horizontal"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            android:padding="8dp"/>
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_container"

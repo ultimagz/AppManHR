@@ -8,5 +8,5 @@
     android:background="?attr/selectableItemBackground"
     android:gravity="center"
     android:textColor="@color/side_index_text_selector"
-    android:textSize="14sp"
+    android:textSize="16sp"
     tools:text="A"/>
