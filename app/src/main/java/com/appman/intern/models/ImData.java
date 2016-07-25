@@ -24,4 +24,24 @@ public class ImData extends BaseContactModel {
         label = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Im.LABEL));
         data = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Im.DATA));
     }
+
+    public int getImType() {
+        return imType;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getCustomProtocol() {
+        return customProtocol;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getData() {
+        return data;
+    }
 }
