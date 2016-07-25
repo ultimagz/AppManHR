@@ -9,6 +9,8 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 @Parcel
 public class ContactData extends BaseContactModel {
     String displayName, photoId, photoUri, photoFileId, thumbnailUri, value, query;
@@ -142,5 +144,62 @@ public class ContactData extends BaseContactModel {
 
     public void setImList(List<ImData> imList) {
         this.imList = new ArrayList<>(imList);
+    }
+
+    public boolean compareValues(LocalContactData dbContactData) {
+        boolean equal;
+        equal = compareId(dbContactData.getLocalId());
+        Timber.w("equal %s", String.valueOf(equal));
+        equal &= compareName(dbContactData.getFullNameEn()) || compareName(dbContactData.getFullNameTh());
+        Timber.w("equal %s", String.valueOf(equal));
+        equal &= comparePhone(dbContactData.getMobile(), ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+        Timber.w("equal %s", String.valueOf(equal));
+        equal &= comparePhone(dbContactData.getWorkPhone(), ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
+        Timber.w("equal %s", String.valueOf(equal));
+        equal &= compareEmail(dbContactData.getEmail());
+        Timber.w("equal %s", String.valueOf(equal));
+        equal &= compareIm(dbContactData.getLineID());
+        Timber.w("equal %s", String.valueOf(equal));
+        return equal;
+    }
+
+    private boolean compareId(String contactId) {
+        Timber.w("compareId %s %s", rawContactId, contactId);
+        return TextUtils.equals(rawContactId, contactId);
+    }
+
+    private boolean compareName(String name) {
+        Timber.w("compareName %s %s", displayName, name);
+        return TextUtils.equals(displayName, name);
+    }
+
+    private boolean comparePhone(String phoneNumber, int type) {
+        Timber.w("comparePhone %s %s %d", phoneList.toString(), phoneNumber, type);
+        boolean equal = false;
+        for (PhoneData phoneData : phoneList) {
+            equal |= (TextUtils.equals(phoneData.getPhoneNo(), phoneNumber) && phoneData.getPhoneType() == type);
+        }
+        return equal;
+    }
+
+    private boolean compareEmail(String email) {
+        Timber.w("compareEmail %s %s", emailList.toString(), email);
+        boolean equal = false;
+        for (EmailData emailData : emailList) {
+            equal |= (TextUtils.equals(emailData.getEmailAddress(), email) && emailData.getEmailType() == ContactsContract.CommonDataKinds.Email.TYPE_WORK);
+        }
+        return equal;
+    }
+
+    private boolean compareIm(String im) {
+        Timber.w("compareIm %s %s", imList.toString(), im);
+        boolean equal = false;
+        for (ImData imData : imList) {
+            equal |= (TextUtils.equals(imData.getData(), im) &&
+                    TextUtils.equals(imData.getLabel(), "LINE") &&
+                    TextUtils.equals(imData.getCustomProtocol(), "LINE") &&
+                    imData.getImType() == ContactsContract.CommonDataKinds.Im.TYPE_CUSTOM);
+        }
+        return equal;
     }
 }
