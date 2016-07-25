@@ -198,10 +198,12 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
             TextView child;
             boolean existData, inSelectedLength;
             for (int idx = 0; idx < childCounts; idx++) {
-                inSelectedLength = idx >= firstSideIndex && idx <= lastSideIndex;
                 child = (TextView) mBinding.sideIndex.getChildAt(idx);
                 existData = mAdapter.getMapIndex(child.getText().toString()) != -1;
-                child.setBackgroundColor(inSelectedLength ? Color.BLACK : Color.WHITE);
+                inSelectedLength = idx >= firstSideIndex && idx <= lastSideIndex;
+
+                child.setBackgroundColor(inSelectedLength ? Color.LTGRAY : Color.WHITE);
+//                child.setText(existData ? child.getText() : "");
                 child.setSelected(existData && inSelectedLength);
                 child.setEnabled(existData);
                 child.setClickable(existData);
