@@ -3,31 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragments.ContactsFragment">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/side_index"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"/>
+
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/side_index"
+            android:layout_toStartOf="@id/side_index">
             <ListView
                 android:id="@+id/contact_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@android:color/white"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="0dp"
                 android:scrollbars="none" />
         </android.support.v4.widget.SwipeRefreshLayout>
-
-        <LinearLayout
-            android:id="@+id/side_index"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal"
-            android:orientation="vertical" />
-    </FrameLayout>
-
+    </RelativeLayout>
 </layout>

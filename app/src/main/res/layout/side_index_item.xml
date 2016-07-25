@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/side_list_item"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:background="?attr/selectableItemBackground"
     android:gravity="center"
-    android:padding="4dp"
-    android:textSize="14sp" />
+    android:textColor="@color/side_index_text_selector"
+    android:textSize="14sp"
+    tools:text="A"/>
