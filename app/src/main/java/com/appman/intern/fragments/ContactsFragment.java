@@ -1,23 +1,28 @@
 package com.appman.intern.fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHRPreferences;
+import com.appman.intern.ContactHelper;
 import com.appman.intern.DatabaseHelper;
 import com.appman.intern.R;
 import com.appman.intern.Utils;
@@ -34,10 +39,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +48,6 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import io.realm.Sort;
 import timber.log.Timber;
 
 public class ContactsFragment extends Fragment implements View.OnClickListener, Callback {
@@ -74,54 +75,52 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        displayIndex();
-        mBinding.swipeContainer.setColorSchemeResources(R.color.red,R.color.blue,R.color.green);
+
+        mAdapter = new ContactListAdapter(getActivity(), new ArrayList<AppContactData>());
+        mBinding.contactList.setAdapter(mAdapter);
+        mBinding.contactList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int scrollState) {}
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                setSideIndexHighlight();
+            }
+        });
+
+        mBinding.swipeContainer.setColorSchemeResources(R.color.red, R.color.blue, R.color.green);
         mBinding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 getContactListFromServer();
             }
         });
+
+        displayIndex();
+        initContactList();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        initContactList();
-//        getContactsListFromFile();
     }
 
     private void initContactList() {
+        Timber.w("initContactList");
         if (Utils.isNetworkConnected(getContext())) {
             getContactListFromServer();
         } else {
-            getContactListFromDatabase();
-        }
-    }
-
-    private void getContactListFromDatabase() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuery<AppContactData> query = realm.where(AppContactData.class);
-        RealmResults<AppContactData> results = query.findAllSorted("firstnameEn", Sort.ASCENDING);
-        mAdapter = new ContactListAdapter(getActivity(), results);
-        mBinding.contactList.setAdapter(mAdapter);
-    }
-
-    private void getContactsListFromFile() {
-        try {
-            InputStream json = getActivity().getAssets().open("sample_contact.json");
-            String jsonString = IOUtils.toString(json, "UTF-8");
-            updateAdapter(jsonString);
-        } catch (IOException e) {
-            updateAdapter("[]");
+            RealmResults<AppContactData> contactList = ContactHelper.getContactListFromDatabase(getContext());
+            mAdapter.setList(contactList);
         }
     }
 
     private void displayIndex() {
+        Context context = getContext();
         TextView textView;
         String[] alphabets = getResources().getStringArray(R.array.alphabet);
         for (String alphabet : alphabets) {
-            textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.side_index_item, null);
+            textView = (TextView) LayoutInflater.from(context).inflate(R.layout.side_index_item, null);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
             textView.setLayoutParams(params);
             textView.setText(alphabet);
@@ -172,8 +171,42 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         Type jsonType = new TypeToken<ArrayList<AppContactData>>() {}.getType();
         List<AppContactData> contactList = new Gson().fromJson(jsonString, jsonType);
         Collections.sort(contactList, AppContactData.getComparator(Language.EN));
-        mAdapter = new ContactListAdapter(getActivity(), contactList);
-        mBinding.contactList.setAdapter(mAdapter);
+        mAdapter.setList(contactList);
+        mBinding.contactList.post(new Runnable() {
+            @Override
+            public void run() {
+                setSideIndexHighlight();
+            }
+        });
+    }
+
+    private void setSideIndexHighlight() {
+        int firstVisiblePosition = mBinding.contactList.getFirstVisiblePosition();
+        int lastVisiblePosition = mBinding.contactList.getLastVisiblePosition() - 1;
+
+        AppContactData firstItem = mAdapter.getItem(firstVisiblePosition);
+        AppContactData lastItem = mAdapter.getItem(lastVisiblePosition);
+
+        if (firstItem != null && lastItem != null) {
+            int childCounts = mBinding.sideIndex.getChildCount();
+
+            String firstChar = firstItem.getFirstCharEn();
+            String lastChar = lastItem.getFirstCharEn();
+            int firstSideIndex = ContactListAdapter.SIDE_INDEX_EN.indexOf(firstChar);
+            int lastSideIndex = ContactListAdapter.SIDE_INDEX_EN.indexOf(lastChar);
+
+            TextView child;
+            boolean existData, inSelectedLength;
+            for (int idx = 0; idx < childCounts; idx++) {
+                inSelectedLength = idx >= firstSideIndex && idx <= lastSideIndex;
+                child = (TextView) mBinding.sideIndex.getChildAt(idx);
+                existData = mAdapter.getMapIndex(child.getText().toString()) != -1;
+                child.setBackgroundColor(inSelectedLength ? Color.BLACK : Color.WHITE);
+                child.setSelected(existData && inSelectedLength);
+                child.setEnabled(existData);
+                child.setClickable(existData);
+            }
+        }
     }
 
     private void getContactListFromServer() {
@@ -248,8 +281,12 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void showRequestFailDialog(String message) {
-        Timber.e("Request fail. %s", message);
-        //TODO
+        new AlertDialog.Builder(getContext())
+                .setNegativeButton(R.string.button_ok, null)
+                .setCancelable(false)
+                .setMessage(message)
+                .setTitle("Request fail.")
+                .show();
     }
 }
 
