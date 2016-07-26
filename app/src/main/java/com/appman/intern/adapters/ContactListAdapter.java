@@ -7,6 +7,7 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -138,6 +139,7 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
+                .setCustomAnimations(R.anim.slide_up,R.anim.slide_down,R.anim.slide_up,R.anim.slide_down)
                 .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos, mLanguage), "ContactDetailFragment")
                 .addToBackStack("ContactDetailFragment")
                 .commit();
