@@ -33,6 +33,7 @@ android {
 
     defaultConfig {
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
         applicationId "com.appman.intern"
         minSdkVersion 15
         targetSdkVersion 24
