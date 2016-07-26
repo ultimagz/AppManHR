@@ -103,12 +103,7 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
         TextView title = (TextView) view.findViewById(R.id.contact_name);
         TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
 
-        if (TextUtils.isEmpty(dataAtPos.getNicknameEn())) {
-            title.setText(mLanguage == Language.TH ? dataAtPos.getFullNameTh() : dataAtPos.getFullNameEn());
-        } else {
-            title.setText(String.format("%s (%s)", dataAtPos.getFullNameEn(), dataAtPos.getNicknameEn()));
-        }
-
+        title.setText(mLanguage == Language.TH ? dataAtPos.getAllNameTh() : dataAtPos.getAllNameEn());
         phoneNo.setText(dataAtPos.getMobile());
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +120,7 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos), "ContactDetailFragment")
+                .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos, mLanguage), "ContactDetailFragment")
                 .addToBackStack("ContactDetailFragment")
                 .commit();
     }
