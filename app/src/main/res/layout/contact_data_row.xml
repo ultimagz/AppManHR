@@ -20,7 +20,7 @@
         tools:text="Name" />
 
     <TextView
-        android:id="@+id/contact_phone_no"
+        android:id="@+id/contact_job"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"

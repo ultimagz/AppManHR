@@ -101,7 +101,7 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
     private View createContactView(final AppContactData dataAtPos, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.contact_data_row, parent, false);
         TextView title = (TextView) view.findViewById(R.id.contact_name);
-        TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
+        TextView phoneNo = (TextView) view.findViewById(R.id.contact_job);
 
         if (TextUtils.isEmpty(dataAtPos.getNicknameEn())) {
             title.setText(mLanguage == Language.TH ? dataAtPos.getFullNameTh() : dataAtPos.getFullNameEn());
@@ -109,7 +109,7 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
             title.setText(String.format("%s (%s)", dataAtPos.getFullNameEn(), dataAtPos.getNicknameEn()));
         }
 
-        phoneNo.setText(dataAtPos.getMobile());
+        phoneNo.setText(dataAtPos.getPosition());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

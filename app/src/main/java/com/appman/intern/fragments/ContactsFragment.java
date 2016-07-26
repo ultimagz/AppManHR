@@ -224,6 +224,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         okHttpClient
                 .newCall(request)
                 .enqueue(this);
+
     }
 
     private void saveDatabase(String jsonString) {
