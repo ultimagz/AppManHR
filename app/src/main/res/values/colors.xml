@@ -11,4 +11,7 @@
     <color name="green">#009900</color>
     <color name="blue">#000099</color>
     <color name="orange">#FF9900</color>
+    <color name="soft_gray">#d3d3d3</color>
+    <color name="light_gray">#d8d8d8</color>
+    <color name="white_smoke">#f1f1f1</color>
 </resources>
