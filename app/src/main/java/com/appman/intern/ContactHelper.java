@@ -16,6 +16,7 @@ import com.appman.intern.models.ContactData;
 import com.appman.intern.models.EmailData;
 import com.appman.intern.models.ImData;
 import com.appman.intern.models.PhoneData;
+import com.appman.intern.models.SearchableContactData;
 
 import org.apache.commons.io.IOUtils;
 
@@ -39,6 +40,21 @@ public class ContactHelper {
         Language lang = AppManHRPreferences.getCurrentLanguage(context);
         String sortBy = lang == Language.TH ? "firstnameTh" : "firstnameEn";
         return query.findAllSorted(sortBy, Sort.ASCENDING);
+    }
+
+    public static List<SearchableContactData> getSearchableContactListFromDatabase(Context context) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmQuery<AppContactData> query = realm.where(AppContactData.class);
+        Language lang = AppManHRPreferences.getCurrentLanguage(context);
+        String sortBy = lang == Language.TH ? "firstnameTh" : "firstnameEn";
+
+        RealmResults<AppContactData> realmResults = query.findAllSorted(sortBy, Sort.ASCENDING);
+        List<SearchableContactData> resultList = new ArrayList<>();
+        for (AppContactData contactData : realmResults) {
+            resultList.add(new SearchableContactData(contactData));
+        }
+
+        return resultList;
     }
 
     public static String getContactsJsonFromFile(Context context) {
