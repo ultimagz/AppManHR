@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHR;
+import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
 import com.appman.intern.Utils;
 import com.appman.intern.adapters.ContactListAdapter;
@@ -90,51 +91,15 @@ public class SearchFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        mAdapter = new ContactListAdapter(getActivity(), ContactHelper.getContactListFromDatabase(getContext()));
+        mBinding.contactList.setAdapter(mAdapter);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mAdapter = new ContactListAdapter(getActivity(), getContactsListFromFile());
-        mBinding.contactList.setAdapter(mAdapter);
     }
-
-    private List<AppContactData> getContactsListFromFile() {
-        List<AppContactData> contactList = new ArrayList<>();
-        try {
-            InputStream json = getActivity().getAssets().open("sample_contact.json");
-            String jsonString = IOUtils.toString(json, "UTF-8");
-            Type jsonType = new TypeToken<ArrayList<AppContactData>>(){}.getType();
-            contactList = Utils.GSON.fromJson(jsonString, jsonType); //ContactHelper.retrieveContacts(getContext(, PROJECTION);
-            Collections.sort(contactList, AppContactData.getComparator(Language.EN));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return contactList;
-    }
-
-    /*private void displayIndex() {
-        TextView textView;
-        String[] alphabets = getResources().getStringArray(R.array.alphabet);
-        for (String alphabet : alphabets) {
-            textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.side_index_item, null);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
-            textView.setLayoutParams(params);
-            textView.setText(alphabet);
-            textView.setOnClickListener(this);
-            mBinding.sideIndex.addView(textView);
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        TextView selectedIndex = (TextView) view;
-        String alphabet = selectedIndex.getText().toString();
-        int index = mAdapter.getMapIndex(alphabet);
-        if (index != -1)
-            mBinding.contactList.setSelection(index);
-    }*/
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

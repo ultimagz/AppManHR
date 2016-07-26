@@ -97,7 +97,6 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
     private View createSessionView(AppContactData dataAtPos, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.contact_header_row, parent, false);
         TextView headView = (TextView) view.findViewById(R.id.section_title);
-        ImageView contactImg = (ImageView) view.findViewById(R.id.contact_img);
 
 
 
