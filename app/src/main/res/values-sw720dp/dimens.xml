@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+    <dimen name="contact_detail_header_size">360dp</dimen>
+    <dimen name="contact_detail_header_half_size">180dp</dimen>
+</resources>
