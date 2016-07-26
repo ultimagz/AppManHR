@@ -8,12 +8,14 @@ import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,8 @@ import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.DataModel;
 import com.appman.intern.models.PhoneData;
+import com.bumptech.glide.Glide;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import timber.log.Timber;
 
 public class ContactListAdapter extends ArrayAdapter<AppContactData> {
@@ -92,6 +97,9 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
     private View createSessionView(AppContactData dataAtPos, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.contact_header_row, parent, false);
         TextView headView = (TextView) view.findViewById(R.id.section_title);
+
+
+
         headView.setText(dataAtPos.getFirstCharEn());
         view.setOnClickListener(null);
 
@@ -103,13 +111,18 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
         TextView title = (TextView) view.findViewById(R.id.contact_name);
         TextView phoneNo = (TextView) view.findViewById(R.id.contact_job);
 
-        if (TextUtils.isEmpty(dataAtPos.getNicknameEn())) {
-            title.setText(mLanguage == Language.TH ? dataAtPos.getFullNameTh() : dataAtPos.getFullNameEn());
-        } else {
-            title.setText(String.format("%s (%s)", dataAtPos.getFullNameEn(), dataAtPos.getNicknameEn()));
+        CircleImageView contactImg = (CircleImageView) view.findViewById(R.id.contact_img);
+        String base64 = dataAtPos.getImage();
+
+        if(base64 != null) {
+            byte[] data1 = Base64.decode(base64, Base64.DEFAULT);
+            Glide.with(mActivity).load(data1).into(contactImg);
         }
 
+
+        title.setText(mLanguage == Language.TH ? dataAtPos.getAllNameTh() : dataAtPos.getAllNameEn());
         phoneNo.setText(dataAtPos.getPosition());
+
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +138,7 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos), "ContactDetailFragment")
+                .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos, mLanguage), "ContactDetailFragment")
                 .addToBackStack("ContactDetailFragment")
                 .commit();
     }

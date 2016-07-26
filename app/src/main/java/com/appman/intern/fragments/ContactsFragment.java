@@ -19,6 +19,8 @@ import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHRPreferences;
@@ -115,6 +117,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+    View oldView = null;
     private void displayIndex() {
         Context context = getContext();
         TextView textView;
@@ -124,7 +127,13 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
             textView.setLayoutParams(params);
             textView.setText(alphabet);
+            textView.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             textView.setOnClickListener(this);
+           /* if(index != -1) {
+                textView.setTextColor(Color.parseColor("#000000"));
+            }else{
+                textView.setTextColor(Color.parseColor("#c8c8c8"));
+            }*/
             mBinding.sideIndex.addView(textView);
         }
     }
@@ -134,8 +143,15 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         TextView selectedIndex = (TextView) view;
         String alphabet = selectedIndex.getText().toString();
         int index = mAdapter.getMapIndex(alphabet);
-        if (index != -1)
+        if (index != -1) {
+            ((TextView) view).setTextColor(Color.parseColor("#fa1414"));
             mBinding.contactList.setSelection(index);
+        }
+
+        if(oldView != null) {
+            ((TextView) oldView).setTextColor(Color.parseColor("#999999"));
+        }
+        oldView = view;
     }
 
     @Override
