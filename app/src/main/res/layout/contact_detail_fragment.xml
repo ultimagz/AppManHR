@@ -7,7 +7,7 @@
 
     <data>
         <import type="com.appman.intern.enums.Language"/>
-        <variable name="contactDetailData" type="com.appman.intern.models.AppContactData"/>
+        <variable name="contactDetailData" type="com.appman.intern.models.SearchableContactData"/>
         <variable name="viewLanguage" type="com.appman.intern.enums.Language"/>
     </data>
 
