@@ -24,6 +24,7 @@ import com.appman.intern.enums.Language;
 import com.appman.intern.interfaces.ContactDetailClickHandler;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactDetailRowModel;
+import com.appman.intern.models.SearchableContactData;
 import com.bumptech.glide.Glide;
 
 import org.parceler.Parcels;
@@ -38,13 +39,13 @@ import timber.log.Timber;
 @RuntimePermissions
 public class ContactDetailFragment extends Fragment implements ContactDetailClickHandler {
 
-    private AppContactData mContactData;
+    private SearchableContactData mContactData;
     private Language mLanguage;
     ContactDetailFragmentBinding mBinding;
     ContactAdapter mAdapter;
     List<ContactDetailRowModel> mList = new ArrayList<>();
 
-    public static ContactDetailFragment newInstance(AppContactData contactData, Language lang) {
+    public static ContactDetailFragment newInstance(SearchableContactData contactData, Language lang) {
         ContactDetailFragment fragment = new ContactDetailFragment();
         Bundle args = new Bundle();
         args.putParcelable("contactData", Parcels.wrap(contactData));

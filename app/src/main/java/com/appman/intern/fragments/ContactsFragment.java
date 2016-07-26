@@ -82,6 +82,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         mAdapter = new ContactListAdapter(getActivity(), new ArrayList<AppContactData>());
         mLayoutManager = new LinearLayoutManager(getContext());
         mBinding.contactList.setLayoutManager(mLayoutManager);
+        mBinding.contactList.setHasFixedSize(true);
         mBinding.contactList.setAdapter(mAdapter);
         mBinding.contactList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

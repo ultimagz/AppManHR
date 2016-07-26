@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="com.appman.intern.enums.Language"/>
+        <variable name="contactData" type="com.appman.intern.models.SearchableContactData"/>
+        <variable name="viewLanguage" type="com.appman.intern.enums.Language"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:weightSum="1">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/contact_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/dummy_photo"
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="1dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/contact_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:text="@{ viewLanguage == Language.TH ? contactData.getAllNameTh() : contactData.getAllNameEn() }"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                tools:text="Name" />
+
+            <TextView
+                android:id="@+id/contact_phone_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@{ contactData.getMobile() }"
+                android:textColor="#c8c8c8"
+                android:textSize="20sp"
+                tools:text="081 234 5678" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

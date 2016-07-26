@@ -15,13 +15,13 @@ import android.view.ViewGroup;
 
 import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
-import com.appman.intern.adapters.ContactListAdapter;
+import com.appman.intern.adapters.SearchContactListAdapter;
 import com.appman.intern.databinding.SearchFragmentBinding;
 
 public class SearchFragment extends Fragment {
 
     private SearchFragmentBinding mBinding;
-    ContactListAdapter mAdapter;
+    SearchContactListAdapter mAdapter;
     LinearLayoutManager mLayoutManager;
 
     public static SearchFragment newInstance() {
@@ -41,7 +41,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //displayIndex();
 
         mBinding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,9 +70,10 @@ public class SearchFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
-        mAdapter = new ContactListAdapter(getActivity(), ContactHelper.getContactListFromDatabase(getContext()));
+        mAdapter = new SearchContactListAdapter(getActivity(), ContactHelper.getSearchableContactListFromDatabase(getContext()));
         mLayoutManager = new LinearLayoutManager(getContext());
         mBinding.contactList.setLayoutManager(mLayoutManager);
+        mBinding.contactList.setHasFixedSize(true);
         mBinding.contactList.setAdapter(mAdapter);
     }
 
