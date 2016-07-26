@@ -22,8 +22,6 @@ public class AppManHRPreferences {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(EXPORT_TIME, exportTime);
         editor.apply();
-
-        new BackupManager(context.getApplicationContext()).dataChanged();
     }
 
     public static Language getCurrentLanguage(Context context) {

@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="8dp"
     android:weightSum="1">
 
 
-    <com.makeramen.roundedimageview.RoundedImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/contact_img"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/downeyjr"
-        android:scaleType="fitCenter"
-        android:layout_height="20dp"
-        android:layout_weight="20dp"
-        app:riv_corner_radius="30dip"
-        app:riv_border_width="2dip"
-        app:riv_border_color="#333333"
-        app:riv_mutate_background="true"
-        app:riv_tile_mode="repeat"
-        app:riv_oval="true"
-         />
+        app:civ_border_width="2dp"
+        app:civ_border_color="#FF000000"/>
 
 
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="5dp"
+    android:orientation="vertical">
     <TextView
         android:id="@+id/contact_name"
         android:layout_width="wrap_content"
@@ -45,4 +44,5 @@
         android:textColor="#c8c8c8"
         android:textSize="20sp"
         tools:text="081 234 5678" />
+</LinearLayout>
 </LinearLayout>

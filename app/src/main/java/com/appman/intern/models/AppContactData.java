@@ -344,19 +344,10 @@ public class AppContactData extends RealmObject {
         return ops;
     }
 
-    public ArrayList<ContentProviderOperation> createUpdateContactProvider(Language lang, String groupId) {
+    public ArrayList<ContentProviderOperation> createUpdateContactProvider(Language lang) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
         boolean isThai = lang == Language.TH;
-
-        // GROUP
-//        if (!TextUtils.isEmpty(groupId)) {
-//            ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-//                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-//                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
-//                    .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
-//                    .build());
-//        }
 
         // NAME
         ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)

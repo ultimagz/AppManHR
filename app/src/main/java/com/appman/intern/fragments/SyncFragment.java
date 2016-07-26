@@ -1,11 +1,16 @@
 package com.appman.intern.fragments;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.ContactHelper;
@@ -26,17 +32,22 @@ import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
 import com.appman.intern.models.LocalContactData;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
+@RuntimePermissions
 public class SyncFragment extends Fragment {
 
     private SyncFragmentBinding mBinding;
@@ -68,7 +79,8 @@ public class SyncFragment extends Fragment {
         mBinding.exportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                exportToLocalContact();
+                SyncFragmentPermissionsDispatcher.exportToLocalContactWithCheck(SyncFragment.this);
+//                exportToLocalContact();
             }
         });
     }
@@ -78,7 +90,14 @@ public class SyncFragment extends Fragment {
         return btnId == R.id.th_btn ? Language.TH : Language.EN;
     }
 
-    private void exportToLocalContact() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        SyncFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @NeedsPermission({ Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS })
+    void exportToLocalContact() {
         Context context = getContext();
         Language lang = getExportLanguage();
         String groupId = ContactHelper.getContactGroupId(getContext());
@@ -91,39 +110,52 @@ public class SyncFragment extends Fragment {
 
         RealmResults<AppContactData> results = query.findAll();
         realm.beginTransaction();
-        for (AppContactData appContactData : results) {
-            LocalContactData dbContactData = appContactData.getLocalContactData();
-            boolean exist = false;
-            for (ContactData contactData : localContactList) {
-                String localId = dbContactData.getLocalId();
-                String rawId = contactData.getRawContactId();
-                Timber.w("Compare local_id %s | db_id %s", localId, rawId);
-                Timber.w("Contact exported %s", String.valueOf(appContactData.isExported()));
-                if (/*!appContactData.isExported() && */localId.equalsIgnoreCase(rawId)) {
-                    exist = true;
-                    dbContactData.setNewValue(appContactData);
-                    dbContactData.setLocalId(rawId);
-                    appContactData.setLocalContactData(dbContactData);
-                    ContactHelper.updateContact(context, appContactData, lang);
-                    break;
-                }
-            }
 
-            if (!exist) {
-                String id = ContactHelper.addNewContact(context, appContactData, lang);
-                Timber.w("New contact id %s", id);
-                dbContactData.setLocalId(id);
-            }
-
-            appContactData.setExported(true);
-            appContactData.setLocalContactData(dbContactData);
-//            realm.insertOrUpdate(appContactData);
+        AppContactData data = query.findFirst();
+        LocalContactData dbContactData = data.getLocalContactData();
+        String rawId = getRawContactId(dbContactData, localContactList);
+        if (TextUtils.isEmpty(rawId)) {
+            String id = ContactHelper.addNewContact(context, data, lang);
+            Timber.w("New contact id %s", id);
+            dbContactData.setLocalId(id);
+        } else {
+            dbContactData.setLocalId(rawId);
+            ContactHelper.updateContact(context, data, lang);
         }
+
+//        for (AppContactData appContactData : results) {
+
+//
+//            if (TextUtils.isEmpty(rawId)) {
+//                String id = ContactHelper.addNewContact(context, appContactData, lang);
+//                Timber.w("New contact id %s", id);
+//                dbContactData.setLocalId(id);
+//            } else {
+//                dbContactData.setLocalId(rawId);
+//                ContactHelper.updateContact(context, appContactData, lang);
+//            }
+//
+//            dbContactData.setNewValue(appContactData);
+//            appContactData.setExported(true);
+//            appContactData.setLocalContactData(dbContactData);
+////            realm.insertOrUpdate(appContactData);
+//        }
         realm.commitTransaction();
 
         String time = Utils.DATE_FORMAT.format(new Date());
         mBinding.syncTime.setText(String.format("Last export : %s", time));
         AppManHRPreferences.setLastExportTime(getContext(), time);
+    }
+
+    private String getRawContactId(LocalContactData dbContactData, List<ContactData> localContactList) {
+        for (ContactData contactData : localContactList) {
+            String rawId = contactData.getRawContactId();
+            if (contactData.compareValues(dbContactData)) {
+                return rawId;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -150,5 +182,39 @@ public class SyncFragment extends Fragment {
 
     private void toggleLanguage(int btnId) {
         AppManHRPreferences.setCurrentLanguage(getContext(), btnId == R.id.th_btn ? "TH" : "EN");
+    }
+
+    @OnShowRationale({Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS})
+    void showRationaleForContact(PermissionRequest request) {
+        showRationaleDialog(R.string.permission_contacts_rationale, request);
+    }
+
+    @OnNeverAskAgain({ Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS })
+    void onContactsNeverAskAgain() {
+        Toast.makeText(getContext(), R.string.permission_contacts_never_ask_again, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnPermissionDenied({ Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS })
+    void onContactsDenied() {
+        Toast.makeText(getContext(), R.string.permission_contacts_denied, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
+        new AlertDialog.Builder(getContext())
+                .setPositiveButton(R.string.button_allow, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        request.proceed();
+                    }
+                })
+                .setNegativeButton(R.string.button_deny, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        request.cancel();
+                    }
+                })
+                .setCancelable(false)
+                .setMessage(messageResId)
+                .show();
     }
 }

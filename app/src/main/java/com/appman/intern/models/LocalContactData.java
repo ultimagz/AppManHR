@@ -25,7 +25,7 @@ public class LocalContactData extends RealmObject {
     String nicknameEn = "nicknameEn";
     String workPhone = "021234567";
     String lineID = "line_id";
-    String updateTime = "UPDATE_TIME";
+    String updateTime = "update_time";
     String image = "image";
     String position = "position";
     String mobile = "0897654321";

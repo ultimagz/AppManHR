@@ -1,5 +1,6 @@
 package com.appman.intern.adapters;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import com.appman.intern.BR;
 import com.appman.intern.R;
 import com.appman.intern.enums.ContactDetailType;
+import com.appman.intern.interfaces.ContactDetailClickHandler;
 import com.appman.intern.models.ContactDetailRowModel;
 import com.appman.intern.viewholders.ContactDetailViewHolder;
 
@@ -18,8 +20,10 @@ import java.util.List;
 public class ContactAdapter extends RecyclerView.Adapter<ContactDetailViewHolder> {
 
     private List<ContactDetailRowModel> mList = new ArrayList<>();
+    private ContactDetailClickHandler mClickHandler;
 
-    public ContactAdapter(List<ContactDetailRowModel> list) {
+    public ContactAdapter(List<ContactDetailRowModel> list, ContactDetailClickHandler clickHandler) {
+        mClickHandler = clickHandler;
         setList(list);
     }
 
@@ -31,19 +35,21 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactDetailViewHolder
     @Override
     public ContactDetailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ViewDataBinding viewDataBinding;
+        Context context = parent.getContext();
         switch (ContactDetailType.values()[viewType]) {
             case MOBILE:
             case WORK_PHONE:
-                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.contact_detail_row_phone, parent, false);
-                return new ContactDetailViewHolder(viewDataBinding);
+                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.contact_detail_row_phone, parent, false);
+                return new ContactDetailViewHolder(context, viewDataBinding, mClickHandler);
             case E_MAIL:
-                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.contact_detail_row_email, parent, false);
-                return new ContactDetailViewHolder(viewDataBinding);
+                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.contact_detail_row_email, parent, false);
+                return new ContactDetailViewHolder(context, viewDataBinding, mClickHandler);
             case LINE:
-                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.contact_detail_row_line, parent, false);
-                return new ContactDetailViewHolder(viewDataBinding);
+                viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.contact_detail_row_line, parent, false);
+                return new ContactDetailViewHolder(context, viewDataBinding, mClickHandler);
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override
