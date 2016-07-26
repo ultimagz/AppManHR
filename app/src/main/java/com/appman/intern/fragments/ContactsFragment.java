@@ -9,17 +9,17 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -58,6 +58,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     ContactListAdapter mAdapter;
     DatabaseHelper mHelper;
     ProgressDialog mProgressDialog;
+    LinearLayoutManager mLayoutManager;
 
     public static ContactsFragment newInstance(Bundle args) {
         ContactsFragment fragment = new ContactsFragment();
@@ -79,13 +80,13 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         super.onViewCreated(view, savedInstanceState);
 
         mAdapter = new ContactListAdapter(getActivity(), new ArrayList<AppContactData>());
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mBinding.contactList.setLayoutManager(mLayoutManager);
         mBinding.contactList.setAdapter(mAdapter);
-        mBinding.contactList.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mBinding.contactList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView absListView, int scrollState) {}
-
-            @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
                 setSideIndexHighlight();
             }
         });
@@ -117,7 +118,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    View oldView = null;
     private void displayIndex() {
         Context context = getContext();
         TextView textView;
@@ -129,11 +129,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
             textView.setText(alphabet);
             textView.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             textView.setOnClickListener(this);
-           /* if(index != -1) {
-                textView.setTextColor(Color.parseColor("#000000"));
-            }else{
-                textView.setTextColor(Color.parseColor("#c8c8c8"));
-            }*/
             mBinding.sideIndex.addView(textView);
         }
     }
@@ -144,14 +139,8 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         String alphabet = selectedIndex.getText().toString();
         int index = mAdapter.getMapIndex(alphabet);
         if (index != -1) {
-            ((TextView) view).setTextColor(Color.parseColor("#fa1414"));
-            mBinding.contactList.setSelection(index);
+            mLayoutManager.scrollToPositionWithOffset(index, 0);
         }
-
-        if(oldView != null) {
-            ((TextView) oldView).setTextColor(Color.parseColor("#999999"));
-        }
-        oldView = view;
     }
 
     @Override
@@ -197,8 +186,8 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void setSideIndexHighlight() {
-        int firstVisiblePosition = mBinding.contactList.getFirstVisiblePosition();
-        int lastVisiblePosition = mBinding.contactList.getLastVisiblePosition() - 1;
+        int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
+        int lastVisiblePosition = mLayoutManager.findLastVisibleItemPosition();
 
         AppContactData firstItem = mAdapter.getItem(firstVisiblePosition);
         AppContactData lastItem = mAdapter.getItem(lastVisiblePosition);

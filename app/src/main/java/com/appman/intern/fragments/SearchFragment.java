@@ -4,6 +4,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -11,36 +12,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.appman.intern.AppManHR;
 import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
-import com.appman.intern.Utils;
 import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.SearchFragmentBinding;
-import com.appman.intern.enums.Language;
-import com.appman.intern.models.AppContactData;
-import com.google.gson.reflect.TypeToken;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class SearchFragment extends Fragment {
 
-
     private SearchFragmentBinding mBinding;
+    ContactListAdapter mAdapter;
+    LinearLayoutManager mLayoutManager;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -51,13 +33,10 @@ public class SearchFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.search_fragment, container, false);
         return mBinding.getRoot();
     }
-
-    ContactListAdapter mAdapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -93,6 +72,8 @@ public class SearchFragment extends Fragment {
         });
 
         mAdapter = new ContactListAdapter(getActivity(), ContactHelper.getContactListFromDatabase(getContext()));
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mBinding.contactList.setLayoutManager(mLayoutManager);
         mBinding.contactList.setAdapter(mAdapter);
     }
 

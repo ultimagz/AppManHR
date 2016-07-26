@@ -1,33 +1,25 @@
 package com.appman.intern.adapters;
 
-import android.content.ContentProviderOperation;
-import android.content.OperationApplicationException;
-import android.database.Cursor;
-import android.os.RemoteException;
+import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
-import android.util.Base64;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Filter;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Filterable;
 
 import com.appman.intern.R;
+import com.appman.intern.databinding.ContactDataRowBinding;
+import com.appman.intern.databinding.ContactHeaderRowBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.fragments.ContactDetailFragment;
 import com.appman.intern.models.AppContactData;
-import com.appman.intern.models.ContactData;
-import com.appman.intern.models.DataModel;
-import com.appman.intern.models.PhoneData;
-import com.bumptech.glide.Glide;
-
+import com.appman.intern.viewholders.ContactRowViewHolder;
+import com.appman.intern.viewholders.ContactSectionViewHolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,10 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-import timber.log.Timber;
-
-public class ContactListAdapter extends ArrayAdapter<AppContactData> {
+public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     public static final List<String> SIDE_INDEX_EN = new ArrayList<>(Arrays.asList(new String[]{
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}));
@@ -57,7 +46,6 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
     Language mLanguage = Language.EN;
 
     public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
-        super(activity, 0);
         mActivity = activity;
         mInflater = LayoutInflater.from(activity);
         setList(contactList);
@@ -70,68 +58,116 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
         notifyDataSetChanged();
     }
 
-    public int getCount() {
-        return mFilterList.size();
-    }
-
     public AppContactData getItem(int position) {
         if (position >= 0 && position < mFilterList.size())
             return mFilterList.get(position);
         return null;
     }
 
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        switch (viewType) {
+            case 0:
+                ContactHeaderRowBinding headerBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.contact_header_row, parent, false);
+                return new ContactSectionViewHolder(context, headerBinding);
+            case 1:
+                ContactDataRowBinding rowBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.contact_data_row, parent, false);
+                return new ContactRowViewHolder(context, rowBinding);
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        final AppContactData dataAtPos = mFilterList.get(position);
+        if (dataAtPos.isHeader()) {
+            ContactSectionViewHolder section = (ContactSectionViewHolder) holder;
+            section.setVariable(dataAtPos, mLanguage);
+        } else {
+            ContactRowViewHolder row = (ContactRowViewHolder) holder;
+            row.setVariable(dataAtPos, mLanguage);
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDetailFragment(dataAtPos);
+                }
+            });
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        final AppContactData dataAtPos = mFilterList.get(position);
+        return dataAtPos.isHeader() ? 0 : 1;
+    }
+
     public long getItemId(int position) {
         return 0;
     }
 
-    public View getView(int position, View view, ViewGroup parent) {
-        final AppContactData dataAtPos = mFilterList.get(position);
-        view = dataAtPos.isHeader() ? createSessionView(dataAtPos, parent) : createContactView(dataAtPos, parent);
-        return view;
+    @Override
+    public int getItemCount() {
+        return mFilterList.size();
     }
+
+//    public View getView(int position, View view, ViewGroup parent) {
+//        final AppContactData dataAtPos = mFilterList.get(position);
+//        view = dataAtPos.isHeader() ? createSessionView(dataAtPos, view, parent) : createContactView(dataAtPos, view, parent);
+//        return view;
+//    }
 
     public void setLanguage(Language language) {
         mLanguage = language;
     }
-
-    private View createSessionView(AppContactData dataAtPos, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.contact_header_row, parent, false);
-        TextView headView = (TextView) view.findViewById(R.id.section_title);
-
-
-
-        headView.setText(dataAtPos.getFirstCharEn());
-        view.setOnClickListener(null);
-
-        return view;
-    }
-
-    private View createContactView(final AppContactData dataAtPos, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.contact_data_row, parent, false);
-        TextView title = (TextView) view.findViewById(R.id.contact_name);
-        TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
-        CircleImageView contactImg = (CircleImageView) view.findViewById(R.id.contact_img);
-        String base64 = dataAtPos.getImage();
-
-        if(base64 != null) {
-            byte[] data1 = Base64.decode(base64, Base64.DEFAULT);
-            Glide.with(mActivity).load(data1).into(contactImg);
-        }
-
-
-
-        title.setText(mLanguage == Language.TH ? dataAtPos.getAllNameTh() : dataAtPos.getAllNameEn());
-        phoneNo.setText(dataAtPos.getMobile());
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDetailFragment(dataAtPos);
-            }
-        });
-
-        return view;
-    }
+//
+//    private View createSessionView(AppContactData dataAtPos, View convertView, ViewGroup parent) {
+//        View view = convertView;
+//        ContactSectionViewHolder viewHolder;
+//
+//        if (view == null) {
+//            view = mInflater.inflate(R.layout.contact_header_row, parent, false);
+//            viewHolder = new ContactSectionViewHolder(view);
+//            view.setTag(R.id.section_view_holder, viewHolder);
+//        } else {
+//            viewHolder = (ContactSectionViewHolder) view.getTag(R.id.section_view_holder);
+//        }
+//
+//        viewHolder.section.setText(dataAtPos.getFirstCharEn());
+//        view.setOnClickListener(null);
+//
+//        return view;
+//    }
+//
+//    private View createContactView(final AppContactData dataAtPos, View convertView, ViewGroup parent) {
+//        View view = convertView;
+//        ContactRowViewHolder viewHolder;
+//        if (view == null) {
+//            view = mInflater.inflate(R.layout.contact_data_row, parent, false);
+//            viewHolder = new ContactRowViewHolder(view);
+//            view.setTag(R.id.row_view_holder, viewHolder);
+//        } else {
+//            viewHolder = (ContactRowViewHolder) view.getTag(R.id.row_view_holder);
+//        }
+//
+//        viewHolder.title.setText(mLanguage == Language.TH ? dataAtPos.getAllNameTh() : dataAtPos.getAllNameEn());
+//        viewHolder.phoneNo.setText(dataAtPos.getMobile());
+//
+//        String base64 = dataAtPos.getImage();
+//        if (base64 != null) {
+//            byte[] imgBytes = Base64.decode(base64, Base64.DEFAULT);
+//            Glide.with(mActivity).load(imgBytes).into(viewHolder.image);
+//        }
+//
+//        view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showDetailFragment(dataAtPos);
+//            }
+//        });
+//
+//        return view;
+//    }
 
     private void showDetailFragment(final AppContactData dataAtPos) {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
@@ -140,89 +176,6 @@ public class ContactListAdapter extends ArrayAdapter<AppContactData> {
                 .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos, mLanguage), "ContactDetailFragment")
                 .addToBackStack("ContactDetailFragment")
                 .commit();
-    }
-
-    private void updateContact(final ContactData dataAtPos) {
-        try {
-            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-
-            List<PhoneData> phoneList = dataAtPos.getPhoneList();
-
-            for (int checkType : PHONE_TYPE_LIST) {
-                DataModel dataModel = containPhoneType(dataAtPos, checkType);
-                if (dataModel == null) {
-                    ops.add(createInsertContact(dataAtPos, checkType));
-                } else {
-                    ops.add(createUpdateContact(dataAtPos, dataModel, checkType));
-                }
-            }
-
-            mActivity.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-            Toast.makeText(mActivity, "Update success", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Log.e("Update contact failed", String.valueOf(dataAtPos), e);
-            Toast.makeText(mActivity, "Update failed", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private ContentProviderOperation createInsertContact(final ContactData dataAtPos, final int checkType) throws RemoteException, OperationApplicationException {
-        Timber.w("createInsertContact\n%s", String.valueOf(dataAtPos));
-        return ContentProviderOperation
-                .newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValue(ContactsContract.Data.RAW_CONTACT_ID, dataAtPos.getRawContactId())
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "089 987 9876")
-//                .withValue(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY, dataAtPos.getLookupKey())
-                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, checkType)
-                .build();
-    }
-
-    private ContentProviderOperation createUpdateContact(final ContactData dataAtPos, final DataModel dataModel, final int checkType) throws RemoteException, OperationApplicationException {
-        Timber.w("createUpdateContact\n%s", String.valueOf(dataAtPos));
-        return ContentProviderOperation
-                .newUpdate(ContactsContract.Data.CONTENT_URI)
-                .withSelection(
-                        ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                                ContactsContract.Data.MIMETYPE + " = ? AND " +
-                                ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
-                        new String[]{
-                                dataAtPos.getId(),
-                                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-                                String.valueOf(checkType)
-                        })
-                .withValue(
-                        ContactsContract.Contacts.Data.MIMETYPE,
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "081 123 1234")
-                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, checkType)
-                .build();
-    }
-
-    private DataModel containPhoneType(ContactData dataAtPos, int phoneType) {
-        String rawContactId = dataAtPos.getId();
-
-        if (TextUtils.isEmpty(rawContactId)) {
-            return null;
-        } else {
-            Cursor cursor = mActivity.getContentResolver().query(
-                    ContactsContract.Data.CONTENT_URI,
-                    null,
-                    ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                    ContactsContract.Data.MIMETYPE + " = ? AND " +
-                    ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
-                    new String[]{rawContactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(phoneType)},
-                    null);
-
-            DataModel returnData = null;
-            if (cursor != null && cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                String dataId = cursor.getString(cursor.getColumnIndex(ContactsContract.Data._ID));
-                returnData = new DataModel(rawContactId, dataId);
-                cursor.close();
-            }
-
-            return returnData;
-        }
     }
 
     public List<AppContactData> createSectionList(List<AppContactData> contactList) {

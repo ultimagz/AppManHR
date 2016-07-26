@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.telephony.SmsManager;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import com.appman.intern.enums.Language;
 import com.appman.intern.interfaces.ContactDetailClickHandler;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactDetailRowModel;
+import com.bumptech.glide.Glide;
 
 import org.parceler.Parcels;
 
@@ -84,6 +87,14 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         mAdapter = new ContactAdapter(mList, this);
         mBinding.recyclerView.setAdapter(mAdapter);
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        if (!TextUtils.isEmpty(mContactData.getImage())) {
+            Glide.with(getContext())
+                    .load(Base64.decode(mContactData.getImage(), Base64.DEFAULT))
+                    .error(R.drawable.dummy_photo)
+                    .into(mBinding.contactImg);
+        }
+
         updateDetail();
     }
 
