@@ -10,6 +10,7 @@
     <string name="button_deny">Deny</string>
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
+    <string name="search_hint">Search...</string>
 
     <string-array name="mobile_type">
         <item>HOME</item>
