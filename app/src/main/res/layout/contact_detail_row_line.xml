@@ -14,21 +14,6 @@
         android:padding="8dp"
         tools:ignore="ContentDescription">
 
-        <ImageButton
-            android:id="@+id/contact_line_btn"
-            style="?attr/buttonBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackground"
-            android:onClick="@{ (view) -> clickHandler.onClick(view, contactLine) }"
-            android:src="@drawable/ic_line"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,8 +21,6 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="36dp"
             android:layout_marginStart="36dp"
-            android:layout_toLeftOf="@id/contact_line_btn"
-            android:layout_toStartOf="@id/contact_line_btn"
             android:gravity="center_vertical"
             android:orientation="vertical">
             <TextView

@@ -104,9 +104,6 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
             case R.id.contact_email_btn:
                 sendEMail(dataModel.getData());
                 break;
-            case R.id.contact_line_btn:
-                Timber.w("LINE %s", dataModel.getData());
-                break;
         }
     }
 
@@ -114,7 +111,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
     void callPhone(String phoneNumber) {
         Timber.w("Call %s", phoneNumber);
         Intent phoneIntent = new Intent(Intent.ACTION_CALL);
-        phoneIntent.setData(Uri.parse("tel:" + "0830639432"));
+        phoneIntent.setData(Uri.parse("tel:" + "0833124860"));
         startActivity(phoneIntent);
     }
 
