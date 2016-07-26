@@ -234,11 +234,23 @@ public class AppContactData extends RealmObject {
     }
 
     public String getAllNameTh() {
-        return String.format("%s %s (%s)", firstnameTh, lastnameTh, nicknameTh);
+        if (TextUtils.isEmpty(firstnameTh) && TextUtils.isEmpty(lastnameTh)) {
+            return getAllNameEn();
+        } else if (TextUtils.isEmpty(nicknameTh)) {
+            return String.format("%s %s", firstnameTh, lastnameTh);
+        } else {
+            return String.format("%s %s (%s)", firstnameTh, lastnameTh, nicknameTh);
+        }
     }
 
     public String getAllNameEn() {
-        return String.format("%s %s (%s)", firstnameEn, lastnameEn, nicknameEn);
+        if (TextUtils.isEmpty(firstnameEn) && TextUtils.isEmpty(lastnameEn)) {
+            return getAllNameTh();
+        } else if (TextUtils.isEmpty(nicknameEn)) {
+            return String.format("%s %s", firstnameEn, lastnameEn);
+        } else {
+            return String.format("%s %s (%s)", firstnameEn, lastnameEn, nicknameEn);
+        }
     }
 
     public String getFirstCharTh() {

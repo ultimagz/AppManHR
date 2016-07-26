@@ -5,7 +5,9 @@
     tools:ignore="ContentDescription">
 
     <data>
-        <variable name="contactData" type="com.appman.intern.models.AppContactData"/>
+        <import type="com.appman.intern.enums.Language"/>
+        <variable name="contactDetailData" type="com.appman.intern.models.AppContactData"/>
+        <variable name="viewLanguage" type="com.appman.intern.enums.Language"/>
     </data>
 
     <RelativeLayout
@@ -57,7 +59,7 @@
                 android:layout_below="@+id/contact_img"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="4dp"
-                android:text="@{contactData.getAllNameEn()}"
+                android:text="@{ viewLanguage == Language.TH ? contactDetailData.getAllNameTh() : contactDetailData.getAllNameEn() }"
                 android:textColor="@color/colorBlack"
                 android:textSize="16sp"
                 tools:text="Robert Downey Jr."/>
@@ -69,7 +71,7 @@
                 android:layout_below="@+id/contact_name"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="4dp"
-                android:text="@{contactData.getPosition()}"
+                android:text="@{ contactDetailData.getPosition() }"
                 android:textColor="@color/colorBlack"
                 android:textSize="16sp"
                 tools:text="Iron Man"/>

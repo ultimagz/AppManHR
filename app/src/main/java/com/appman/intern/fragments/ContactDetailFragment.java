@@ -18,6 +18,7 @@ import com.appman.intern.R;
 import com.appman.intern.adapters.ContactAdapter;
 import com.appman.intern.databinding.ContactDetailFragmentBinding;
 import com.appman.intern.enums.ContactDetailType;
+import com.appman.intern.enums.Language;
 import com.appman.intern.interfaces.ContactDetailClickHandler;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactDetailRowModel;
@@ -35,14 +36,16 @@ import timber.log.Timber;
 public class ContactDetailFragment extends Fragment implements ContactDetailClickHandler {
 
     private AppContactData mContactData;
+    private Language mLanguage;
     ContactDetailFragmentBinding mBinding;
     ContactAdapter mAdapter;
     List<ContactDetailRowModel> mList = new ArrayList<>();
 
-    public static ContactDetailFragment newInstance(AppContactData contactData) {
+    public static ContactDetailFragment newInstance(AppContactData contactData, Language lang) {
         ContactDetailFragment fragment = new ContactDetailFragment();
         Bundle args = new Bundle();
         args.putParcelable("contactData", Parcels.wrap(contactData));
+        args.putString("lang", lang.name());
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,7 +53,11 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContactData = Parcels.unwrap(getArguments().getParcelable("contactData"));
+        Bundle args = getArguments();
+        if (args != null) {
+            mContactData = Parcels.unwrap(args.getParcelable("contactData"));
+            mLanguage = Language.valueOf(args.getString("lang", Language.EN.name()));
+        }
     }
 
     @Nullable
@@ -63,7 +70,8 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mBinding.setContactData(mContactData);
+        mBinding.setViewLanguage(mLanguage);
+        mBinding.setContactDetailData(mContactData);
 
         mBinding.contactJob.setText(mContactData.getPosition());
         mBinding.backBtn.setOnClickListener(new View.OnClickListener() {
