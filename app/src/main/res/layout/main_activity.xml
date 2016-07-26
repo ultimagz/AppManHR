@@ -31,7 +31,7 @@
                         style="?attr/buttonBarButtonStyle"
                         android:layout_width="?attr/actionBarSize"
                         android:layout_height="?attr/actionBarSize"
-                        android:src="@drawable/ic_action_name"/>
+                        android:src="@drawable/ic_search_white_36px"/>
 
                     <TextView
                         android:id="@+id/toolbar_title"

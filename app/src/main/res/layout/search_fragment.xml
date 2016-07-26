@@ -38,7 +38,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_action_name"/>
+                    android:src="@drawable/ic_search_black_36px"/>
 
                 <ImageButton
                     android:id="@+id/search_clear_btn"
@@ -51,7 +51,7 @@
                     android:layout_gravity="right|center_vertical"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    android:src="@drawable/ic_cancel_36px"
                     android:visibility="gone" />
 
                 <EditText
