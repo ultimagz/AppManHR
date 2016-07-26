@@ -6,39 +6,43 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:weightSum="1">
 
-    <com.appman.intern.views.RoundedImageView
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/contact_img"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/downeyjr"/>
+        android:src="@drawable/downeyjr"
+        android:scaleType="fitCenter"
+        android:layout_height="20dp"
+        android:layout_weight="20dp"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="2dip"
+        app:riv_border_color="#333333"
+        app:riv_mutate_background="true"
+        app:riv_tile_mode="repeat"
+        app:riv_oval="true"
+         />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+
+    <TextView
+        android:id="@+id/contact_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/contact_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            tools:text="Name" />
+        android:layout_gravity="top"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        tools:text="Name" />
 
-        <TextView
-            android:id="@+id/contact_phone_no"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:textColor="#c8c8c8"
-            android:textSize="20sp"
-            tools:text="081 234 5678" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/contact_phone_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:textColor="#c8c8c8"
+        android:textSize="20sp"
+        tools:text="081 234 5678" />
 </LinearLayout>

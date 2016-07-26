@@ -1,9 +1,7 @@
 package com.appman.intern.fragments;
 
-
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -13,12 +11,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.appman.intern.AppManHR;
 import com.appman.intern.R;
+import com.appman.intern.Utils;
 import com.appman.intern.adapters.ContactListAdapter;
-import com.appman.intern.databinding.ContactFragmentBinding;
 import com.appman.intern.databinding.SearchFragmentBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
@@ -33,10 +32,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SearchFragment extends Fragment {
+
 
     private SearchFragmentBinding mBinding;
 
@@ -69,21 +70,25 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        mBinding.searchClearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mBinding.searchText.setText("");
+            }
+        });
+
         mBinding.searchText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mAdapter.getFilter().filter(s);
+                mBinding.searchClearBtn.setVisibility(s.length() == 0 ? View.GONE : View.VISIBLE);
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -100,7 +105,7 @@ public class SearchFragment extends Fragment {
             InputStream json = getActivity().getAssets().open("sample_contact.json");
             String jsonString = IOUtils.toString(json, "UTF-8");
             Type jsonType = new TypeToken<ArrayList<AppContactData>>(){}.getType();
-            contactList = AppManHR.GSON.fromJson(jsonString, jsonType); //ContactHelper.retrieveContacts(getContext(, PROJECTION);
+            contactList = Utils.GSON.fromJson(jsonString, jsonType); //ContactHelper.retrieveContacts(getContext(, PROJECTION);
             Collections.sort(contactList, AppContactData.getComparator(Language.EN));
         } catch (IOException e) {
             e.printStackTrace();
@@ -114,6 +119,8 @@ public class SearchFragment extends Fragment {
         String[] alphabets = getResources().getStringArray(R.array.alphabet);
         for (String alphabet : alphabets) {
             textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.side_index_item, null);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
+            textView.setLayoutParams(params);
             textView.setText(alphabet);
             textView.setOnClickListener(this);
             mBinding.sideIndex.addView(textView);
@@ -134,5 +141,4 @@ public class SearchFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_tab, menu);
     }
-
 }

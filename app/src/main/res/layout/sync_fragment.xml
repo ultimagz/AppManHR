@@ -14,39 +14,65 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="64dp"
             android:gravity="center"
-            android:text="Which language of contacts\ndo you want to sync ?"
+            android:text="Which language of contacts\ndo you want to export ?"
             android:textColor="@color/colorBlack"
             android:textSize="24sp" />
 
-        <LinearLayout
-            android:id="@+id/sync_btn_wrapper"
+        <RadioGroup
+            android:id="@+id/lang_btn_group"
+            android:layout_width="200dp"
+            android:layout_height="64dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/white_outline"
+            android:checkedButton="@+id/en_btn"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@id/en_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/switch_bg_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="EN"
+                android:textColor="@color/switch_text_selector"
+                android:textSize="24sp" />
+
+            <RadioButton
+                android:id="@+id/th_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/switch_bg_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="TH"
+                android:textColor="@color/switch_text_selector"
+                android:textSize="24sp" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/sync_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/sync_title"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
+            android:layout_marginBottom="64dp"
+            android:text="Last export : 10/07/2016 09:35"
+            android:textSize="18sp"/>
 
-            <Button
-                android:id="@+id/th_btn"
-                style="?attr/buttonBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/set_button"
-                android:padding="8dp"
-                android:text="TH"
-                android:textSize="20sp"/>
+        <Button
+            android:id="@+id/export_btn"
+            style="?attr/buttonBarStyle"
+            android:layout_width="144dp"
+            android:layout_height="64dp"
+            android:layout_above="@id/sync_time"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/black_btn_selector"
+            android:text="Export"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"/>
 
-            <Button
-                android:id="@+id/en_btn"
-                style="?attr/buttonBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/set_button"
-                android:padding="8dp"
-                android:text="EN"
-                android:textSize="20sp"/>
-
-        </LinearLayout>
     </RelativeLayout>
 </layout>

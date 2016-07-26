@@ -14,10 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appman.intern.R;
+import com.appman.intern.enums.Language;
 import com.appman.intern.fragments.ContactDetailFragment;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactData;
@@ -35,15 +37,16 @@ import timber.log.Timber;
 public class ContactListAdapter extends ArrayAdapter<ContactData> {
     List<Integer> PHONE_TYPE_LIST = new ArrayList<>(
             Arrays.asList(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
-            ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
-            ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
+                    ContactsContract.CommonDataKinds.Phone.TYPE_HOME,
+                    ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
 
     FragmentActivity mActivity;
     List<AppContactData> mOriginalList;
     List<AppContactData> mFilterList;
     LayoutInflater mInflater;
-    Map<String, Integer> mapIndex;
+    Map<String, Integer> mapIndex = new HashMap<>();
     ItemFilter mFilter = new ItemFilter();
+    Language mLanguage = Language.EN;
 
     public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
         super(activity, 0);
@@ -72,6 +75,10 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         return view;
     }
 
+    public void setLanguage(Language language) {
+        mLanguage = language;
+    }
+
     private View createSessionView(AppContactData dataAtPos, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.contact_header_row, parent, false);
         TextView headView = (TextView) view.findViewById(R.id.section_title);
@@ -85,8 +92,15 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         View view = mInflater.inflate(R.layout.contact_data_row, parent, false);
         TextView title = (TextView) view.findViewById(R.id.contact_name);
         TextView phoneNo = (TextView) view.findViewById(R.id.contact_phone_no);
+        ImageView contactImg = (ImageView) view.findViewById(R.id.contact_img);
 
-        title.setText(dataAtPos.getFullNameEn());
+
+        if (TextUtils.isEmpty(dataAtPos.getNicknameEn())) {
+            title.setText(mLanguage == Language.TH ? dataAtPos.getFullNameTh() : dataAtPos.getFullNameEn());
+        } else {
+            title.setText(String.format("%s (%s)", dataAtPos.getFullNameEn(), dataAtPos.getNicknameEn()));
+        }
+
         phoneNo.setText(dataAtPos.getMobile());
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -149,9 +163,9 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 .newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(
                         ContactsContract.Data.CONTACT_ID + " = ? AND " +
-                        ContactsContract.Data.MIMETYPE + " = ? AND " +
-                        ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
-                        new String[] {
+                                ContactsContract.Data.MIMETYPE + " = ? AND " +
+                                ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
+                        new String[]{
                                 dataAtPos.getId(),
                                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
                                 String.valueOf(checkType)
@@ -159,7 +173,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 .withValue(
                         ContactsContract.Contacts.Data.MIMETYPE,
                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "083 312 4860")
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "081 123 1234")
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, checkType)
                 .build();
     }
@@ -176,7 +190,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                     ContactsContract.Data.CONTACT_ID + " = ? AND " +
                     ContactsContract.Data.MIMETYPE + " = ? AND " +
                     ContactsContract.CommonDataKinds.Phone.TYPE + " = ?",
-                    new String[] { rawContactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(phoneType) },
+                    new String[]{rawContactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, String.valueOf(phoneType)},
                     null);
 
             DataModel returnData = null;
@@ -202,7 +216,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 header = new AppContactData();
                 header.setFirstnameEn(firstChar);
                 header.setFirstnameTh(firstChar);
-                header.setIsHeader(true);
+                header.setHeader(true);
                 all.add(header);
             }
 
@@ -212,7 +226,7 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
     }
 
     private void createIndexList(List<AppContactData> contactList) {
-        mapIndex = new HashMap<>();
+        mapIndex.clear();
         String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
         for (String anAlphabet : alphabet) {
@@ -222,7 +236,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
                 if (anAlphabet.equals(value)) {
                     mapIndex.put(value, j);
                 }
-            }}
+            }
+        }
     }
 
     public int getMapIndex(String key) {
@@ -235,51 +250,45 @@ public class ContactListAdapter extends ArrayAdapter<ContactData> {
         return mFilter;
     }
 
-    private class ItemFilter extends Filter {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            String filterString = constraint.toString();
-            FilterResults results = new FilterResults();
-            List<AppContactData> nlist = filterString.length() == 0 ? new ArrayList<>(mOriginalList) : createFilterList(filterString);
-
-            results.values = createSectionList(nlist);
-            results.count = nlist.size();
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilterList.clear();
-            mFilterList = (List<AppContactData>) results.values;
-            createIndexList(mFilterList);
-            notifyDataSetChanged();
-        }
-    }
-
     private List<AppContactData> createFilterList(String filterString) {
-        int lengthFilterString = filterString.length();
         List<AppContactData> nlist = new ArrayList<>();
-        String filterableString_FirstnameEn = "";
-        String filterableString_LastnameEn = "";
-        String filterableString_Position = "";
         for (AppContactData data : mOriginalList) {
-            if(lengthFilterString <= data.getFirstnameEn().length()){
-                filterableString_FirstnameEn = data.getFirstnameEn().substring(0, lengthFilterString);
-            }
-
-            if(lengthFilterString <= data.getLastnameEn().length()){
-                filterableString_LastnameEn = data.getLastnameEn().substring(0, lengthFilterString);
-            }
-
-            if(lengthFilterString <= data.getPosition().length()){
-                filterableString_Position = data.getPosition().substring(0, lengthFilterString);
-            }
-
-            if (filterableString_FirstnameEn.equalsIgnoreCase(filterString) || filterableString_LastnameEn.equalsIgnoreCase(filterString) || filterableString_Position.equalsIgnoreCase(filterString)) {
+            if (checkRegionMatches(data, filterString)) {
                 nlist.add(data);
             }
         }
 
         return nlist;
+    }
+
+    private boolean checkRegionMatches(AppContactData data, String filterString) {
+        int searchLength = filterString.length();
+        boolean match;
+
+        match = data.getFirstnameEn().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getLastnameEn().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getNicknameEn().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getFirstnameTh().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getLastnameTh().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getNicknameTh().regionMatches(true, 0, filterString, 0, searchLength);
+        match |= data.getPosition().regionMatches(true, 0, filterString, 0, searchLength);
+
+        return match;
+    }
+
+    private class ItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            String filterString = constraint.toString();
+            List<AppContactData> filterlist = createFilterList(filterString);
+            mFilterList = createSectionList(filterlist);
+            return null;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            createIndexList(mFilterList);
+            notifyDataSetChanged();
+        }
     }
 }

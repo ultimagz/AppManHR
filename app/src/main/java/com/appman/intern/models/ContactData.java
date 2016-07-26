@@ -4,14 +4,20 @@ import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Parcel
 public class ContactData extends BaseContactModel {
     String displayName, photoId, photoUri, photoFileId, thumbnailUri, value, query;
     boolean inVisibleGroup, isUserProfile, hasPhoneNumber, isHeader;
     List<PhoneData> phoneList = new ArrayList<>();
     List<EmailData> emailList = new ArrayList<>();
+    List<ImData> imList = new ArrayList<>();
+
+    public ContactData() {}
 
     public ContactData(Cursor cursor) {
         id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
@@ -24,15 +30,6 @@ public class ContactData extends BaseContactModel {
         inVisibleGroup = TextUtils.equals(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.IN_VISIBLE_GROUP)), "1");
         hasPhoneNumber = TextUtils.equals(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)), "1");
         lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-    }
-
-    public ContactData(boolean isHeader) {
-        this.isHeader = isHeader;
-    }
-
-    public ContactData(String value, boolean isHeader) {
-        this.value = value;
-        this.isHeader = isHeader;
     }
 
     public String getDisplayName() {
@@ -75,14 +72,6 @@ public class ContactData extends BaseContactModel {
         this.thumbnailUri = thumbnailUri;
     }
 
-    public String getLookupKey() {
-        return lookupKey;
-    }
-
-    public void setLookupKey(String lookupKey) {
-        this.lookupKey = lookupKey;
-    }
-
     public String getValue() {
         return value;
     }
@@ -111,7 +100,7 @@ public class ContactData extends BaseContactModel {
         return isUserProfile;
     }
 
-    public void setIsUserProfile(boolean userProfile) {
+    public void setUserProfile(boolean userProfile) {
         isUserProfile = userProfile;
     }
 
@@ -145,5 +134,13 @@ public class ContactData extends BaseContactModel {
 
     public void setEmailList(List<EmailData> emailList) {
         this.emailList = new ArrayList<>(emailList);
+    }
+
+    public List<ImData> getImList() {
+        return new ArrayList<>(imList);
+    }
+
+    public void setImList(List<ImData> imList) {
+        this.imList = new ArrayList<>(imList);
     }
 }
