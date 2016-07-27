@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.telephony.SmsManager;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +23,14 @@ import com.appman.intern.enums.Language;
 import com.appman.intern.interfaces.ContactDetailClickHandler;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactDetailRowModel;
+import com.bumptech.glide.Glide;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
@@ -84,6 +87,14 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         mAdapter = new ContactAdapter(mList, this);
         mBinding.recyclerView.setAdapter(mAdapter);
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        CircleImageView contactImg = (CircleImageView) view.findViewById(R.id.contact_img);
+        String base64 = mContactData.getImage();
+
+        if(base64 != null) {
+            byte[] data1 = Base64.decode(base64, Base64.DEFAULT);
+            Glide.with(getActivity()).load(data1).into(contactImg);
+        }
+
         updateDetail();
     }
 
@@ -132,6 +143,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.putExtra("sms_body", "message");
         sendIntent.setType("vnd.android-dir/mms-sms");
+        sendIntent.setData(Uri.parse("sms:" + "0833124860"));
         startActivity(sendIntent);
     }
 
