@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements Callback {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-        
+
         SharedPreferences.Editor editor = sharedpreferences.edit();
         String u = mEmailView.getText().toString();
         String p = mPasswordView.getText().toString();

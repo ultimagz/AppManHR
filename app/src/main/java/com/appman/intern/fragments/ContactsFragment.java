@@ -149,7 +149,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         }
 
         if(oldView != null) {
-            ((TextView) oldView).setTextColor(Color.parseColor("#999999"));
+            ((TextView) oldView).setTextColor(Color.parseColor("#000000"));
         }
         oldView = view;
     }
