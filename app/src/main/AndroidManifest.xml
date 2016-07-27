@@ -27,6 +27,10 @@
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIrfz-xPcszzrrd7TpkorY6BIevTwb3aJ0MzImHg" />
 
+        <meta-data
+            android:name="com.appman.intern.AppGlideModule"
+            android:value="GlideModule" />
+
         <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="sensorPortrait"
