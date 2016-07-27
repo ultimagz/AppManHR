@@ -15,3 +15,10 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keepnames class com.appman.intern.AppGlideModule
+# or more generally:
+-keep public class * implements com.bumptech.glide.module.GlideModule
+
+# for DexGuard only
+#-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
