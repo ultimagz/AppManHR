@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager
                             .beginTransaction()
+                            .setCustomAnimations(R.anim.slide_up,R.anim.slide_down,R.anim.slide_up,R.anim.slide_down)
+                            //.addSharedElement(sharedElement, transitionName)
                             .replace(R.id.main_content, SearchFragment.newInstance(), "SearchFragment")
                             .addToBackStack("SearchFragment")
                             .commit();

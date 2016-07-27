@@ -120,6 +120,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.main_content, ContactDetailFragment.newInstance(searchDate, mLanguage), "ContactDetailFragment")
+                .setCustomAnimations(R.anim.slide_up,R.anim.slide_down,R.anim.slide_up,R.anim.slide_down)
                 .addToBackStack("ContactDetailFragment")
                 .commit();
     }

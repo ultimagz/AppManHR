@@ -22,7 +22,6 @@ import com.appman.intern.databinding.ContactDetailFragmentBinding;
 import com.appman.intern.enums.ContactDetailType;
 import com.appman.intern.enums.Language;
 import com.appman.intern.interfaces.ContactDetailClickHandler;
-import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactDetailRowModel;
 import com.appman.intern.models.SearchableContactData;
 import com.bumptech.glide.Glide;
@@ -125,9 +124,6 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
             case R.id.contact_email_btn:
                 sendEMail(dataModel.getData());
                 break;
-            case R.id.contact_line_btn:
-                Timber.w("LINE %s", dataModel.getData());
-                break;
         }
     }
 
@@ -135,7 +131,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
     void callPhone(String phoneNumber) {
         Timber.w("Call %s", phoneNumber);
         Intent phoneIntent = new Intent(Intent.ACTION_CALL);
-        phoneIntent.setData(Uri.parse("tel:" + "0830639432"));
+        phoneIntent.setData(Uri.parse("tel:" + "0833124860"));
         startActivity(phoneIntent);
     }
 
@@ -148,6 +144,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.putExtra("sms_body", "message");
         sendIntent.setType("vnd.android-dir/mms-sms");
+        sendIntent.setData(Uri.parse("sms:" + "0833124860"));
         startActivity(sendIntent);
     }
 
