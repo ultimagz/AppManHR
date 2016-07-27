@@ -36,6 +36,17 @@
                         android:src="@drawable/ic_search_white_36px"/>
 
                     <TextView
+                        android:id="@+id/logout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity = "center"
+                        android:text="Log out"
+                        android:textColor="@color/textColorPrimary"
+                        android:textSize="24sp"
+                        tools:text="Log out" />
+
+                    <TextView
                         android:id="@+id/toolbar_title"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
