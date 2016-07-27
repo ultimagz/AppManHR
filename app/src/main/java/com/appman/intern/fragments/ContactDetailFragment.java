@@ -26,6 +26,7 @@ import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.ContactDetailRowModel;
 import com.appman.intern.models.SearchableContactData;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.parceler.Parcels;
 
@@ -89,14 +90,14 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         mBinding.recyclerView.setAdapter(mAdapter);
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        if (!TextUtils.isEmpty(mContactData.getImage())) {
-            Glide.with(getContext())
-                    .load(Base64.decode(mContactData.getImage(), Base64.DEFAULT))
-                    .error(R.drawable.dummy_photo)
-                    .into(mBinding.contactImg);
-        }
-
         updateDetail();
+        Glide.with(getContext())
+                .load(TextUtils.isEmpty(mContactData.getImage()) ? null : Base64.decode(mContactData.getImage(), Base64.DEFAULT))
+                .error(R.drawable.dummy_photo)
+                .placeholder(R.drawable.dummy_photo)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .dontAnimate().dontTransform()
+                .into(mBinding.contactImg);
     }
 
     private void updateDetail() {
