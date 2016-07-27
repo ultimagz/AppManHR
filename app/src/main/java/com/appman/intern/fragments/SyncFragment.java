@@ -75,7 +75,7 @@ public class SyncFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         String time = AppManHRPreferences.getLastExportTime(getContext());
-        mBinding.syncTime.setText(TextUtils.isEmpty(time) ? "" : time);
+        mBinding.lastExportTime.setText(TextUtils.isEmpty(time) ? "" : time);
         mBinding.exportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,7 +87,7 @@ public class SyncFragment extends Fragment {
 
     private Language getExportLanguage() {
         int btnId = mBinding.langBtnGroup.getCheckedRadioButtonId();
-        return btnId == R.id.th_btn ? Language.TH : Language.EN;
+        return btnId == R.id.export_th_btn ? Language.TH : Language.EN;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class SyncFragment extends Fragment {
         realm.commitTransaction();
 
         String time = Utils.DATE_FORMAT.format(new Date());
-        mBinding.syncTime.setText(String.format("Last export : %s", time));
+        mBinding.lastExportTime.setText(String.format("Last export : %s", time));
         AppManHRPreferences.setLastExportTime(getContext(), time);
     }
 
