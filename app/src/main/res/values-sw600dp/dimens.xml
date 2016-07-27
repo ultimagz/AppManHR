@@ -1,0 +1,19 @@
+<resources>
+    <dimen name="contact_detail_header_size">360dp</dimen>
+    <dimen name="contact_detail_header_half_size">180dp</dimen>
+    <dimen name="switch_lang_btn_width">80dp</dimen>
+    <dimen name="switch_lang_btn_height">36dp</dimen>
+
+    <dimen name="row_height">80dp</dimen>
+    <dimen name="header_height">64dp</dimen>
+    <dimen name="row_image_size">60dp</dimen>
+    <dimen name="row_padding">16dp</dimen>
+
+    <dimen name="side_index_width">32sp</dimen>
+
+    <dimen name="row_header_text_size">24sp</dimen>
+    <dimen name="row_name_text_size">20sp</dimen>
+    <dimen name="row_phone_text_size">18sp</dimen>
+    <dimen name="side_index_text_size">16sp</dimen>
+    <dimen name="switch_lang_text_size">16sp</dimen>
+</resources>

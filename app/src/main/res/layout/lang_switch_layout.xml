@@ -2,18 +2,19 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:padding="8dp">
     <RadioGroup
         android:id="@+id/lang_btn_group"
-        android:layout_width="84dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/switch_lang_btn_width"
+        android:layout_height="@dimen/switch_lang_btn_height"
         android:layout_centerInParent="true"
         android:background="@drawable/white_outline"
         android:checkedButton="@+id/en_btn"
         android:orientation="horizontal">
         <RadioButton
-            android:id="@+id/en_btn"
+            android:id="@id/en_btn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="1dp"
@@ -22,8 +23,9 @@
             android:layout_weight="1"
             android:background="@drawable/switch_bg_selector"
             android:button="@null"
+            android:textSize="@dimen/switch_lang_text_size"
             android:gravity="center"
-            android:text="EN"
+            android:text="@string/en_label"
             android:textColor="@color/switch_text_selector" />
 
         <RadioButton
@@ -37,7 +39,8 @@
             android:background="@drawable/switch_bg_selector"
             android:button="@null"
             android:gravity="center"
-            android:text="TH"
+            android:text="@string/th_label"
+            android:textSize="@dimen/switch_lang_text_size"
             android:textColor="@color/switch_text_selector" />
     </RadioGroup>
 </RelativeLayout>

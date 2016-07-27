@@ -10,16 +10,20 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/header_height"
+        android:paddingTop="@dimen/row_padding"
+        android:paddingLeft="@dimen/row_padding"
+        android:paddingRight="@dimen/row_padding"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/section_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:textColor="#fa1414"
-            android:textSize="24sp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/row_header_text_size"
             android:textStyle="bold"
             android:text="@{ viewLanguage == Language.TH ? contactData.getFirstCharTh() : contactData.getFirstCharEn() }"
             tools:text="A" />
@@ -27,8 +31,6 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:background="@android:color/darker_gray"/>
     </LinearLayout>
 </layout>

@@ -27,9 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="8dp"
-                android:background="@drawable/gray_outline"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp">
+                android:background="@drawable/gray_outline">
 
                 <ImageView
                     android:id="@+id/search_ic"
@@ -59,7 +57,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
-                    android:layout_margin="8dp"
                     android:layout_toEndOf="@id/search_clear_btn"
                     android:layout_toLeftOf="@id/search_clear_btn"
                     android:layout_toRightOf="@id/search_ic"

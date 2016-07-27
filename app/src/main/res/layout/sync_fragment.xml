@@ -24,10 +24,10 @@
             android:layout_height="64dp"
             android:layout_centerInParent="true"
             android:background="@drawable/white_outline"
-            android:checkedButton="@+id/en_btn"
+            android:checkedButton="@+id/export_en_btn"
             android:orientation="horizontal">
             <RadioButton
-                android:id="@id/en_btn"
+                android:id="@id/export_en_btn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -39,7 +39,7 @@
                 android:textSize="24sp" />
 
             <RadioButton
-                android:id="@+id/th_btn"
+                android:id="@+id/export_th_btn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -52,7 +52,7 @@
         </RadioGroup>
 
         <TextView
-            android:id="@+id/sync_time"
+            android:id="@+id/last_export_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -66,7 +66,7 @@
             style="?attr/buttonBarStyle"
             android:layout_width="144dp"
             android:layout_height="64dp"
-            android:layout_above="@id/sync_time"
+            android:layout_above="@id/last_export_time"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
             android:background="@drawable/black_btn_selector"

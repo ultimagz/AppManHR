@@ -11,25 +11,26 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/row_height"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:paddingLeft="@dimen/row_padding"
+        android:paddingRight="@dimen/row_padding"
         android:weightSum="1">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/contact_img"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/row_image_size"
+            android:layout_height="@dimen/row_image_size"
             android:src="@drawable/dummy_photo"
-            app:civ_border_color="#FF000000"
+            app:civ_border_color="@android:color/black"
             app:civ_border_width="1dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="@dimen/row_padding"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/contact_name"
@@ -37,8 +38,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:text="@{ viewLanguage == Language.TH ? contactData.getAllNameTh() : contactData.getAllNameEn() }"
-                android:textColor="#000000"
-                android:textSize="20sp"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/row_name_text_size"
                 tools:text="Name" />
 
             <TextView
@@ -48,7 +49,7 @@
                 android:layout_gravity="bottom"
                 android:text="@{ contactData.getMobile() }"
                 android:textColor="#c8c8c8"
-                android:textSize="20sp"
+                android:textSize="@dimen/row_phone_text_size"
                 tools:text="081 234 5678" />
         </LinearLayout>
     </LinearLayout>

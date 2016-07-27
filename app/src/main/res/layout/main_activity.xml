@@ -16,7 +16,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:layout_margin="0dp"
                 android:background="?attr/colorPrimary"
+                android:padding="0dp"
                 app:contentInsetEnd="0dp"
                 app:contentInsetLeft="0dp"
                 app:contentInsetRight="0dp"
@@ -63,7 +65,5 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
         </LinearLayout>
-
-
     </RelativeLayout>
 </layout>
