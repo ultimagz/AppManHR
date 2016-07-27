@@ -207,7 +207,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
                 existData = mAdapter.getMapIndex(child.getText().toString()) != -1;
                 inSelectedLength = idx >= firstSideIndex && idx <= lastSideIndex;
 
-                child.setBackgroundColor(inSelectedLength ? Color.parseColor("#F1F1F1") : Color.WHITE);
+                child.setBackgroundColor(inSelectedLength ? Color.parseColor("#e0e0e0") : Color.WHITE);
 //                child.setText(existData ? child.getText() : "");
                 child.setSelected(existData && inSelectedLength);
                 child.setEnabled(existData);
