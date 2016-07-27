@@ -1,5 +1,8 @@
 package com.appman.intern.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -64,6 +67,21 @@ public class MainActivity extends AppCompatActivity {
                             .replace(R.id.main_content, SearchFragment.newInstance(), "SearchFragment")
                             .addToBackStack("SearchFragment")
                             .commit();
+            }
+        });
+
+        final Intent back = new Intent(this,LoginActivity.class);
+        mBinding.logout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedpreferences = getSharedPreferences
+                        (LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.clear();
+                editor.commit();
+
+                startActivity(back);
             }
         });
 
