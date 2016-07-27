@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,17 +31,32 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.appman.intern.R;
+import com.appman.intern.Utils;
+import com.appman.intern.models.LoginModel;
+import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.google.gson.Gson;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity  {
+public class LoginActivity extends AppCompatActivity implements Callback {
 
 
 
@@ -177,15 +193,49 @@ public class LoginActivity extends AppCompatActivity  {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-
-        Intent a = new Intent(getApplicationContext(),MainActivity.class);
-        startActivity(a);
-
+        checkLogin();
     }
 
+    public void checkLogin(){
+        Intent a = new Intent(getApplicationContext(),MainActivity.class);
+        Log.i("jsonTest",stringToJSON());
+        try {
+            post("http://192.168.1.17:8080/test2",stringToJSON());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        startActivity(a);
+    }
 
+    public String stringToJSON(){
+        String json;
+        LoginModel login = new LoginModel();
+        login.setUsername(mEmailView.getText().toString());
+        login.setPassword(mPasswordView.getText().toString());
+        Gson gson = new Gson();
+        json = gson.toJson(login);
+    return json;
+    }
 
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
+    OkHttpClient client = new OkHttpClient();
+
+    public void post(String url, String json) throws IOException {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        client.networkInterceptors().add(new StethoInterceptor());
+        client
+                .newCall(request)
+                .enqueue(this);
+    }
+
+        private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(LoginActivity.this,
@@ -194,5 +244,15 @@ public class LoginActivity extends AppCompatActivity  {
         //mEmailView.setAdapter(adapter);
     }
 
+    @Override
+    public void onFailure(Request request, IOException e) {
+        Log.i("Fail","Fail");
+    }
+
+    @Override
+    public void onResponse(Response response) throws IOException {
+        Log.i("Complete","Complete");
+        Log.i("Complete",response.body().string());
+    }
 }
 
