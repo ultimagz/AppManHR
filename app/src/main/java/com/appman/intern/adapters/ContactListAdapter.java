@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final List<String> SIDE_INDEX_EN = new ArrayList<>(Arrays.asList(new String[]{
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
@@ -86,12 +88,14 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             section.setVariable(dataAtPos, mLanguage);
         } else {
             final ContactRowViewHolder row = (ContactRowViewHolder) holder;
-            ViewCompat.setTransitionName(row.getImageView(), String.valueOf(position) + "_image");
+            final String transitionName = String.valueOf(position) + "_image";
+            final CircleImageView imageView = row.getImageView();
             row.setVariable(dataAtPos, mLanguage);
             row.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mClickHanler.onContactClick(row.getImageView(), dataAtPos, mLanguage);
+                    ViewCompat.setTransitionName(imageView, transitionName);
+                    mClickHanler.onContactClick(imageView, dataAtPos, mLanguage);
                 }
             });
         }
