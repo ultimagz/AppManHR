@@ -1,99 +1,92 @@
-<android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
-    tools:context="com.appman.intern.activities.LoginActivity">
+    tools:context="com.appman.intern.activities.LoginActivity"
+    tools:ignore="ContentDescription">
 
-    <ImageView
-        android:id="@+id/img_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_appmanlogo"
-        app:layout_marginTopPercent="10%" />
-
-    <RelativeLayout
+    <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/img_logo">
-        <!-- Login progress -->
-        <ProgressBar
-            android:id="@+id/login_progress"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone" />
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/login_form"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:animateLayoutChanges="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_marginLeftPercent="5%"
+            app:layout_marginRightPercent="5%">
 
-            <LinearLayout
-                android:id="@+id/email_login_form"
-                android:layout_width="match_parent"
-                app:layout_marginPercent="10%"
+            <ImageView
+                android:id="@+id/img_logo"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:src="@drawable/appmanlogo" />
 
-                <!--<android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-    -->
-                <EditText
-                    android:id="@+id/email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="50dp"
-                    android:background="@drawable/rounded_edittext"
-                    android:hint="EMAIL"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:padding="3dp"
-                    android:singleLine="true" />
+            <EditText
+                android:id="@+id/email_input"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_input_height"
+                android:layout_marginTop="@dimen/login_margin_xxlarge"
+                android:background="@drawable/rounded_edittext"
+                android:gravity="center_vertical"
+                android:hint="@string/email"
+                android:imeActionId="@+id/login"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeOptions="actionDone"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/login_input_padding"
+                android:paddingRight="@dimen/login_input_padding"
 
-                <!-- </android.support.design.widget.TextInputLayout>-->
+                android:singleLine="true"
+                android:textColorHint="@android:color/darker_gray"
+                android:textSize="@dimen/login_input_text_size" />
 
-                <!--<android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-    -->
-                <EditText
-                    android:id="@+id/password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/rounded_edittext"
-                    android:hint="PASSWORD"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:padding="3dp"
-                    android:singleLine="true" />
+            <EditText
+                android:id="@+id/password_input"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_input_height"
+                android:layout_marginTop="@dimen/login_margin_medium"
+                android:background="@drawable/rounded_edittext"
+                android:gravity="center_vertical"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/login_input_padding"
+                android:paddingRight="@dimen/login_input_padding"
+                android:singleLine="true"
+                android:textSize="@dimen/login_input_text_size"/>
 
-                <!--</android.support.design.widget.TextInputLayout>
-    -->
-                <Button
-                    android:id="@+id/email_sign_in_button"
-                    style="?android:textAppearanceSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:background="@drawable/set_button_click_login"
-                    android:text="LOG IN"
-                    android:textStyle="bold" />
+            <Button
+                android:id="@+id/sign_in_button"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_button_size"
+                android:layout_marginTop="@dimen/login_margin_large"
+                android:background="@drawable/set_button_click_login"
+                android:text="@string/login"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/login_input_text_size"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
 
-            </LinearLayout>
-        </RelativeLayout>
-    </RelativeLayout>
+        <ProgressBar
+            android:id="@+id/login_progress"
+            style="@android:style/Widget.Holo.ProgressBar.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/row_padding"
+            android:visibility="visible"
+            tools:visibility="visible"/>
 
-</android.support.percent.PercentRelativeLayout>
+    </android.support.percent.PercentRelativeLayout>
+</layout>

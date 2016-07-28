@@ -3,6 +3,18 @@
     <dimen name="contact_detail_header_half_size">120dp</dimen>
     <dimen name="switch_lang_btn_width">64dp</dimen>
     <dimen name="switch_lang_btn_height">32dp</dimen>
+
+    <dimen name="login_button_size">48dp</dimen>
+    <dimen name="login_input_height">48dp</dimen>
+    <dimen name="login_input_text_size">20sp</dimen>
+    <dimen name="login_input_button_height">16sp</dimen>
+    <dimen name="login_input_text_height">16sp</dimen>
+    <dimen name="login_input_padding">8dp</dimen>
+    <dimen name="login_margin_xxlarge">42dp</dimen>
+    <dimen name="login_margin_xlarge">36dp</dimen>
+    <dimen name="login_margin_large">24dp</dimen>
+    <dimen name="login_margin_medium">16dp</dimen>
+
     <dimen name="row_height">56dp</dimen>
     <dimen name="header_height">48dp</dimen>
     <dimen name="row_image_size">42dp</dimen>

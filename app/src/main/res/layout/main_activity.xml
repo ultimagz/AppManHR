@@ -43,7 +43,7 @@
                         android:gravity = "center"
                         android:text="Log out"
                         android:textColor="@color/textColorPrimary"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         tools:text="Log out" />
 
                     <TextView
@@ -54,7 +54,7 @@
                         android:gravity = "center"
                         android:text="All Contact"
                         android:textColor="@color/textColorPrimary"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         tools:text="All Contact" />
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
