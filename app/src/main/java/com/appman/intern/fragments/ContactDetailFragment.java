@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
@@ -17,7 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appman.intern.R;
-import com.appman.intern.adapters.ContactAdapter;
+import com.appman.intern.adapters.ContactDetailAdapter;
 import com.appman.intern.databinding.ContactDetailFragmentBinding;
 import com.appman.intern.enums.ContactDetailType;
 import com.appman.intern.enums.Language;
@@ -42,14 +43,16 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
     private SearchableContactData mContactData;
     private Language mLanguage;
     ContactDetailFragmentBinding mBinding;
-    ContactAdapter mAdapter;
+    ContactDetailAdapter mAdapter;
     List<ContactDetailRowModel> mList = new ArrayList<>();
+    String mTransitionName = null;
 
-    public static ContactDetailFragment newInstance(SearchableContactData contactData, Language lang) {
+    public static ContactDetailFragment newInstance(SearchableContactData contactData, Language lang, String transitionName) {
         ContactDetailFragment fragment = new ContactDetailFragment();
         Bundle args = new Bundle();
         args.putParcelable("contactData", Parcels.wrap(contactData));
         args.putString("lang", lang.name());
+        args.putString("transitionName", transitionName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +64,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         if (args != null) {
             mContactData = Parcels.unwrap(args.getParcelable("contactData"));
             mLanguage = Language.valueOf(args.getString("lang", Language.EN.name()));
+            mTransitionName = args.getString("transitionName", null);
         }
     }
 
@@ -68,6 +72,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.contact_detail_fragment, container, false);
+        ViewCompat.setTransitionName(mBinding.contactDetailImg, mTransitionName);
         return mBinding.getRoot();
     }
 
@@ -77,7 +82,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         mBinding.setViewLanguage(mLanguage);
         mBinding.setContactDetailData(mContactData);
 
-        mBinding.contactJob.setText(mContactData.getPosition());
+        mBinding.contactDetailJob.setText(mContactData.getPosition());
         mBinding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,7 +90,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
             }
         });
 
-        mAdapter = new ContactAdapter(mList, this);
+        mAdapter = new ContactDetailAdapter(mList, this);
         mBinding.recyclerView.setAdapter(mAdapter);
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -96,7 +101,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
                 .placeholder(R.drawable.dummy_photo)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .dontAnimate().dontTransform()
-                .into(mBinding.contactImg);
+                .into(mBinding.contactDetailImg);
     }
 
     private void updateDetail() {
