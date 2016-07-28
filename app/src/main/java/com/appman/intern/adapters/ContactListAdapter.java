@@ -4,7 +4,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +14,8 @@ import com.appman.intern.R;
 import com.appman.intern.databinding.ContactDataRowBinding;
 import com.appman.intern.databinding.ContactHeaderRowBinding;
 import com.appman.intern.enums.Language;
-import com.appman.intern.fragments.ContactDetailFragment;
+import com.appman.intern.interfaces.ContactClickHandler;
 import com.appman.intern.models.AppContactData;
-import com.appman.intern.models.SearchableContactData;
 import com.appman.intern.viewholders.ContactRowViewHolder;
 import com.appman.intern.viewholders.ContactSectionViewHolder;
 
@@ -38,14 +37,16 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     ContactsContract.CommonDataKinds.Phone.TYPE_WORK));
 
     FragmentActivity mActivity;
+    ContactClickHandler mClickHanler;
     List<AppContactData> mOriginalList;
     List<AppContactData> mFilterList;
     LayoutInflater mInflater;
     Map<String, Integer> mapIndex = new HashMap<>();
     Language mLanguage = Language.EN;
 
-    public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList) {
+    public ContactListAdapter(FragmentActivity activity, List<AppContactData> contactList, ContactClickHandler clickHandler) {
         mActivity = activity;
+        mClickHanler = clickHandler;
         mInflater = LayoutInflater.from(activity);
         setList(contactList);
     }
@@ -84,12 +85,13 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ContactSectionViewHolder section = (ContactSectionViewHolder) holder;
             section.setVariable(dataAtPos, mLanguage);
         } else {
-            ContactRowViewHolder row = (ContactRowViewHolder) holder;
+            final ContactRowViewHolder row = (ContactRowViewHolder) holder;
+            ViewCompat.setTransitionName(row.getImageView(), String.valueOf(position) + "_image");
             row.setVariable(dataAtPos, mLanguage);
             row.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showDetailFragment(dataAtPos);
+                    mClickHanler.onContactClick(row.getImageView(), dataAtPos, mLanguage);
                 }
             });
         }
@@ -112,17 +114,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setLanguage(Language language) {
         mLanguage = language;
-    }
-
-    private void showDetailFragment(final AppContactData dataAtPos) {
-        SearchableContactData searchDate = new SearchableContactData(dataAtPos);
-        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
-        fragmentManager
-                .beginTransaction()
-                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
-                .replace(R.id.main_content, ContactDetailFragment.newInstance(searchDate, mLanguage), "ContactDetailFragment")
-                .addToBackStack("ContactDetailFragment")
-                .commit();
     }
 
     public List<AppContactData> createSectionList(List<AppContactData> contactList) {
