@@ -113,8 +113,8 @@ public class SearchContactListAdapter extends RecyclerView.Adapter<RecyclerView.
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos, mLanguage), "ContactDetailFragment")
-                .addToBackStack("ContactDetailFragment")
+                .replace(R.id.main_content, ContactDetailFragment.newInstance(dataAtPos, mLanguage, null), "SearchContactDetailFragment")
+                .addToBackStack("SearchContactDetailFragment")
                 .commit();
     }
 
