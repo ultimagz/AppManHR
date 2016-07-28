@@ -17,12 +17,12 @@ import com.appman.intern.viewholders.ContactDetailViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactAdapter extends RecyclerView.Adapter<ContactDetailViewHolder> {
+public class ContactDetailAdapter extends RecyclerView.Adapter<ContactDetailViewHolder> {
 
     private List<ContactDetailRowModel> mList = new ArrayList<>();
     private ContactDetailClickHandler mClickHandler;
 
-    public ContactAdapter(List<ContactDetailRowModel> list, ContactDetailClickHandler clickHandler) {
+    public ContactDetailAdapter(List<ContactDetailRowModel> list, ContactDetailClickHandler clickHandler) {
         mClickHandler = clickHandler;
         setList(list);
     }
