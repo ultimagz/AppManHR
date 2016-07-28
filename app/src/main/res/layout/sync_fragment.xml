@@ -74,5 +74,17 @@
             android:textColor="@android:color/white"
             android:textSize="24sp"/>
 
+        <Button
+            android:id="@+id/logout_btn"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="8dp"
+            android:text="Log out"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"/>
     </RelativeLayout>
 </layout>

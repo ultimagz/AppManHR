@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
 import com.appman.intern.Utils;
+import com.appman.intern.activities.LoginActivity;
 import com.appman.intern.databinding.SyncFragmentBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
@@ -83,6 +85,13 @@ public class SyncFragment extends Fragment {
             public void onClick(View view) {
                 SyncFragmentPermissionsDispatcher.exportToLocalContactWithCheck(SyncFragment.this);
 //                exportToLocalContact();
+            }
+        });
+
+        mBinding.logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doLogout();
             }
         });
     }
@@ -239,5 +248,12 @@ public class SyncFragment extends Fragment {
                 .setCancelable(false)
                 .setMessage(messageResId)
                 .show();
+    }
+
+    private void doLogout() {
+        AppManHRPreferences.setLogin(getContext(), false);
+        Intent backToLogin = new Intent(getActivity(), LoginActivity.class);
+        getActivity().startActivity(backToLogin);
+        getActivity().finish();
     }
 }

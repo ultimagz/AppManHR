@@ -54,14 +54,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-
-        mBinding.logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doLogout();
-            }
-        });
-
         AppManHRPreferences.setCurrentLanguage(this, "EN");
     }
 
@@ -73,12 +65,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setToolbarTitleByIndex(mBinding.viewPager.getCurrentItem());
-    }
-
-    private void doLogout() {
-        AppManHRPreferences.setLogin(this, false);
-        Intent backToLogin = new Intent(this, LoginActivity.class);
-        startActivity(backToLogin);
-        finish();
     }
 }

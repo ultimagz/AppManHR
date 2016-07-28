@@ -54,7 +54,7 @@
                 android:layout_height="@dimen/contact_detail_header_half_size"
                 android:layout_centerInParent="true"
                 android:src="@drawable/dummy_photo"
-                app:civ_border_color="@android:color/white"
+                app:civ_border_color="@color/cardview_light_background"
                 app:civ_border_width="2dp"/>
 
             <TextView

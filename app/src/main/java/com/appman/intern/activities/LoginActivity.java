@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +19,7 @@ import com.appman.intern.R;
 import com.appman.intern.Utils;
 import com.appman.intern.databinding.LoginActivityBinding;
 import com.appman.intern.models.LoginModel;
+import com.appman.intern.models.ResponseModel;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
@@ -29,6 +29,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity implements Callback {
 
@@ -132,7 +133,7 @@ public class LoginActivity extends AppCompatActivity implements Callback {
     }
 
     private boolean isEmailValid(String email) {
-        return email.contains("@");
+        return Pattern.matches("[a-zA-Z0-9._-]+@[a-z]+.[a-z]+", email);
     }
 
     private boolean isPasswordValid(String password) {
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements Callback {
 
     public void requestLogin() {
         LoginModel login = new LoginModel();
-        login.setUsername(mBinding.emailInput.getText().toString());
+        login.setEmail(mBinding.emailInput.getText().toString());
         login.setPassword(mBinding.passwordInput.getText().toString());
 
         RequestBody body = RequestBody.create(JSON, Utils.GSON.toJson(login));
@@ -156,7 +157,6 @@ public class LoginActivity extends AppCompatActivity implements Callback {
 
     @Override
     public void onFailure(final Request request, final IOException e) {
-        Log.i("Fail","Fail");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -167,21 +167,18 @@ public class LoginActivity extends AppCompatActivity implements Callback {
 
     @Override
     public void onResponse(final Response response) throws IOException {
-        final boolean isSuccessful = response.isSuccessful();
         final String body = response.body().toString();
-        Log.i("Complete","Complete");
-        Log.i("Complete", body);
-
+        final ResponseModel responseModel = Utils.GSON.fromJson(body, ResponseModel.class);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                checkResponse(isSuccessful, body);
+                checkResponse(responseModel);
             }
         });
     }
 
-    private void checkResponse(boolean isSuccessful, String body) {
-        if (isSuccessful) {
+    private void checkResponse(ResponseModel responseModel) {
+        if (responseModel.getStatus() == 200) {
             AppManHRPreferences.setLogin(this, true);
             mBinding.getRoot().postDelayed(new Runnable() {
                 @Override
@@ -190,7 +187,7 @@ public class LoginActivity extends AppCompatActivity implements Callback {
                 }
             }, 2000);
         } else {
-            showRequestFailDialog(body);
+            showRequestFailDialog(responseModel.getResult());
         }
     }
 

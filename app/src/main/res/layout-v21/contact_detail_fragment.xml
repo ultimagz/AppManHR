@@ -55,7 +55,7 @@
                 android:layout_centerInParent="true"
                 android:src="@drawable/dummy_photo"
                 android:transitionName="contactImage"
-                app:civ_border_color="@android:color/white"
+                app:civ_border_color="@color/cardview_light_background"
                 app:civ_border_width="2dp"/>
 
             <TextView
