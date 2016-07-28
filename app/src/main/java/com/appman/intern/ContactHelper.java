@@ -100,7 +100,7 @@ public class ContactHelper {
 //            for (ContentProviderResult result : results) {
 //                Log.w("insert id", String.valueOf(result.uri));
 //            }
-            Timber.w("update result %s", Arrays.toString(results));
+//            Timber.w("update result %s", Arrays.toString(results));
             return Arrays.toString(results);
 
         } catch (RemoteException | OperationApplicationException e) {
