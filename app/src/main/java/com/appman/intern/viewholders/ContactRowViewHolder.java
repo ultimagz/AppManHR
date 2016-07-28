@@ -14,6 +14,8 @@ import com.appman.intern.models.AppContactData;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ContactRowViewHolder extends RecyclerView.ViewHolder {
 
     private Context mContext;
@@ -36,6 +38,10 @@ public class ContactRowViewHolder extends RecyclerView.ViewHolder {
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .dontAnimate().dontTransform()
                 .into(mViewDataBinding.contactImg);
+    }
+
+    public CircleImageView getImageView() {
+        return mViewDataBinding.contactImg;
     }
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
