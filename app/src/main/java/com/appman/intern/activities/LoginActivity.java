@@ -32,16 +32,19 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.appman.intern.R;
 import com.appman.intern.Utils;
 import com.appman.intern.models.LoginModel;
+import com.appman.intern.models.ResponseModel;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
@@ -68,10 +71,6 @@ public class LoginActivity extends AppCompatActivity implements Callback {
     private View mProgressView;
     private View mLoginFormView;
 
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String name = "nameKey";
-    public static final String pass = "passwordKey";
-    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,15 +106,6 @@ public class LoginActivity extends AppCompatActivity implements Callback {
 
     @Override
     protected void onResume() {
-        sharedpreferences=getSharedPreferences(MyPREFERENCES,
-                Context.MODE_PRIVATE);
-        if (sharedpreferences.contains(name))
-        {
-            if(sharedpreferences.contains(pass)){
-                Intent i = new Intent(this,MainActivity.class);
-                startActivity(i);
-            }
-        }
         super.onResume();
     }
 
@@ -170,7 +160,7 @@ public class LoginActivity extends AppCompatActivity implements Callback {
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return Pattern.matches("[a-zA-Z0-9._-]+@[a-z]+.[a-z]+", email);
     }
 
     private boolean isPasswordValid(String password) {
@@ -213,30 +203,22 @@ public class LoginActivity extends AppCompatActivity implements Callback {
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
 
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        String u = mEmailView.getText().toString();
-        String p = mPasswordView.getText().toString();
-        editor.putString(name, u);
-        editor.putString(pass, p);
-        editor.commit();
         checkLogin();
     }
 
     public void checkLogin(){
-        Intent a = new Intent(getApplicationContext(),MainActivity.class);
         Log.i("jsonTest",stringToJSON());
         try {
-            post("http://192.168.1.17:8080/test2",stringToJSON());
+            post("http://hr.appmanproject.com/api/user/login",stringToJSON());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        startActivity(a);
     }
 
     public String stringToJSON(){
         String json;
         LoginModel login = new LoginModel();
-        login.setUsername(mEmailView.getText().toString());
+        login.setEmail(mEmailView.getText().toString());
         login.setPassword(mPasswordView.getText().toString());
         Gson gson = new Gson();
         json = gson.toJson(login);
@@ -278,7 +260,17 @@ public class LoginActivity extends AppCompatActivity implements Callback {
     @Override
     public void onResponse(Response response) throws IOException {
         Log.i("Complete","Complete");
-        Log.i("Complete",response.body().string());
+
+        ResponseModel login = new Gson().fromJson(response.body().string(), ResponseModel.class);
+        if(login.getStatus() == 200) {
+            Intent in = new Intent(this, MainActivity.class);
+            startActivity(in);
+        }else{
+            Intent in = new Intent(this, LoginActivity.class);
+            startActivity(in);
+        }
+
+
     }
 }
 

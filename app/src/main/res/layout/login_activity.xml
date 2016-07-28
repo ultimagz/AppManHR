@@ -38,6 +38,8 @@
                 android:layout_width="match_parent"
                 app:layout_marginPercent="10%"
                 android:layout_height="wrap_content"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
                 android:orientation="vertical">
 
                 <!--<android.support.design.widget.TextInputLayout

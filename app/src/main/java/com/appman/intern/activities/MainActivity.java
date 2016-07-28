@@ -73,19 +73,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final Intent back = new Intent(this,LoginActivity.class);
-        mBinding.logout.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                SharedPreferences sharedpreferences = getSharedPreferences
-                        (LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.clear();
-                editor.commit();
-
-                startActivity(back);
-            }
-        });
 
         AppManHRPreferences.setCurrentLanguage(this, "EN");
     }
