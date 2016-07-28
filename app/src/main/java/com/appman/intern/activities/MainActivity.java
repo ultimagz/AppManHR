@@ -1,12 +1,10 @@
 package com.appman.intern.activities;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.R;
