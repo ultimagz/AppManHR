@@ -4,19 +4,26 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -26,13 +33,16 @@ import android.widget.TextView;
 import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.ContactHelper;
 import com.appman.intern.DatabaseHelper;
+import com.appman.intern.DetailsTransition;
 import com.appman.intern.R;
 import com.appman.intern.Utils;
 import com.appman.intern.adapters.ContactListAdapter;
 import com.appman.intern.databinding.ContactFragmentBinding;
 import com.appman.intern.enums.Language;
+import com.appman.intern.interfaces.ContactClickHandler;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.LocalContactData;
+import com.appman.intern.models.SearchableContactData;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -47,12 +57,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
-public class ContactsFragment extends Fragment implements View.OnClickListener, Callback {
+public class ContactsFragment extends Fragment implements View.OnClickListener, Callback, ContactClickHandler {
 
     ContactFragmentBinding mBinding;
     ContactListAdapter mAdapter;
@@ -72,6 +83,30 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.contact_fragment, container, false);
         mHelper = new DatabaseHelper(getActivity());
         mProgressDialog = new ProgressDialog(getActivity());
+
+        ImageButton searchBtn = (ImageButton) getActivity().findViewById(R.id.search_btn);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SearchFragment searchFragment = SearchFragment.newInstance();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    searchFragment.setSharedElementEnterTransition(new ChangeBounds());
+                    searchFragment.setEnterTransition(new Fade());
+                    setExitTransition(new Fade());
+                    searchFragment.setSharedElementReturnTransition(new ChangeBounds());
+                }
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager
+                        .beginTransaction()
+//                        .setCustomAnimations(R.anim.slide_up,R.anim.slide_down,R.anim.slide_up,R.anim.slide_down)
+                        .addSharedElement(mBinding.contactList, "contactList")
+                        .replace(R.id.main_content, searchFragment, "SearchFragment")
+                        .addToBackStack("SearchFragment")
+                        .commit();
+            }
+        });
+
         return mBinding.getRoot();
     }
 
@@ -79,7 +114,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAdapter = new ContactListAdapter(getActivity(), new ArrayList<AppContactData>());
+        mAdapter = new ContactListAdapter(getActivity(), new ArrayList<AppContactData>(), this);
         mLayoutManager = new LinearLayoutManager(getContext());
         mBinding.contactList.setLayoutManager(mLayoutManager);
         mBinding.contactList.setHasFixedSize(true);
@@ -208,7 +243,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
                 inSelectedLength = idx >= firstSideIndex && idx <= lastSideIndex;
 
                 child.setBackgroundColor(inSelectedLength ? Color.parseColor("#e0e0e0") : Color.WHITE);
-//                child.setText(existData ? child.getText() : "");
                 child.setSelected(existData && inSelectedLength);
                 child.setEnabled(existData);
                 child.setClickable(existData);
@@ -295,6 +329,28 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
                 .setMessage(message)
                 .setTitle("Request fail.")
                 .show();
+    }
+
+    @Override
+    public void onContactClick(CircleImageView imageView, AppContactData dataAtPos, Language language) {
+        SearchableContactData searchDate = new SearchableContactData(dataAtPos);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+        ContactDetailFragment detailFragment = ContactDetailFragment.newInstance(searchDate, language);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            detailFragment.setSharedElementEnterTransition(new DetailsTransition());
+            detailFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
+            setExitTransition(new Slide(Gravity.TOP));
+            detailFragment.setSharedElementReturnTransition(new DetailsTransition());
+        }
+
+        fragmentManager
+                .beginTransaction()
+//                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
+                .addSharedElement(imageView, "contactImg")
+                .replace(R.id.main_content, detailFragment, "ContactDetailFragment")
+                .addToBackStack("ContactDetailFragment")
+                .commit();
     }
 }
 
