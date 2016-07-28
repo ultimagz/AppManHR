@@ -39,7 +39,6 @@ import com.appman.intern.models.LocalContactData;
 import java.util.Date;
 import java.util.List;
 
-import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -49,7 +48,6 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import timber.log.Timber;
 
 @RuntimePermissions
 public class SyncFragment extends Fragment {
@@ -127,24 +125,9 @@ public class SyncFragment extends Fragment {
                 List<ContactData> localContactList = ContactHelper.retrieveContacts(getContext(), PROJECTION, groupId);
 
                 Realm realm = Realm.getDefaultInstance();
-                RealmQuery<AppContactData> query = realm
-                        .where(AppContactData.class);
-//                .beginsWith("firstnameEn", "A", Case.INSENSITIVE);
-
+                RealmQuery<AppContactData> query = realm.where(AppContactData.class);
                 RealmResults<AppContactData> results = query.findAll();
                 realm.beginTransaction();
-
-//        AppContactData data = query.findFirst();
-//        LocalContactData dbContactData = data.getLocalContactData();
-//        String rawId = getRawContactId(dbContactData, localContactList);
-//        if (TextUtils.isEmpty(rawId)) {
-//            String id = ContactHelper.addNewContact(context, data, lang);
-//            Timber.w("New contact id %s", id);
-//            dbContactData.setLocalId(id);
-//        } else {
-//            dbContactData.setLocalId(rawId);
-//            ContactHelper.updateContact(context, data, lang);
-//        }
 
                 for (AppContactData appContactData : results) {
                     LocalContactData dbContactData = appContactData.getLocalContactData();
@@ -162,7 +145,6 @@ public class SyncFragment extends Fragment {
                     dbContactData.setNewValue(appContactData);
                     appContactData.setExported(true);
                     appContactData.setLocalContactData(dbContactData);
-//            realm.insertOrUpdate(appContactData);
                 }
                 realm.commitTransaction();
                 return null;
