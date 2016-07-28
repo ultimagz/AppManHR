@@ -131,7 +131,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
     void callPhone(String phoneNumber) {
         Timber.w("Call %s", phoneNumber);
         Intent phoneIntent = new Intent(Intent.ACTION_CALL);
-        phoneIntent.setData(Uri.parse("tel:" + "083314860"));
+        phoneIntent.setData(Uri.parse("tel:" + "0833124860"));
         startActivity(phoneIntent);
     }
 
@@ -144,7 +144,7 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.putExtra("sms_body", "");
         sendIntent.setType("vnd.android-dir/mms-sms");
-        sendIntent.setData(Uri.parse("sms:" + "083314860"));
+        sendIntent.setData(Uri.parse("sms:" + "0833124860"));
         startActivity(sendIntent);
     }
 
