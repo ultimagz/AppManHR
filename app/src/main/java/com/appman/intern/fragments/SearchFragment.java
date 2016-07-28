@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
+import com.appman.intern.Utils;
 import com.appman.intern.adapters.SearchContactListAdapter;
 import com.appman.intern.databinding.SearchFragmentBinding;
 
@@ -73,13 +75,20 @@ public class SearchFragment extends Fragment {
         mAdapter = new SearchContactListAdapter(getActivity(), ContactHelper.getSearchableContactListFromDatabase(getContext()));
         mLayoutManager = new LinearLayoutManager(getContext());
         mBinding.contactList.setLayoutManager(mLayoutManager);
-        mBinding.contactList.setHasFixedSize(true);
         mBinding.contactList.setAdapter(mAdapter);
+        mBinding.contactList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                Utils.hideSoftKeyboard(getActivity());
+            }
+        });
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onDetach() {
+        super.onDetach();
+        Utils.hideSoftKeyboard(getActivity());
     }
 
     @Override
