@@ -13,6 +13,9 @@
     <string name="search_hint">Search&#8230;</string>
     <string name="en_label">EN</string>
     <string name="th_label">TH</string>
+    <string name="email">E-Mail</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
 
     <string-array name="mobile_type">
         <item>HOME</item>

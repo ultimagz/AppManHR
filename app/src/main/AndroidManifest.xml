@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.appman.intern">
+<manifest package="com.appman.intern"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
@@ -39,8 +39,8 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:screenOrientation="sensorPortrait"
             android:name=".activities.LoginActivity"
+            android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,9 +1,12 @@
 package com.appman.intern.fragments;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -26,6 +29,7 @@ import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.ContactHelper;
 import com.appman.intern.R;
 import com.appman.intern.Utils;
+import com.appman.intern.activities.LoginActivity;
 import com.appman.intern.databinding.SyncFragmentBinding;
 import com.appman.intern.enums.Language;
 import com.appman.intern.models.AppContactData;
@@ -83,6 +87,13 @@ public class SyncFragment extends Fragment {
 //                exportToLocalContact();
             }
         });
+
+        mBinding.logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doLogout();
+            }
+        });
     }
 
     private Language getExportLanguage() {
@@ -98,53 +109,74 @@ public class SyncFragment extends Fragment {
 
     @NeedsPermission({ Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS })
     void exportToLocalContact() {
-        Context context = getContext();
-        Language lang = getExportLanguage();
-        String groupId = ContactHelper.getContactGroupId(getContext());
-        List<ContactData> localContactList = ContactHelper.retrieveContacts(getContext(), PROJECTION, groupId);
+        new AsyncTask<Void, Void, Void>() {
+            ProgressDialog progressDialog;
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog = new ProgressDialog(getContext());
+                progressDialog.setMessage("Export contacts...");
+                progressDialog.show();
+            }
 
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuery<AppContactData> query = realm
-                .where(AppContactData.class)
-                .beginsWith("firstnameEn", "A", Case.INSENSITIVE);
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Context context = getContext();
+                Language lang = getExportLanguage();
+                String groupId = ContactHelper.getContactGroupId(getContext());
+                List<ContactData> localContactList = ContactHelper.retrieveContacts(getContext(), PROJECTION, groupId);
 
-        RealmResults<AppContactData> results = query.findAll();
-        realm.beginTransaction();
+                Realm realm = Realm.getDefaultInstance();
+                RealmQuery<AppContactData> query = realm
+                        .where(AppContactData.class);
+//                .beginsWith("firstnameEn", "A", Case.INSENSITIVE);
 
-        AppContactData data = query.findFirst();
-        LocalContactData dbContactData = data.getLocalContactData();
-        String rawId = getRawContactId(dbContactData, localContactList);
-        if (TextUtils.isEmpty(rawId)) {
-            String id = ContactHelper.addNewContact(context, data, lang);
-            Timber.w("New contact id %s", id);
-            dbContactData.setLocalId(id);
-        } else {
-            dbContactData.setLocalId(rawId);
-            ContactHelper.updateContact(context, data, lang);
-        }
+                RealmResults<AppContactData> results = query.findAll();
+                realm.beginTransaction();
 
-//        for (AppContactData appContactData : results) {
-
-//
-//            if (TextUtils.isEmpty(rawId)) {
-//                String id = ContactHelper.addNewContact(context, appContactData, lang);
-//                Timber.w("New contact id %s", id);
-//                dbContactData.setLocalId(id);
-//            } else {
-//                dbContactData.setLocalId(rawId);
-//                ContactHelper.updateContact(context, appContactData, lang);
-//            }
-//
-//            dbContactData.setNewValue(appContactData);
-//            appContactData.setExported(true);
-//            appContactData.setLocalContactData(dbContactData);
-////            realm.insertOrUpdate(appContactData);
+//        AppContactData data = query.findFirst();
+//        LocalContactData dbContactData = data.getLocalContactData();
+//        String rawId = getRawContactId(dbContactData, localContactList);
+//        if (TextUtils.isEmpty(rawId)) {
+//            String id = ContactHelper.addNewContact(context, data, lang);
+//            Timber.w("New contact id %s", id);
+//            dbContactData.setLocalId(id);
+//        } else {
+//            dbContactData.setLocalId(rawId);
+//            ContactHelper.updateContact(context, data, lang);
 //        }
-        realm.commitTransaction();
 
-        String time = Utils.DATE_FORMAT.format(new Date());
-        mBinding.lastExportTime.setText(String.format("Last export : %s", time));
-        AppManHRPreferences.setLastExportTime(getContext(), time);
+                for (AppContactData appContactData : results) {
+                    LocalContactData dbContactData = appContactData.getLocalContactData();
+                    String rawId = getRawContactId(dbContactData, localContactList);
+
+                    if (TextUtils.isEmpty(rawId)) {
+                        String id = ContactHelper.addNewContact(context, appContactData, lang);
+//                        Timber.w("New contact id %s", id);
+                        dbContactData.setLocalId(id);
+                    } else {
+                        dbContactData.setLocalId(rawId);
+                        ContactHelper.updateContact(context, appContactData, lang);
+                    }
+
+                    dbContactData.setNewValue(appContactData);
+                    appContactData.setExported(true);
+                    appContactData.setLocalContactData(dbContactData);
+//            realm.insertOrUpdate(appContactData);
+                }
+                realm.commitTransaction();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                progressDialog.dismiss();
+                String time = Utils.DATE_FORMAT.format(new Date());
+                mBinding.lastExportTime.setText(String.format("Last export : %s", time));
+                AppManHRPreferences.setLastExportTime(getContext(), time);
+            }
+
+        }.execute();
     }
 
     private String getRawContactId(LocalContactData dbContactData, List<ContactData> localContactList) {
@@ -216,5 +248,12 @@ public class SyncFragment extends Fragment {
                 .setCancelable(false)
                 .setMessage(messageResId)
                 .show();
+    }
+
+    private void doLogout() {
+        AppManHRPreferences.setLogin(getContext(), false);
+        Intent backToLogin = new Intent(getActivity(), LoginActivity.class);
+        getActivity().startActivity(backToLogin);
+        getActivity().finish();
     }
 }

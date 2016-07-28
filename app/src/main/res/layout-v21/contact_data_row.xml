@@ -24,6 +24,7 @@
             android:layout_width="@dimen/row_image_size"
             android:layout_height="@dimen/row_image_size"
             android:src="@drawable/dummy_photo"
+            android:transitionName="contactImage"
             app:civ_border_color="@android:color/white"
             app:civ_border_width="1dp"/>
 
@@ -47,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:text="@{ contactData.getPosition()}"
+                android:text="@{ contactData.getMobile() }"
                 android:textColor="#c8c8c8"
                 android:textSize="@dimen/row_phone_text_size"
                 tools:text="081 234 5678" />

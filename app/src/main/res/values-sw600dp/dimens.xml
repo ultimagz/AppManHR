@@ -4,6 +4,17 @@
     <dimen name="switch_lang_btn_width">80dp</dimen>
     <dimen name="switch_lang_btn_height">36dp</dimen>
 
+    <dimen name="login_button_size">64dp</dimen>
+    <dimen name="login_input_height">56dp</dimen>
+    <dimen name="login_input_text_size">24sp</dimen>
+    <dimen name="login_input_button_height">32sp</dimen>
+    <dimen name="login_input_text_height">32sp</dimen>
+    <dimen name="login_input_padding">16dp</dimen>
+    <dimen name="login_margin_xxlarge">56dp</dimen>
+    <dimen name="login_margin_xlarge">48dp</dimen>
+    <dimen name="login_margin_large">36dp</dimen>
+    <dimen name="login_margin_medium">24dp</dimen>
+
     <dimen name="row_height">80dp</dimen>
     <dimen name="header_height">64dp</dimen>
     <dimen name="row_image_size">60dp</dimen>

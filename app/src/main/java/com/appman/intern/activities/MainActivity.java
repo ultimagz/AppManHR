@@ -1,12 +1,9 @@
 package com.appman.intern.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,7 +12,6 @@ import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.R;
 import com.appman.intern.adapters.SectionsPagerAdapter;
 import com.appman.intern.databinding.MainActivityBinding;
-import com.appman.intern.fragments.SearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,21 +53,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
-
-        mBinding.searchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager
-                            .beginTransaction()
-                            .setCustomAnimations(R.anim.slide_up,R.anim.slide_down,R.anim.slide_up,R.anim.slide_down)
-                            //.addSharedElement(sharedElement, transitionName)
-                            .replace(R.id.main_content, SearchFragment.newInstance(), "SearchFragment")
-                            .addToBackStack("SearchFragment")
-                            .commit();
-            }
-        });
-
 
         AppManHRPreferences.setCurrentLanguage(this, "EN");
     }

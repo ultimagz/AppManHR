@@ -54,6 +54,7 @@
                 android:layout_height="@dimen/contact_detail_header_half_size"
                 android:layout_centerInParent="true"
                 android:src="@drawable/dummy_photo"
+                android:transitionName="contactImage"
                 app:civ_border_color="@color/cardview_light_background"
                 app:civ_border_width="2dp"/>
 
@@ -70,7 +71,7 @@
                 tools:text="Robert Downey Jr."/>
 
             <TextView
-                android:id="@+id/contact_detail_job"
+                android:id="@+id/contact_detailjob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/contact_detail_name"
@@ -92,6 +93,7 @@
             android:layout_weight="1"
             android:background="@drawable/shadow_bottom_view_contact"
             android:overScrollMode="never"
-            android:scrollbars="none"/>
+            android:scrollbars="none"
+            android:transitionName="contactList"/>
     </LinearLayout>
 </layout>
