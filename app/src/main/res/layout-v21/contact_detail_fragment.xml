@@ -1,0 +1,99 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.ContactDetailFragment"
+    tools:ignore="ContentDescription">
+
+    <data>
+        <import type="com.appman.intern.enums.Language"/>
+        <variable name="contactDetailData" type="com.appman.intern.models.SearchableContactData"/>
+        <variable name="viewLanguage" type="com.appman.intern.enums.Language"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white_smoke"
+        android:clickable="true"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/contact_detail_header_size"
+            android:clickable="true">
+
+            <View
+                android:id="@+id/contact_header_top"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/contact_detail_header_half_size"
+                android:background="@color/colorPrimary"
+                android:clickable="false"/>
+
+            <View
+                android:id="@+id/contact_name_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/contact_detail_header_half_size"
+                android:layout_below="@id/contact_header_top"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/shadow_top_view_contact"
+                android:clickable="false"/>
+
+            <ImageButton
+                android:id="@+id/back_btn"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_back"/>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/contact_img"
+                android:layout_width="@dimen/contact_detail_header_half_size"
+                android:layout_height="@dimen/contact_detail_header_half_size"
+                android:layout_centerInParent="true"
+                android:src="@drawable/dummy_photo"
+                android:transitionName="contactImg"
+                app:civ_border_color="@android:color/white"
+                app:civ_border_width="2dp"/>
+
+            <TextView
+                android:id="@+id/contact_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contact_img"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="4dp"
+                android:text="@{ viewLanguage == Language.TH ? contactDetailData.getAllNameTh() : contactDetailData.getAllNameEn() }"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                tools:text="Robert Downey Jr."/>
+
+            <TextView
+                android:id="@+id/contact_job"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contact_name"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="4dp"
+                android:text="@{ contactDetailData.getPosition() }"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                tools:text="Iron Man"/>
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/shadow_bottom_view_contact"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:transitionName="contactList"/>
+    </LinearLayout>
+</layout>
