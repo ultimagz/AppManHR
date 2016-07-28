@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:text="@{ contactData.getMobile() }"
+                android:text="@{ contactData.getPosition() }"
                 android:textColor="#c8c8c8"
                 android:textSize="@dimen/row_phone_text_size"
                 tools:text="081 234 5678" />
