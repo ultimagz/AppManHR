@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -336,20 +339,22 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         SearchableContactData searchDate = new SearchableContactData(dataAtPos);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-        ContactDetailFragment detailFragment = ContactDetailFragment.newInstance(searchDate, language);
+        String transitionName = ViewCompat.getTransitionName(imageView);
+        ContactDetailFragment detailFragment = ContactDetailFragment.newInstance(searchDate, language, transitionName);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            detailFragment.setSharedElementEnterTransition(new DetailsTransition());
+            Transition changeTransform = TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_transform);
+            detailFragment.setSharedElementEnterTransition(changeTransform);
             detailFragment.setEnterTransition(new Slide(Gravity.BOTTOM));
-            setExitTransition(new Slide(Gravity.TOP));
-            detailFragment.setSharedElementReturnTransition(new DetailsTransition());
+            detailFragment.setExitTransition(new Slide(Gravity.TOP));
+            detailFragment.setSharedElementReturnTransition(changeTransform);
         }
 
         fragmentManager
                 .beginTransaction()
 //                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
-                .addSharedElement(imageView, "contactImg")
                 .replace(R.id.main_content, detailFragment, "ContactDetailFragment")
                 .addToBackStack("ContactDetailFragment")
+                .addSharedElement(imageView, transitionName)
                 .commit();
     }
 }
