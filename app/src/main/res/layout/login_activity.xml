@@ -92,6 +92,7 @@
                     android:layout_marginTop="30dp"
                     android:background="@drawable/set_button_click_login"
                     android:text="LOG IN"
+                    android:textColor="@color/cardview_light_background"
                     android:textStyle="bold" />
 
             </LinearLayout>

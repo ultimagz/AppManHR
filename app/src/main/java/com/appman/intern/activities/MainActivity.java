@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Intent back = new Intent(this,LoginActivity.class);
 
         AppManHRPreferences.setCurrentLanguage(this, "EN");
     }
