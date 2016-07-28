@@ -149,17 +149,11 @@ public class ContactData extends BaseContactModel {
     public boolean compareValues(LocalContactData dbContactData) {
         boolean equal;
         equal = compareId(dbContactData.getLocalId());
-        Timber.w("equal %s", String.valueOf(equal));
         equal &= compareName(dbContactData.getFullNameEn()) || compareName(dbContactData.getFullNameTh());
-        Timber.w("equal %s", String.valueOf(equal));
         equal &= comparePhone(dbContactData.getMobile(), ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
-        Timber.w("equal %s", String.valueOf(equal));
         equal &= comparePhone(dbContactData.getWorkPhone(), ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
-        Timber.w("equal %s", String.valueOf(equal));
         equal &= compareEmail(dbContactData.getEmail());
-        Timber.w("equal %s", String.valueOf(equal));
         equal &= compareIm(dbContactData.getLineID());
-        Timber.w("equal %s", String.valueOf(equal));
         return equal;
     }
 
