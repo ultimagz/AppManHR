@@ -42,6 +42,13 @@ public class LoginActivity extends AppCompatActivity implements Callback {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.login_activity);
 
+        mBinding.getRoot().setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Utils.hideSoftKeyboard(LoginActivity.this);
+            }
+        });
+
         mBinding.loginProgress.getIndeterminateDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
 
         mBinding.passwordInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -58,6 +65,7 @@ public class LoginActivity extends AppCompatActivity implements Callback {
         mBinding.signInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                Utils.hideSoftKeyboard(LoginActivity.this);
                 attemptLogin();
             }
         });
@@ -167,7 +175,7 @@ public class LoginActivity extends AppCompatActivity implements Callback {
 
     @Override
     public void onResponse(final Response response) throws IOException {
-        final String body = response.body().toString();
+        final String body = response.body().string();
         final ResponseModel responseModel = Utils.GSON.fromJson(body, ResponseModel.class);
         runOnUiThread(new Runnable() {
             @Override
