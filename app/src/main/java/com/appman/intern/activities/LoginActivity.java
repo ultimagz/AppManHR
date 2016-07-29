@@ -21,6 +21,7 @@ import com.appman.intern.databinding.LoginActivityBinding;
 import com.appman.intern.models.LoginModel;
 import com.appman.intern.models.ResponseModel;
 import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -30,6 +31,8 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 public class LoginActivity extends AppCompatActivity implements Callback {
 
@@ -61,6 +64,9 @@ public class LoginActivity extends AppCompatActivity implements Callback {
                 attemptLogin();
             }
         });
+
+        mBinding.emailInput.setText("Amorn@mail.com");
+        mBinding.passwordInput.setText("12345");
 
         showView(false);
     }
@@ -167,8 +173,11 @@ public class LoginActivity extends AppCompatActivity implements Callback {
 
     @Override
     public void onResponse(final Response response) throws IOException {
-        final String body = response.body().toString();
+        final String body = response.body().string();
+        Timber.w("body %s", body);
         final ResponseModel responseModel = Utils.GSON.fromJson(body, ResponseModel.class);
+//        final ResponseModel responseModel = new ResponseModel();
+//        responseModel.setStatus(200);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

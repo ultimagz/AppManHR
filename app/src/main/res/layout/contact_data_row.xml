@@ -24,8 +24,8 @@
             android:layout_width="@dimen/row_image_size"
             android:layout_height="@dimen/row_image_size"
             android:src="@drawable/dummy_photo"
-            app:civ_border_color="@android:color/white"
-            app:civ_border_width="1dp"/>
+            app:civ_border_color="@android:color/black"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"

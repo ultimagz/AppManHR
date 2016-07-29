@@ -82,7 +82,6 @@ public class ContactDetailFragment extends Fragment implements ContactDetailClic
         mBinding.setViewLanguage(mLanguage);
         mBinding.setContactDetailData(mContactData);
 
-        mBinding.contactDetailJob.setText(mContactData.getPosition());
         mBinding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
