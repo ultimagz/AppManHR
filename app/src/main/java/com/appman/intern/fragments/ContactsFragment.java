@@ -46,13 +46,9 @@ import com.appman.intern.interfaces.ContactClickHandler;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.LocalContactData;
 import com.appman.intern.models.SearchableContactData;
-import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -64,6 +60,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import timber.log.Timber;
 
 public class ContactsFragment extends Fragment implements View.OnClickListener, Callback, ContactClickHandler {
@@ -266,7 +267,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         okHttpClient
                 .newCall(request)
                 .enqueue(this);
-
     }
 
     private void saveDatabase(String jsonString) {
@@ -294,35 +294,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         }
 
         realm.commitTransaction();
-    }
-
-    @Override
-    public void onFailure(final Request request, IOException e) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.dismiss();
-                showRequestFailDialog(request.toString());
-            }
-        });
-    }
-
-    @Override
-    public void onResponse(final Response response) throws IOException {
-        final String result = response.body().string();
-        final boolean success = response.isSuccessful();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.dismiss();
-                if (success) {
-                    updateAdapter(result);
-                    saveDatabase(result);
-                } else {
-                    showRequestFailDialog(response.message());
-                }
-            }
-        });
     }
 
     private void showRequestFailDialog(String message) {
@@ -356,6 +327,35 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
                 .addToBackStack("ContactDetailFragment")
                 .addSharedElement(imageView, transitionName)
                 .commit();
+    }
+
+    @Override
+    public void onFailure(final Call call, IOException e) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+                showRequestFailDialog(call.toString());
+            }
+        });
+    }
+
+    @Override
+    public void onResponse(Call call, final Response response) throws IOException {
+        final String result = response.body().string();
+        final boolean success = response.isSuccessful();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+                if (success) {
+                    updateAdapter(result);
+                    saveDatabase(result);
+                } else {
+                    showRequestFailDialog(response.message());
+                }
+            }
+        });
     }
 }
 
