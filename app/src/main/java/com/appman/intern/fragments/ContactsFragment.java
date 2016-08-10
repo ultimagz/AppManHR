@@ -45,7 +45,6 @@ import com.appman.intern.interfaces.ContactClickHandler;
 import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.LocalContactData;
 import com.appman.intern.models.SearchableContactData;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -61,7 +60,6 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import timber.log.Timber;
@@ -258,14 +256,9 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         mProgressDialog.setMessage("Sync contacts");
         mProgressDialog.show();
 
-        OkHttpClient okHttpClient = new OkHttpClient();
         Request.Builder builder = new Request.Builder();
         Request request = builder.url(Utils.URL).build();
-
-        okHttpClient.networkInterceptors().add(new StethoInterceptor());
-        okHttpClient
-                .newCall(request)
-                .enqueue(this);
+        Utils.HTTP_CLIENT.newCall(request).enqueue(this);
     }
 
     private void saveDatabase(String jsonString) {

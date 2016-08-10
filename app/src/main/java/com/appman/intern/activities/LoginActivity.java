@@ -20,7 +20,6 @@ import com.appman.intern.Utils;
 import com.appman.intern.databinding.LoginActivityBinding;
 import com.appman.intern.models.LoginModel;
 import com.appman.intern.models.ResponseModel;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -159,7 +158,6 @@ public class LoginActivity extends AppCompatActivity implements Callback {
                 .post(body)
                 .build();
 
-        Utils.HTTP_CLIENT.networkInterceptors().add(new StethoInterceptor());
         Utils.HTTP_CLIENT.newCall(request).enqueue(this);
     }
 
