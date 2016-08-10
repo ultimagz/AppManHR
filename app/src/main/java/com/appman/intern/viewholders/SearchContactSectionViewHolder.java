@@ -4,10 +4,8 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import com.appman.intern.BR;
-import com.appman.intern.databinding.ContactHeaderRowBinding;
 import com.appman.intern.databinding.SearchContactHeaderRowBinding;
 import com.appman.intern.enums.Language;
-import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.SearchableContactData;
 
 public class SearchContactSectionViewHolder extends RecyclerView.ViewHolder {

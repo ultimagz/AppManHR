@@ -36,7 +36,6 @@ import android.widget.TextView;
 import com.appman.intern.AppManHRPreferences;
 import com.appman.intern.ContactHelper;
 import com.appman.intern.DatabaseHelper;
-import com.appman.intern.DetailsTransition;
 import com.appman.intern.R;
 import com.appman.intern.Utils;
 import com.appman.intern.adapters.ContactListAdapter;

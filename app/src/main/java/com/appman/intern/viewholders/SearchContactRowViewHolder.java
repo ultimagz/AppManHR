@@ -8,10 +8,8 @@ import android.view.View;
 
 import com.appman.intern.BR;
 import com.appman.intern.R;
-import com.appman.intern.databinding.ContactDataRowBinding;
 import com.appman.intern.databinding.SearchContactDataRowBinding;
 import com.appman.intern.enums.Language;
-import com.appman.intern.models.AppContactData;
 import com.appman.intern.models.SearchableContactData;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
