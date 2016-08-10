@@ -20,21 +20,21 @@ import com.appman.intern.Utils;
 import com.appman.intern.databinding.LoginActivityBinding;
 import com.appman.intern.models.LoginModel;
 import com.appman.intern.models.ResponseModel;
-import com.facebook.stetho.okhttp.StethoInterceptor;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class LoginActivity extends AppCompatActivity implements Callback {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private OkHttpClient client = new OkHttpClient();
     private LoginActivityBinding mBinding;
 
     @Override
@@ -159,30 +159,8 @@ public class LoginActivity extends AppCompatActivity implements Callback {
                 .post(body)
                 .build();
 
-        client.networkInterceptors().add(new StethoInterceptor());
-        client.newCall(request).enqueue(this);
-    }
-
-    @Override
-    public void onFailure(final Request request, final IOException e) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                showRequestFailDialog(e.getMessage());
-            }
-        });
-    }
-
-    @Override
-    public void onResponse(final Response response) throws IOException {
-        final String body = response.body().string();
-        final ResponseModel responseModel = Utils.GSON.fromJson(body, ResponseModel.class);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                checkResponse(responseModel);
-            }
-        });
+        Utils.HTTP_CLIENT.networkInterceptors().add(new StethoInterceptor());
+        Utils.HTTP_CLIENT.newCall(request).enqueue(this);
     }
 
     private void checkResponse(ResponseModel responseModel) {
@@ -216,6 +194,28 @@ public class LoginActivity extends AppCompatActivity implements Callback {
             public void run() {
                 startActivity(gotoMain);
                 finish();
+            }
+        });
+    }
+
+    @Override
+    public void onFailure(Call call, final IOException e) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showRequestFailDialog(e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+        final String body = response.body().string();
+        final ResponseModel responseModel = Utils.GSON.fromJson(body, ResponseModel.class);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                checkResponse(responseModel);
             }
         });
     }
